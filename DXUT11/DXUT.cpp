@@ -519,7 +519,6 @@ void DXUTParseCommandLine( __inout WCHAR* strCommandLine,
 bool DXUTIsNextArg( __inout WCHAR*& strCmdLine, __in const WCHAR* strArg );
 bool DXUTGetCmdParam( __inout WCHAR*& strCmdLine, __out WCHAR* strFlag );
 void DXUTAllowShortcutKeys( bool bAllowKeys );
-void DXUTUpdateStaticFrameStats();
 void DXUTUpdateFrameStats();
 
 LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -934,7 +933,6 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
             strSpace++;
         *strSpace = 0;
 
-        DXUTOutputDebugString( L"Unrecognized flag: %s", strFlag );
         strCmdLine += wcslen( strFlag );
     }
 
@@ -1005,7 +1003,7 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
 
     // Not allowed to call this from inside the device callbacks
     if( GetDXUTState().GetInsideDeviceCallback() )
-        return DXUT_ERR_MSGBOX( L"DXUTCreateWindow", E_FAIL );
+        return E_FAIL;
 
     GetDXUTState().SetWindowCreateCalled( true );
 
@@ -1051,7 +1049,7 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
         {
             DWORD dwError = GetLastError();
             if( dwError != ERROR_CLASS_ALREADY_EXISTS )
-                return DXUT_ERR_MSGBOX( L"RegisterClass", HRESULT_FROM_WIN32(dwError) );
+                return HRESULT_FROM_WIN32(dwError) ;
         }
 
         // Override the window's initial & size position if there were cmd line args
@@ -1086,7 +1084,7 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
         if( hWnd == NULL )
         {
             DWORD dwError = GetLastError();
-            return DXUT_ERR_MSGBOX( L"CreateWindow", HRESULT_FROM_WIN32(dwError) );
+            return HRESULT_FROM_WIN32(dwError);
         }
 
         GetDXUTState().SetWindowCreated( true );
@@ -1109,8 +1107,8 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
     HRESULT hr;
 
     // Not allowed to call this from inside the device callbacks
-    if( GetDXUTState().GetInsideDeviceCallback() )
-        return DXUT_ERR_MSGBOX( L"DXUTCreateWindow", E_FAIL );
+	if (GetDXUTState().GetInsideDeviceCallback())
+		return E_FAIL;
 
     GetDXUTState().SetWindowCreateCalled( true );
 
@@ -1118,7 +1116,7 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
     // caller must pass in valid HWND for all three parameters.  The same
     // HWND may be used for more than one parameter.
     if( hWndFocus == NULL || hWndDeviceFullScreen == NULL || hWndDeviceWindowed == NULL )
-        return DXUT_ERR_MSGBOX( L"DXUTSetWindow", E_INVALIDARG );
+        return E_INVALIDARG;
 
     // If subclassing the window, set the pointer to the local window procedure
     if( bHandleMessages )
@@ -1128,7 +1126,7 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
 
         DWORD dwError = GetLastError();
         if( nResult == 0 )
-            return DXUT_ERR_MSGBOX( L"SetWindowLongPtr", HRESULT_FROM_WIN32(dwError) );
+            return HRESULT_FROM_WIN32(dwError);
     }
 
     if( !GetDXUTState().GetDXUTInited() )
@@ -1404,7 +1402,6 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 GetDXUTState().SetActive( true );
 
                 // Enable controller rumble & input when activating app
-                DXUTEnableXInput( true );
 
                 // The GetMinimizedWhileFullscreen() varible is used instead of !DXUTIsWindowed()
                 // to handle the rare case toggling to windowed mode while the fullscreen application 
@@ -1430,7 +1427,6 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 GetDXUTState().SetActive( false );
 
                 // Disable any controller rumble & input when de-activating app
-                DXUTEnableXInput( false );
 
                 if( !DXUTIsWindowed() )
                 {
@@ -1609,7 +1605,7 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
     {
         if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
             GetDXUTState().SetExitCode( 1 );
-        return DXUT_ERR_MSGBOX( L"DXUTMainLoop", E_FAIL );
+        return E_FAIL;
     }
 
     GetDXUTState().SetInsideMainloop( true );
@@ -1643,7 +1639,7 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
     {
         if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
             GetDXUTState().SetExitCode( 1 );
-        return DXUT_ERR_MSGBOX( L"DXUTMainLoop", E_FAIL );
+        return E_FAIL;
     }
 
     // Now we're ready to receive and process Windows messages.
@@ -1695,7 +1691,7 @@ HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nS
    
     // Not allowed to call this from inside the device callbacks
     if( GetDXUTState().GetInsideDeviceCallback() )
-        return DXUT_ERR_MSGBOX( L"DXUTCreateWindow", E_FAIL );
+        return E_FAIL;
 
     GetDXUTState().SetDeviceCreateCalled( true );
 
@@ -1864,7 +1860,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
     if( FAILED( hr ) ) // the call will fail if no valid devices were found
     {
         DXUTDisplayErrorMessage( hr );
-        return DXUT_ERR( L"DXUTFindValidDeviceSettings", hr );
+        return hr;
     }
 
     // If the ModifyDeviceSettings callback is non-NULL, then call it to let the app 
@@ -1892,7 +1888,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         if( FAILED( hr ) ) // the call will fail if no valid devices were found
         {
             DXUTDisplayErrorMessage( hr );
-            return DXUT_ERR( L"DXUTFindValidDeviceSettings", hr );
+			return hr;
         }
 
     }
@@ -1971,7 +1967,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
     GetDXUTState().SetAdapterMonitor( hAdapterMonitor );
 
     // Update the device stats text
-    DXUTUpdateStaticFrameStats();
 
     if( pOldDeviceSettings && !DXUTGetIsWindowedFromDS( pOldDeviceSettings ) &&
         DXUTGetIsWindowedFromDS( pNewDeviceSettings ) )
@@ -2690,7 +2685,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
                                                          );
                 }
                 if ( FAILED ( hr ) ) {
-                    DXUT_ERR( L"D3D11CreateDevice", hr );
                     return DXUTERR_CREATINGDEVICE;
                 }
             }
@@ -2718,7 +2712,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
 
         if( FAILED( hr ) )
         {
-            DXUT_ERR( L"D3D11CreateDevice", hr );
             return DXUTERR_CREATINGDEVICE;
         }
         // set default render state to msaa enabled
@@ -2738,7 +2731,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         hr = pd3d11Device->CreateRasterizerState(&drd, &pRS);
         if ( FAILED( hr ) )
         {
-            DXUT_ERR( L"CreateRasterizerState", hr );
             return DXUTERR_CREATINGDEVICE;
         }
         DXUT_SetDebugName( pRS, "DXUT Default" );
@@ -2766,7 +2758,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         hr = pDXGIFactory->CreateSwapChain( pd3d11Device, &pNewDeviceSettings->d3d11.sd, &pSwapChain );
         if( FAILED( hr ) )
         {
-            DXUT_ERR( L"CreateSwapChain", hr );
             return DXUTERR_CREATINGDEVICE;
         }
     }
@@ -2812,7 +2803,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         return E_FAIL;
     if( FAILED( hr ) )
     {
-        DXUT_ERR( L"DeviceCreated callback", hr );
         return ( hr == DXUTERR_MEDIANOTFOUND ) ? DXUTERR_MEDIANOTFOUND : DXUTERR_CREATINGDEVICEOBJECTS;
     }
     GetDXUTState().SetDeviceObjectsCreated( true );
@@ -2821,7 +2811,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
     hr = DXUTCreateD3D11Views( pd3d11Device, pd3dImmediateContext, pNewDeviceSettings );
     if( FAILED( hr ) )
     {
-        DXUT_ERR( L"DXUTCreateD3D11Views", hr );
         return DXUTERR_CREATINGDEVICEOBJECTS;
     }
 
@@ -2840,7 +2829,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         return E_FAIL;
     if( FAILED( hr ) )
     {
-        DXUT_ERR( L"DeviceReset callback", hr );
         return ( hr == DXUTERR_MEDIANOTFOUND ) ? DXUTERR_MEDIANOTFOUND : DXUTERR_RESETTINGDEVICEOBJECTS;
     }
     GetDXUTState().SetDeviceObjectsReset( true );
@@ -3275,7 +3263,6 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
             if( references > 0 )
             {
                 DXUTDisplayErrorMessage( DXUTERR_NONZEROREFCOUNT );
-                DXUT_ERR( L"DXUTCleanup3DEnvironment", DXUTERR_NONZEROREFCOUNT );
             }
         }
         GetDXUTState().SetD3D11Device( NULL );
@@ -3454,7 +3441,7 @@ HRESULT WINAPI DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutI
                              void* pCallbackUserContext )
 {
     if( pCallbackTimer == NULL )
-        return DXUT_ERR_MSGBOX( L"DXUTSetTimer", E_INVALIDARG );
+        return E_INVALIDARG;
 
     HRESULT hr;
     DXUT_TIMER DXUTTimer;
@@ -3509,7 +3496,7 @@ HRESULT WINAPI DXUTKillTimer( UINT nIDEvent )
     }
 
     if( !bFound )
-        return DXUT_ERR_MSGBOX( L"DXUTKillTimer", E_INVALIDARG );
+        return E_INVALIDARG;
 
     return S_OK;
 }
@@ -3856,11 +3843,11 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
         Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
     // ResizeBuffers
-    V( pSwapChain->ResizeBuffers( pDevSettings->d3d11.sd.BufferCount,
+    pSwapChain->ResizeBuffers( pDevSettings->d3d11.sd.BufferCount,
                                   Width,
                                   Height,
                                   pDevSettings->d3d11.sd.BufferDesc.Format,
-                                  Flags ) );
+                                  Flags ) ;
 
     if( !GetDXUTState().GetDoNotStoreBufferSize() )
     {
@@ -3872,13 +3859,11 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
     DXUTUpdateBackBufferDesc();
 
     // Update the device stats text
-    DXUTUpdateStaticFrameStats();
 
     // Setup the render target view and viewport
     hr = DXUTCreateD3D11Views( pd3dDevice, pd3dImmediateContext, pDevSettings );
     if( FAILED( hr ) )
     {
-        DXUT_ERR( L"DXUTCreateD3D11Views", hr );
         return;
     }
 
@@ -3897,7 +3882,6 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
     if( FAILED( hr ) )
     {
         // If callback failed, cleanup
-        DXUT_ERR( L"DeviceResetCallback", hr );
         if( hr != DXUTERR_MEDIANOTFOUND )
             hr = DXUTERR_RESETTINGDEVICEOBJECTS;
 
@@ -4193,46 +4177,6 @@ void DXUTSetupCursor()
         }
     }
 }
-
-
-//--------------------------------------------------------------------------------------
-// Updates the static part of the frame stats so it doesn't have be generated every frame
-//--------------------------------------------------------------------------------------
-void DXUTUpdateStaticFrameStats()
-{
-    if( GetDXUTState().GetNoStats() )
-        return;
-
-    DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
-    if( NULL == pDeviceSettings )
-        return;
-
-    // D3D11
-    CD3D11Enumeration* pd3dEnum = DXUTGetD3D11Enumeration();
-    if( NULL == pd3dEnum )
-        return;
-
-    CD3D11EnumDeviceSettingsCombo* pDeviceSettingsCombo = pd3dEnum->GetDeviceSettingsCombo(
-        pDeviceSettings->d3d11.AdapterOrdinal, pDeviceSettings->d3d11.DriverType, pDeviceSettings->d3d11.Output,
-        pDeviceSettings->d3d11.sd.BufferDesc.Format, pDeviceSettings->d3d11.sd.Windowed );
-    if( NULL == pDeviceSettingsCombo )
-        return;
-
-    WCHAR strFmt[100];
-
-    wcscpy_s( strFmt, 100, DXUTDXGIFormatToString( pDeviceSettingsCombo->BackBufferFormat, false ) );
-
-    WCHAR strMultiSample[100];
-    swprintf_s( strMultiSample, 100, L" (MS%u, Q%u)", pDeviceSettings->d3d11.sd.SampleDesc.Count,
-                        pDeviceSettings->d3d11.sd.SampleDesc.Quality );
-
-    WCHAR* pstrStaticFrameStats = GetDXUTState().GetStaticFrameStats();
-    swprintf_s( pstrStaticFrameStats, 256, L"D3D11 %%sVsync %s (%dx%d), %s%s",
-                        ( pDeviceSettings->d3d11.SyncInterval == 0 ) ? L"off" : L"on",
-                        pDeviceSettings->d3d11.sd.BufferDesc.Width, pDeviceSettings->d3d11.sd.BufferDesc.Height,
-                        strFmt, strMultiSample );
-}
-
 
 //--------------------------------------------------------------------------------------
 // Updates the frames/sec stat once per second

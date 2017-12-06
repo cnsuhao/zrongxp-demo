@@ -289,8 +289,6 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime,
                                   float fElapsedTime, void* pUserContext )
 {
-    HRESULT hr;
-
     float ClearColor[4] = { 0.627f, 0.627f, 0.980f, 0.0f };
     ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
     pd3dImmediateContext->ClearRenderTargetView( pRTV, ClearColor );
@@ -303,13 +301,13 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 
     // Set the constant buffers
     D3D11_MAPPED_SUBRESOURCE MappedResource;
-    V( pd3dImmediateContext->Map( g_pcbVSPerFrame11, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) );
+    pd3dImmediateContext->Map( g_pcbVSPerFrame11, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
     CB_VS_PER_FRAME* pVSPerFrame = ( CB_VS_PER_FRAME* )MappedResource.pData;
     pVSPerFrame->m_vLightDir = D3DXVECTOR4( 0,0.707f,-0.707f, 0 );
     pd3dImmediateContext->Unmap( g_pcbVSPerFrame11, 0 );
     pd3dImmediateContext->VSSetConstantBuffers( 1, 1, &g_pcbVSPerFrame11 );
 
-    V( pd3dImmediateContext->Map( g_pcbVSPerObject11, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) );
+    pd3dImmediateContext->Map( g_pcbVSPerObject11, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource );
     pd3dImmediateContext->Unmap( g_pcbVSPerObject11, 0 );
     pd3dImmediateContext->VSSetConstantBuffers( 0, 1, &g_pcbVSPerObject11 );
 
@@ -430,11 +428,9 @@ void CALLBACK OnGUIEvent( UINT nEvent, int nControlID, CDXUTControl* pControl, v
             DXUTToggleREF();
             break;
         case IDC_CHANGEDEVICE:
-           // g_SettingsDlg.SetActive( !g_SettingsDlg.IsActive() );
             break;
         case IDC_LOAD_TEXTURE:
             {
-                HRESULT hr = S_OK;
                 OPENFILENAME ofn;
                 WCHAR szFile[MAX_PATH];
                 szFile[0] = 0;
@@ -452,13 +448,8 @@ void CALLBACK OnGUIEvent( UINT nEvent, int nControlID, CDXUTControl* pControl, v
                     if( DXUTIsAppRenderingWithD3D11() )
                     {
                         SAFE_RELEASE( g_pSRV11 );
-                        V( CreateDDSTextureFromFile( DXUTGetD3D11Device(), szFile, &g_pSRV11 ) );
+                        CreateDDSTextureFromFile( DXUTGetD3D11Device(), szFile, &g_pSRV11 );
                     }
-                    //else
-                    //{
-                    //    SAFE_RELEASE( g_pTexture9 );
-                    //    V( CreateDDSTextureFromFile( DXUTGetD3D9Device(), szFile, &g_pTexture9 ) );
-                    //}
                 }
             }
             break;

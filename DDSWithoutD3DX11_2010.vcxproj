@@ -416,6 +416,11 @@
     </ClCompile>
     <CLInclude Include="dds.h" />
     <CLInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="DXUT11\DXUT.h" />
+    <ClInclude Include="DXUT11\DXUTDevice11.h" />
+    <ClInclude Include="DXUT11\DXUTgui.h" />
+    <ClInclude Include="DXUT11\DXUTmisc.h" />
+    <ClInclude Include="DXUT11\DXUTres.h" />
     <CLInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
