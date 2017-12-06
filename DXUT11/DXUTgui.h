@@ -217,15 +217,9 @@ public:
 
     // Render helpers
     HRESULT             DrawRect( RECT* pRect, D3DCOLOR color );
-    HRESULT             DrawPolyLine( POINT* apPoints, UINT nNumPoints, D3DCOLOR color );
     HRESULT             DrawSprite( CDXUTElement* pElement, RECT* prcDest, float fDepth );
     HRESULT             DrawSprite11( CDXUTElement* pElement, RECT* prcDest, float fDepth );
     HRESULT             CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, int nCount = -1 );
-    HRESULT             DrawText( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow = false,
-                                  int nCount = -1, bool bCenter = false  );
-    HRESULT             DrawText11( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3d11DeviceContext,
-                                    LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow = false,
-                                    int nCount = -1, bool bCenter = false );
 
     // Attributes
     bool                GetVisible()
@@ -444,16 +438,6 @@ public:
 
     bool    MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-    // D3D9 specific
-    HRESULT OnD3D9CreateDevice( LPDIRECT3DDEVICE9 pd3dDevice );
-    HRESULT OnD3D9ResetDevice();
-    void    OnD3D9LostDevice();
-    void    OnD3D9DestroyDevice();
-    IDirect3DDevice9* GetD3D9Device()
-    {
-        return m_pd3d9Device;
-    }
-
     // D3D11 specific
     HRESULT OnD3D11CreateDevice( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3d11DeviceContext );
     HRESULT OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc );
@@ -532,11 +516,6 @@ public:
     CGrowableArray <CDXUTDialog*> m_Dialogs;            // Dialogs registered
 
 protected:
-    // D3D9 specific
-    IDirect3DDevice9* m_pd3d9Device;
-    HRESULT CreateFont9( UINT index );
-    HRESULT CreateTexture9( UINT index );
-
     // D3D11 specific
     ID3D11Device* m_pd3d11Device;
     ID3D11DeviceContext* m_pd3d11DeviceContext;
@@ -546,12 +525,6 @@ protected:
     CGrowableArray <DXUTTextureNode*> m_TextureCache;   // Shared textures
     CGrowableArray <DXUTFontNode*> m_FontCache;         // Shared fonts
 };
-
-void BeginText11();
-void DrawText11DXUT( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3d11DeviceContext,
-                 LPCWSTR strText, RECT rcScreen, D3DXCOLOR vFontColor,
-                 float fBBWidth, float fBBHeight, bool bCenter );
-void EndText11( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3d11DeviceContext );
 
 //-----------------------------------------------------------------------------
 // Base class for controls

@@ -37,9 +37,6 @@
     <ClCompile Include="DXUT11\DXUTres.cpp">
       <Filter>DXUT</Filter>
     </ClCompile>
-    <ClCompile Include="DXUT11\SDKmisc.cpp">
-      <Filter>DXUT</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="DDSWithoutD3DX.hlsl">

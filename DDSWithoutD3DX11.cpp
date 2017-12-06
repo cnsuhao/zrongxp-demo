@@ -15,13 +15,13 @@
 #include "resource.h"
 #include "DDSTextureLoader.h"
 #include <Commdlg.h>
+#include <atlstr.h>
 
 //--------------------------------------------------------------------------------------
 // Global variables
 //--------------------------------------------------------------------------------------
 CModelViewerCamera                  g_Camera;               // A model viewing camera
 CDXUTDialogResourceManager          g_DialogResourceManager;// manager for shared resources of dialogs
-CDXUTTextHelper*                    g_pTxtHelper = NULL;
 CDXUTDialog                         g_HUD;                  // dialog for standard controls
 CDXUTDialog                         g_SampleUI;             // dialog for sample specific controls
 
@@ -92,7 +92,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
                                  float fElapsedTime, void* pUserContext );
 
 void InitApp();
-void RenderText();
 
 
 //--------------------------------------------------------------------------------------
@@ -159,20 +158,6 @@ void InitApp()
 }
 
 //--------------------------------------------------------------------------------------
-// Render the help and statistics text. This function uses the ID3DXFont interface for 
-// efficient text rendering.
-//--------------------------------------------------------------------------------------
-void RenderText()
-{
-    g_pTxtHelper->Begin();
-    g_pTxtHelper->SetInsertionPos( 5, 5 );
-    g_pTxtHelper->SetForegroundColor( D3DXCOLOR( 1.0f, 1.0f, 0.0f, 1.0f ) );
-    g_pTxtHelper->DrawTextLine( DXUTGetFrameStats( DXUTIsVsyncEnabled() ) );
-    g_pTxtHelper->DrawTextLine( DXUTGetDeviceStats() );
-    g_pTxtHelper->End();
-}
-
-//--------------------------------------------------------------------------------------
 // Reject any D3D11 devices that aren't acceptable by returning false
 //--------------------------------------------------------------------------------------
 bool CALLBACK IsD3D11DeviceAcceptable( const CD3D11EnumAdapterInfo *AdapterInfo, UINT Output, const CD3D11EnumDeviceInfo *DeviceInfo,
@@ -192,12 +177,14 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
     ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
 	hr = g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pd3dImmediateContext);
-//    V_RETURN( g_SettingsDlg.OnD3D11CreateDevice( pd3dDevice ) );
-    g_pTxtHelper = new CDXUTTextHelper( pd3dDevice, pd3dImmediateContext, &g_DialogResourceManager, 15 );
 
     // Read the HLSL file
-    WCHAR str[MAX_PATH];
-    V_RETURN( DXUTFindDXSDKMediaFileCch( str, MAX_PATH, L"DDSWithoutD3DX.hlsl" ) );
+	// Í¼Æ¬Â·¾¶
+	CString path;
+	::GetModuleFileName(NULL, path.GetBufferSetLength(MAX_PATH), MAX_PATH);
+	path = path.Left(path.ReverseFind(L'\\')) + L"\\DDSWithoutD3DX.hlsl";
+
+	//V_RETURN(DXUTFindDXSDKMediaFileCch(path, MAX_PATH, L"DDSWithoutD3DX.hlsl"));
 
     // Compile the shaders
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -211,11 +198,11 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
         // NOTE: We use 10level9_1 shader profiles to support all D3D11 feature-levels
     ID3DBlob* pVertexShaderBuffer = NULL;
-    V_RETURN( D3DX11CompileFromFile( str, NULL, NULL, "RenderSceneVS", "vs_4_0_level_9_1", dwShaderFlags, 0, NULL,
+	V_RETURN(D3DX11CompileFromFile(path, NULL, NULL, "RenderSceneVS", "vs_4_0_level_9_1", dwShaderFlags, 0, NULL,
                                      &pVertexShaderBuffer, NULL, NULL ) );
 
     ID3DBlob* pPixelShaderBuffer = NULL;
-    V_RETURN( D3DX11CompileFromFile( str, NULL, NULL, "RenderScenePS", "ps_4_0_level_9_1", dwShaderFlags, 0, NULL,
+	V_RETURN(D3DX11CompileFromFile(path, NULL, NULL, "RenderScenePS", "ps_4_0_level_9_1", dwShaderFlags, 0, NULL,
                                      &pPixelShaderBuffer, NULL, NULL ) );
 
     // Create the shaders
@@ -356,8 +343,8 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->PSSetSamplers( 0, 1, &g_pSamLinear );
 
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
-    RenderText();
-   g_HUD.OnRender( fElapsedTime );
+
+	g_HUD.OnRender( fElapsedTime );
     g_SampleUI.OnRender( fElapsedTime );
     DXUT_EndPerfEvent();
 
@@ -386,8 +373,6 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
     g_DialogResourceManager.OnD3D11DestroyDevice();
-    DXUTGetGlobalResourceCache().OnDestroyDevice();
-    SAFE_DELETE( g_pTxtHelper );
 
     SAFE_RELEASE( g_pVertexShader11 );
     SAFE_RELEASE( g_pPixelShader11 );
@@ -414,7 +399,7 @@ bool CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, void* p
             ( DXUT_D3D11_DEVICE == pDeviceSettings->ver &&
             pDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_REFERENCE ) )
         {
-            DXUTDisplaySwitchingToREFWarning( pDeviceSettings->ver );
+            //DXUTDisplaySwitchingToREFWarning( pDeviceSettings->ver );
         }
     }
 

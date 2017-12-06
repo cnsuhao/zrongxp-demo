@@ -22,10 +22,6 @@ CD3DArcBall::CD3DArcBall()
     SetWindow( rc.right, rc.bottom );
 }
 
-
-
-
-
 //--------------------------------------------------------------------------------------
 void CD3DArcBall::Reset()
 {

@@ -439,8 +439,6 @@ bool DXUTFindMediaSearchParentDirs( WCHAR* strSearchPath, int cchSearch, WCHAR* 
 //--------------------------------------------------------------------------------------
 CDXUTResourceCache::~CDXUTResourceCache()
 {
-    OnDestroyDevice();
-
     m_TextureCache.RemoveAll();
     m_EffectCache.RemoveAll();
     m_FontCache.RemoveAll();
@@ -1259,32 +1257,6 @@ HRESULT CDXUTResourceCache::OnLostDevice()
 
     return S_OK;
 }
-
-
-//--------------------------------------------------------------------------------------
-HRESULT CDXUTResourceCache::OnDestroyDevice()
-{
-    // Release all resources
-    for( int i = m_EffectCache.GetSize() - 1; i >= 0; --i )
-    {
-        SAFE_RELEASE( m_EffectCache[i].pEffect );
-        m_EffectCache.Remove( i );
-    }
-    for( int i = m_FontCache.GetSize() - 1; i >= 0; --i )
-    {
-        SAFE_RELEASE( m_FontCache[i].pFont );
-        m_FontCache.Remove( i );
-    }
-    for( int i = m_TextureCache.GetSize() - 1; i >= 0; --i )
-    {
-        SAFE_RELEASE( m_TextureCache[i].pTexture9 );
-        SAFE_RELEASE( m_TextureCache[i].pSRV11 );
-        m_TextureCache.Remove( i );
-    }
-
-    return S_OK;
-}
-
 
 //--------------------------------------------------------------------------------------
 // Desc: Returns a view matrix for rendering to a face of a cubemap.

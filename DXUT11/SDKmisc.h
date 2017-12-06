@@ -179,46 +179,6 @@ CDXUTResourceCache& WINAPI DXUTGetGlobalResourceCache();
 // Manages the insertion point when drawing text
 //--------------------------------------------------------------------------------------
 class CDXUTDialogResourceManager;
-class CDXUTTextHelper
-{
-public:
-            CDXUTTextHelper( ID3DXFont* pFont9 = NULL, ID3DXSprite* pSprite9 = NULL,
-                             int nLineHeight = 15 );
-			CDXUTTextHelper( ID3D11Device* pd3d11Device, ID3D11DeviceContext* pd3dDeviceContext, CDXUTDialogResourceManager* pManager, int nLineHeight );
-            ~CDXUTTextHelper();
-
-    void    Init( ID3DXFont* pFont9 = NULL, ID3DXSprite* pSprite9 = NULL, 
-                  int nLineHeight = 15 );
-
-    void    SetInsertionPos( int x, int y )
-    {
-        m_pt.x = x; m_pt.y = y;
-    }
-    void    SetForegroundColor( D3DXCOLOR clr )
-    {
-        m_clr = clr;
-    }
-
-    void    Begin();
-    HRESULT DrawFormattedTextLine( const WCHAR* strMsg, ... );
-    HRESULT DrawTextLine( const WCHAR* strMsg );
-    HRESULT DrawFormattedTextLine( RECT& rc, DWORD dwFlags, const WCHAR* strMsg, ... );
-    HRESULT DrawTextLine( RECT& rc, DWORD dwFlags, const WCHAR* strMsg );
-    void    End();
-
-protected:
-    ID3DXFont* m_pFont9;
-    ID3DXSprite* m_pSprite9;
-    D3DXCOLOR m_clr;
-    POINT m_pt;
-    int m_nLineHeight;
-
-	// D3D11 font 
-	ID3D11Device* m_pd3d11Device;
-	ID3D11DeviceContext* m_pd3d11DeviceContext;
-	CDXUTDialogResourceManager* m_pManager;
-};
-
 
 //--------------------------------------------------------------------------------------
 // Manages a persistent list of lines and draws them using ID3DXLine
