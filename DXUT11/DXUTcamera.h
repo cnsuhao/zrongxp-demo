@@ -438,18 +438,7 @@ class CDXUTDirectionWidget
 public:
                             CDXUTDirectionWidget();
 
-    static HRESULT WINAPI   StaticOnD3D9CreateDevice( IDirect3DDevice9* pd3dDevice );
-    HRESULT                 OnD3D9ResetDevice( const D3DSURFACE_DESC* pBackBufferSurfaceDesc );
-    HRESULT                 OnRender9( D3DXCOLOR color, const D3DXMATRIX* pmView, const D3DXMATRIX* pmProj,
-                                       const D3DXVECTOR3* pEyePt );
     LRESULT                 HandleMessages( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-    static void WINAPI      StaticOnD3D9LostDevice();
-    static void WINAPI      StaticOnD3D9DestroyDevice();
-
-    static HRESULT WINAPI   StaticOnD3D11CreateDevice( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext );
-    HRESULT                 OnRender11( D3DXCOLOR color, const D3DXMATRIX* pmView, const D3DXMATRIX* pmProj,
-                                        const D3DXVECTOR3* pEyePt );
-    static void WINAPI      StaticOnD3D11DestroyDevice();
 
     D3DXVECTOR3             GetLightDirection()
     {
@@ -480,27 +469,6 @@ public:
 
 protected:
     HRESULT                 UpdateLightDir();
-
-    // D3D9 objects
-    static IDirect3DDevice9* s_pd3d9Device;
-    static ID3DXEffect* s_pD3D9Effect;
-    static ID3DXMesh* s_pD3D9Mesh;
-    static D3DXHANDLE s_hRenderWith1LightNoTexture;
-    static D3DXHANDLE s_hMaterialDiffuseColor;
-    static D3DXHANDLE s_hLightDir;
-    static D3DXHANDLE s_hWorldViewProjection;
-    static D3DXHANDLE s_hWorld;
-
-    // D3D10 objects 
-    //static ID3D10Device* s_pd3d10Device;
-    //static ID3D10Effect* s_pD3D10Effect;
-    //TODO: add some sort of d3d10 mesh object here
-    //static ID3D10InputLayout* s_pVertexLayout;
-    //static ID3D10EffectTechnique* s_pRenderTech;
-    //static ID3D10EffectVectorVariable* g_pMaterialDiffuseColor;
-    //static ID3D10EffectVectorVariable* g_pLightDir;
-    //static ID3D10EffectMatrixVariable* g_pmWorld;
-    //static ID3D10EffectMatrixVariable* g_pmWorldViewProjection;
 
     D3DXMATRIXA16 m_mRot;
     D3DXMATRIXA16 m_mRotSnapshot;

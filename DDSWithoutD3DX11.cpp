@@ -21,16 +21,9 @@
 //--------------------------------------------------------------------------------------
 CModelViewerCamera                  g_Camera;               // A model viewing camera
 CDXUTDialogResourceManager          g_DialogResourceManager;// manager for shared resources of dialogs
-//CD3DSettingsDlg                     g_SettingsDlg;          // Device settings dialog
 CDXUTTextHelper*                    g_pTxtHelper = NULL;
 CDXUTDialog                         g_HUD;                  // dialog for standard controls
 CDXUTDialog                         g_SampleUI;             // dialog for sample specific controls
-CDXUTSDKMesh                        g_Mesh;				    // mesh
-
-// Direct3D 9 resources
-//extern ID3DXFont*                   g_pFont9;
-//extern ID3DXSprite*                 g_pSprite9;
-//extern IDirect3DTexture9*           g_pTexture9;
 
 // Direct3D 11 resources
 ID3D11VertexShader*                 g_pVertexShader11 = NULL;
@@ -326,13 +319,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
 {
     HRESULT hr;
 
-    // If the settings dialog is being shown, then render it instead of rendering the app's scene
-//    if( g_SettingsDlg.IsActive() )
-/*    {
-        g_SettingsDlg.OnRender( fElapsedTime );
-        return;
-    }   */    
-
     float ClearColor[4] = { 0.627f, 0.627f, 0.980f, 0.0f };
     ID3D11RenderTargetView* pRTV = DXUTGetD3D11RenderTargetView();
     pd3dImmediateContext->ClearRenderTargetView( pRTV, ClearColor );
@@ -369,8 +355,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->PSSetShaderResources( 0, 1, &g_pSRV11 );
     pd3dImmediateContext->PSSetSamplers( 0, 1, &g_pSamLinear );
 
-    g_Mesh.Render( pd3dImmediateContext );
-
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
     RenderText();
    g_HUD.OnRender( fElapsedTime );
@@ -402,11 +386,8 @@ void CALLBACK OnD3D11ReleasingSwapChain( void* pUserContext )
 void CALLBACK OnD3D11DestroyDevice( void* pUserContext )
 {
     g_DialogResourceManager.OnD3D11DestroyDevice();
-//    g_SettingsDlg.OnD3D11DestroyDevice();
     DXUTGetGlobalResourceCache().OnDestroyDevice();
     SAFE_DELETE( g_pTxtHelper );
-
-    g_Mesh.Destroy();
 
     SAFE_RELEASE( g_pVertexShader11 );
     SAFE_RELEASE( g_pPixelShader11 );
