@@ -361,7 +361,7 @@ bool CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, void* p
     if( s_bFirstTime )
     {
         s_bFirstTime = false;
-        if( ( DXUT_D3D9_DEVICE == pDeviceSettings->ver && pDeviceSettings->d3d9.DeviceType == D3DDEVTYPE_REF ) ||
+        if( 
             ( DXUT_D3D11_DEVICE == pDeviceSettings->ver &&
             pDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_REFERENCE ) )
         {

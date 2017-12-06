@@ -381,7 +381,6 @@ VOID WINAPI DXUTOutputDebugStringA( LPCSTR strMsg, ... )
 //--------------------------------------------------------------------------------------
 
 // Function prototypes
-typedef IDirect3D9* (WINAPI * LPDIRECT3DCREATE9) (UINT);
 typedef INT         (WINAPI * LPD3DPERF_BEGINEVENT)(D3DCOLOR, LPCWSTR);
 typedef INT         (WINAPI * LPD3DPERF_ENDEVENT)(void);
 typedef VOID        (WINAPI * LPD3DPERF_SETMARKER)(D3DCOLOR, LPCWSTR);
@@ -394,7 +393,6 @@ typedef HRESULT     (WINAPI * LPD3D11CREATEDEVICE)( IDXGIAdapter*, D3D_DRIVER_TY
 
 // Module and function pointers
 static HMODULE                              s_hModD3D9 = NULL;
-static LPDIRECT3DCREATE9                    s_DynamicDirect3DCreate9 = NULL;
 static LPD3DPERF_BEGINEVENT                 s_DynamicD3DPERF_BeginEvent = NULL;
 static LPD3DPERF_ENDEVENT                   s_DynamicD3DPERF_EndEvent = NULL;
 static LPD3DPERF_SETMARKER                  s_DynamicD3DPERF_SetMarker = NULL;

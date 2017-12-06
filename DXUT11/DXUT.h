@@ -152,7 +152,6 @@ struct DXUTD3D11DeviceSettings
 
 enum DXUTDeviceVersion
 {
-    DXUT_D3D9_DEVICE,
     DXUT_D3D11_DEVICE
 };
 
@@ -160,7 +159,6 @@ struct DXUTDeviceSettings
 {
     DXUTDeviceVersion ver;
     D3D_FEATURE_LEVEL MinimumFeatureLevel;
-    DXUTD3D9DeviceSettings d3d9; // only valid if ver == DXUT_D3D9_DEVICE
     DXUTD3D11DeviceSettings d3d11; // only valid if ver == DXUT_D3D11_DEVICE
 };
 
