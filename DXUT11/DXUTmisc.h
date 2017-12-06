@@ -26,51 +26,8 @@
 //--------------------------------------------------------------------------------------
 #define DXUT_MAX_CONTROLLERS 4  // XInput handles up to 4 controllers 
 
-struct DXUT_GAMEPAD
-{
-    // From XINPUT_GAMEPAD
-    WORD wButtons;
-    BYTE bLeftTrigger;
-    BYTE bRightTrigger;
-    SHORT sThumbLX;
-    SHORT sThumbLY;
-    SHORT sThumbRX;
-    SHORT sThumbRY;
-
-    // Device properties
-    XINPUT_CAPABILITIES caps;
-    bool bConnected; // If the controller is currently connected
-    bool bInserted;  // If the controller was inserted this frame
-    bool bRemoved;   // If the controller was removed this frame
-
-    // Thumb stick values converted to range [-1,+1]
-    float fThumbRX;
-    float fThumbRY;
-    float fThumbLX;
-    float fThumbLY;
-
-    // Records which buttons were pressed this frame.
-    // These are only set on the first frame that the button is pressed
-    WORD wPressedButtons;
-    bool bPressedLeftTrigger;
-    bool bPressedRightTrigger;
-
-    // Last state of the buttons
-    WORD wLastButtons;
-    bool bLastLeftTrigger;
-    bool bLastRightTrigger;
-};
-
-HRESULT DXUTGetGamepadState( DWORD dwPort, DXUT_GAMEPAD* pGamePad, bool bThumbstickDeadZone = true,
-                             bool bSnapThumbstickToCardinals = true );
 HRESULT DXUTStopRumbleOnAllControllers();
 void DXUTEnableXInput( bool bEnable );
-
-
-//--------------------------------------------------------------------------------------
-// Takes a screen shot of a 32bit D3D9 back buffer and saves the images to a BMP file
-//--------------------------------------------------------------------------------------
-HRESULT DXUTSnapD3D9Screenshot( LPCTSTR szFileName );
 
 //--------------------------------------------------------------------------------------
 // Takes a screen shot of a 32bit D3D11 back buffer and saves the images to a BMP file
