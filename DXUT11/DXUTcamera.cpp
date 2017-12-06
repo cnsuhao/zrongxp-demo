@@ -35,35 +35,6 @@ void CD3DArcBall::Reset()
     m_fRadius = 1.0f;
 }
 
-
-
-
-//--------------------------------------------------------------------------------------
-D3DXVECTOR3 CD3DArcBall::ScreenToVector( float fScreenPtX, float fScreenPtY )
-{
-    // Scale to screen
-    FLOAT x = -( fScreenPtX - m_Offset.x - m_nWidth / 2 ) / ( m_fRadius * m_nWidth / 2 );
-    FLOAT y = ( fScreenPtY - m_Offset.y - m_nHeight / 2 ) / ( m_fRadius * m_nHeight / 2 );
-
-    FLOAT z = 0.0f;
-    FLOAT mag = x * x + y * y;
-
-    if( mag > 1.0f )
-    {
-        FLOAT scale = 1.0f / sqrtf( mag );
-        x *= scale;
-        y *= scale;
-    }
-    else
-        z = sqrtf( 1.0f - mag );
-
-    // Return vector
-    return D3DXVECTOR3( x, y, z );
-}
-
-
-
-
 //--------------------------------------------------------------------------------------
 D3DXQUATERNION CD3DArcBall::QuatFromBallPoints( const D3DXVECTOR3& vFrom, const D3DXVECTOR3& vTo )
 {
@@ -89,7 +60,6 @@ void CD3DArcBall::OnBegin( int nX, int nY )
     {
         m_bDrag = true;
         m_qDown = m_qNow;
-        m_vDownPt = ScreenToVector( ( float )nX, ( float )nY );
     }
 }
 
@@ -101,7 +71,6 @@ void CD3DArcBall::OnMove( int nX, int nY )
 {
     if( m_bDrag )
     {
-        m_vCurrentPt = ScreenToVector( ( float )nX, ( float )nY );
         m_qNow = m_qDown * QuatFromBallPoints( m_vDownPt, m_vCurrentPt );
     }
 }

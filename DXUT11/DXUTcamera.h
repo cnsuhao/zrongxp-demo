@@ -87,8 +87,6 @@ protected:
     POINT m_ptLastMouse;      // position of last mouse point
     D3DXVECTOR3 m_vDownPt;           // starting point of rotation arc
     D3DXVECTOR3 m_vCurrentPt;        // current point of rotation arc
-
-    D3DXVECTOR3                     ScreenToVector( float fScreenPtX, float fScreenPtY );
 };
 
 
