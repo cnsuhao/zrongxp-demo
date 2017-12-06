@@ -518,7 +518,6 @@ void DXUTParseCommandLine( __inout WCHAR* strCommandLine,
                            bool bIgnoreFirstCommand = true );
 bool DXUTIsNextArg( __inout WCHAR*& strCmdLine, __in const WCHAR* strArg );
 bool DXUTGetCmdParam( __inout WCHAR*& strCmdLine, __out WCHAR* strFlag );
-void DXUTAllowShortcutKeys( bool bAllowKeys );
 void DXUTUpdateFrameStats();
 
 LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -1416,11 +1415,6 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                     }
                 }
 
-                // Upon returning to this app, potentially disable shortcut keys 
-                // (Windows key, accessibility shortcuts) 
-                DXUTAllowShortcutKeys( ( DXUTIsWindowed() ) ? GetDXUTState().GetAllowShortcutKeysWhenWindowed() :
-                                       GetDXUTState().GetAllowShortcutKeysWhenFullscreen() );
-
             }
             else if( wParam == FALSE && DXUTIsActive() ) // Handle only if previously active 
             {
@@ -1434,14 +1428,6 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                     ClipCursor( NULL );      // don't limit the cursor anymore
                     GetDXUTState().SetMinimizedWhileFullscreen( true );
                 }
-
-                // Restore shortcut keys (Windows key, accessibility shortcuts) to original state
-                //
-                // This is important to call here if the shortcuts are disabled, 
-                // because if this is not done then the Windows key will continue to 
-                // be disabled while this app is running which is very bad.
-                // If the app crashes, the Windows key will return to normal.
-                DXUTAllowShortcutKeys( true );
             }
             break;
 
@@ -1956,12 +1942,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         GetDXUTState().SetIgnoreSizeChange( false );
         return hr;
     }
-
-    // Enable/disable StickKeys shortcut, ToggleKeys shortcut, FilterKeys shortcut, and Windows key 
-    // to prevent accidental task switching
-    DXUTAllowShortcutKeys( ( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) ) ?
-                           GetDXUTState().GetAllowShortcutKeysWhenWindowed() :
-                           GetDXUTState().GetAllowShortcutKeysWhenFullscreen() );
 
     HMONITOR hAdapterMonitor = DXUTGetMonitorFromAdapter( pNewDeviceSettings );
     GetDXUTState().SetAdapterMonitor( hAdapterMonitor );
@@ -3305,107 +3285,6 @@ LRESULT CALLBACK DXUTLowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lPar
         return CallNextHookEx( GetDXUTState().GetKeyboardHook(), nCode, wParam, lParam );
 }
 
-
-
-//--------------------------------------------------------------------------------------
-// Controls how DXUT behaves when fullscreen and windowed mode with regard to 
-// shortcut keys (Windows keys, StickyKeys shortcut, ToggleKeys shortcut, FilterKeys shortcut) 
-//--------------------------------------------------------------------------------------
-void WINAPI DXUTSetShortcutKeySettings( bool bAllowWhenFullscreen, bool bAllowWhenWindowed )
-{
-    GetDXUTState().SetAllowShortcutKeysWhenWindowed( bAllowWhenWindowed );
-    GetDXUTState().SetAllowShortcutKeysWhenFullscreen( bAllowWhenFullscreen );
-
-    // DXUTInit() records initial accessibility states so don't change them until then
-    if( GetDXUTState().GetDXUTInited() )
-    {
-        if( DXUTIsWindowed() )
-            DXUTAllowShortcutKeys( GetDXUTState().GetAllowShortcutKeysWhenWindowed() );
-        else
-            DXUTAllowShortcutKeys( GetDXUTState().GetAllowShortcutKeysWhenFullscreen() );
-    }
-}
-
-
-//--------------------------------------------------------------------------------------
-// Enables/disables Windows keys, and disables or restores the StickyKeys/ToggleKeys/FilterKeys 
-// shortcut to help prevent accidental task switching
-//--------------------------------------------------------------------------------------
-void DXUTAllowShortcutKeys( bool bAllowKeys )
-{
-    GetDXUTState().SetAllowShortcutKeys( bAllowKeys );
-
-    if( bAllowKeys )
-    {
-        // Restore StickyKeys/etc to original state and enable Windows key      
-        STICKYKEYS sk = GetDXUTState().GetStartupStickyKeys();
-        TOGGLEKEYS tk = GetDXUTState().GetStartupToggleKeys();
-        FILTERKEYS fk = GetDXUTState().GetStartupFilterKeys();
-
-        SystemParametersInfo( SPI_SETSTICKYKEYS, sizeof( STICKYKEYS ), &sk, 0 );
-        SystemParametersInfo( SPI_SETTOGGLEKEYS, sizeof( TOGGLEKEYS ), &tk, 0 );
-        SystemParametersInfo( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &fk, 0 );
-
-        // Remove the keyboard hoook when it isn't needed to prevent any slow down of other apps
-        if( GetDXUTState().GetKeyboardHook() )
-        {
-            UnhookWindowsHookEx( GetDXUTState().GetKeyboardHook() );
-            GetDXUTState().SetKeyboardHook( NULL );
-        }
-    }
-    else
-    {
-        // Set low level keyboard hook if haven't already
-        if( GetDXUTState().GetKeyboardHook() == NULL )
-        {
-            // Set the low-level hook procedure.  Only works on Windows 2000 and above
-            OSVERSIONINFO OSVersionInfo;
-            OSVersionInfo.dwOSVersionInfoSize = sizeof( OSVersionInfo );
-            GetVersionEx( &OSVersionInfo );
-            if( OSVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_NT && OSVersionInfo.dwMajorVersion > 4 )
-            {
-                HHOOK hKeyboardHook = SetWindowsHookEx( WH_KEYBOARD_LL, DXUTLowLevelKeyboardProc,
-                                                        GetModuleHandle( NULL ), 0 );
-                GetDXUTState().SetKeyboardHook( hKeyboardHook );
-            }
-        }
-
-        // Disable StickyKeys/etc shortcuts but if the accessibility feature is on, 
-        // then leave the settings alone as its probably being usefully used
-
-        STICKYKEYS skOff = GetDXUTState().GetStartupStickyKeys();
-        if( ( skOff.dwFlags & SKF_STICKYKEYSON ) == 0 )
-        {
-            // Disable the hotkey and the confirmation
-            skOff.dwFlags &= ~SKF_HOTKEYACTIVE;
-            skOff.dwFlags &= ~SKF_CONFIRMHOTKEY;
-
-            SystemParametersInfo( SPI_SETSTICKYKEYS, sizeof( STICKYKEYS ), &skOff, 0 );
-        }
-
-        TOGGLEKEYS tkOff = GetDXUTState().GetStartupToggleKeys();
-        if( ( tkOff.dwFlags & TKF_TOGGLEKEYSON ) == 0 )
-        {
-            // Disable the hotkey and the confirmation
-            tkOff.dwFlags &= ~TKF_HOTKEYACTIVE;
-            tkOff.dwFlags &= ~TKF_CONFIRMHOTKEY;
-
-            SystemParametersInfo( SPI_SETTOGGLEKEYS, sizeof( TOGGLEKEYS ), &tkOff, 0 );
-        }
-
-        FILTERKEYS fkOff = GetDXUTState().GetStartupFilterKeys();
-        if( ( fkOff.dwFlags & FKF_FILTERKEYSON ) == 0 )
-        {
-            // Disable the hotkey and the confirmation
-            fkOff.dwFlags &= ~FKF_HOTKEYACTIVE;
-            fkOff.dwFlags &= ~FKF_CONFIRMHOTKEY;
-
-            SystemParametersInfo( SPI_SETFILTERKEYS, sizeof( FILTERKEYS ), &fkOff, 0 );
-        }
-    }
-}
-
-
 //--------------------------------------------------------------------------------------
 // Pauses time or rendering.  Keeps a ref count so pausing can be layered
 //--------------------------------------------------------------------------------------
@@ -4384,7 +4263,6 @@ void WINAPI DXUTShutdown( int nExitCode )
     // If the app crashes without restoring the settings, this is also true so it
     // would be wise to backup/restore the settings from a file so they can be 
     // restored when the crashed app is run again.
-    DXUTAllowShortcutKeys( true );
 
     // Shutdown D3D9
     IDirect3D9* pD3D = GetDXUTState().GetD3D9();
@@ -4395,9 +4273,6 @@ void WINAPI DXUTShutdown( int nExitCode )
     IDXGIFactory1* pDXGIFactory = GetDXUTState().GetDXGIFactory();
     SAFE_RELEASE( pDXGIFactory );
     GetDXUTState().SetDXGIFactory( NULL );
-
-    if( GetDXUTState().GetOverrideRelaunchMCE() )
-        DXUTReLaunchMediaCenter();
 }
 
 //--------------------------------------------------------------------------------------

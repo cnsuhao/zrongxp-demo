@@ -6,8 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 #pragma once
-#ifndef DXUT_DEVICE11_H
-#define DXUT_DEVICE11_H
 
 void DXUTApplyDefaultDeviceSettings(DXUTDeviceSettings *modifySettings);
 
@@ -202,9 +200,5 @@ float   DXUTRankD3D11DeviceCombo( CD3D11EnumDeviceSettingsCombo* pDeviceSettings
                                  int &bestMSAAIndex
                                  );
 
-
-
-
-#endif
 
 

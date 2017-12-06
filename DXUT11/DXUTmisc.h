@@ -420,11 +420,6 @@ IDirect3DDevice9*           WINAPI DXUTCreateRefDevice9( HWND hWnd, bool bNullRe
 //test d3d10 version ID3D10Device*               WINAPI DXUTCreateRefDevice10( bool bNullRef = true );
 
 //--------------------------------------------------------------------------------------
-// Helper function to launch the Media Center UI after the program terminates
-//--------------------------------------------------------------------------------------
-bool DXUTReLaunchMediaCenter();
-
-//--------------------------------------------------------------------------------------
 // Helper functions to create SRGB formats from typeless formats and vice versa
 //--------------------------------------------------------------------------------------
 DXGI_FORMAT MAKE_SRGB( DXGI_FORMAT format );

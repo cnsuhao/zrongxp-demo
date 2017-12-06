@@ -97,20 +97,6 @@ HRESULT WINAPI DXUT_Dynamic_D3D11CreateDevice( IDXGIAdapter* pAdapter,
         return DXUTERR_NODIRECT3D11;
 }
 
-//--------------------------------------------------------------------------------------
-// Trace a string description of a decl 
-//--------------------------------------------------------------------------------------
-void WINAPI DXUTTraceDecl( D3DVERTEXELEMENT9 decl[MAX_FVF_DECL_SIZE] )
-{
-    int iDecl = 0;
-    for( iDecl = 0; iDecl < MAX_FVF_DECL_SIZE; iDecl++ )
-    {
-        if( decl[iDecl].Stream == 0xFF )
-            break;
-    }
-
-}
-
 #define TRACE_ID(iD) case iD: return L#iD;
 
 //--------------------------------------------------------------------------------------
@@ -226,55 +212,12 @@ void WINAPI DXUTGetDesktopResolution( UINT AdapterOrdinal, UINT* pWidth, UINT* p
         *pHeight = devMode.dmPelsHeight;
 }
 
-//--------------------------------------------------------------------------------------
-// Helper function to launch the Media Center UI after the program terminates
-//--------------------------------------------------------------------------------------
-bool DXUTReLaunchMediaCenter()
-{
-    // Get the path to Media Center
-    WCHAR szExpandedPath[MAX_PATH];
-    if( !ExpandEnvironmentStrings( L"%SystemRoot%\\ehome\\ehshell.exe", szExpandedPath, MAX_PATH ) )
-        return false;
-
-    // Skip if ehshell.exe doesn't exist
-    if( GetFileAttributes( szExpandedPath ) == 0xFFFFFFFF )
-        return false;
-
-    // Launch ehshell.exe 
-    INT_PTR result = ( INT_PTR )ShellExecute( NULL, TEXT( "open" ), szExpandedPath, NULL, NULL, SW_SHOWNORMAL );
-    return ( result > 32 );
-}
 
 typedef DWORD ( WINAPI* LPXINPUTGETSTATE )( DWORD dwUserIndex, XINPUT_STATE* pState );
 typedef DWORD ( WINAPI* LPXINPUTSETSTATE )( DWORD dwUserIndex, XINPUT_VIBRATION* pVibration );
 typedef DWORD ( WINAPI* LPXINPUTGETCAPABILITIES )( DWORD dwUserIndex, DWORD dwFlags,
                                                    XINPUT_CAPABILITIES* pCapabilities );
 typedef void ( WINAPI* LPXINPUTENABLE )( BOOL bEnable );
-
-//--------------------------------------------------------------------------------------
-// Don't pause the game or deactive the window without first stopping rumble otherwise 
-// the controller will continue to rumble
-//--------------------------------------------------------------------------------------
-HRESULT DXUTStopRumbleOnAllControllers()
-{
-    static LPXINPUTSETSTATE s_pXInputSetState = NULL;
-    if( NULL == s_pXInputSetState )
-    {
-        HINSTANCE hInst = LoadLibrary( XINPUT_DLL );
-        if( hInst )
-            s_pXInputSetState = ( LPXINPUTSETSTATE )GetProcAddress( hInst, "XInputSetState" );
-    }
-    if( s_pXInputSetState == NULL )
-        return E_FAIL;
-
-    XINPUT_VIBRATION vibration;
-    vibration.wLeftMotorSpeed = 0;
-    vibration.wRightMotorSpeed = 0;
-    for( int iUserIndex = 0; iUserIndex < DXUT_MAX_CONTROLLERS; iUserIndex++ )
-        s_pXInputSetState( iUserIndex, &vibration );
-
-    return S_OK;
-}
 
 //--------------------------------------------------------------------------------------
 // Helper functions to create SRGB formats from typeless formats and vice versa
