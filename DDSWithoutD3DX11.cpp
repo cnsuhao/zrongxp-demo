@@ -198,7 +198,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
     HRESULT hr;
 
     ID3D11DeviceContext* pd3dImmediateContext = DXUTGetD3D11DeviceContext();
-    V_RETURN( g_DialogResourceManager.OnD3D11CreateDevice( pd3dDevice, pd3dImmediateContext ) );
+	hr = g_DialogResourceManager.OnD3D11CreateDevice(pd3dDevice, pd3dImmediateContext);
 //    V_RETURN( g_SettingsDlg.OnD3D11CreateDevice( pd3dDevice ) );
     g_pTxtHelper = new CDXUTTextHelper( pd3dDevice, pd3dImmediateContext, &g_DialogResourceManager, 15 );
 
