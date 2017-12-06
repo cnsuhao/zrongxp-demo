@@ -23,7 +23,6 @@
 CModelViewerCamera                  g_Camera;               // A model viewing camera
 CDXUTDialogResourceManager          g_DialogResourceManager;// manager for shared resources of dialogs
 CDXUTDialog                         g_HUD;                  // dialog for standard controls
-CDXUTDialog                         g_SampleUI;             // dialog for sample specific controls
 
 // Direct3D 11 resources
 ID3D11VertexShader*                 g_pVertexShader11 = NULL;
@@ -151,10 +150,8 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 void InitApp()
 {
     g_HUD.Init( &g_DialogResourceManager );
-    g_SampleUI.Init( &g_DialogResourceManager );
     g_HUD.SetCallback( OnGUIEvent );
-    g_HUD.AddButton( IDC_TOGGLEFULLSCREEN, L"Toggle full screen", 0, 30, 328, 175 );
-    g_SampleUI.SetCallback( OnGUIEvent );
+    g_HUD.AddButton( IDC_TOGGLEFULLSCREEN, L"Toggle full screen", 0, 0, 328, 175 );
 }
 
 //--------------------------------------------------------------------------------------
@@ -280,9 +277,7 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
                                           const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext )
 {
     HRESULT hr;
-
     V_RETURN( g_DialogResourceManager.OnD3D11ResizedSwapChain( pd3dDevice, pBackBufferSurfaceDesc ) );
-//    V_RETURN( g_SettingsDlg.OnD3D11ResizedSwapChain( pd3dDevice, pBackBufferSurfaceDesc ) );
 
     // Setup the camera's projection parameters
     float fAspectRatio = pBackBufferSurfaceDesc->Width / ( FLOAT )pBackBufferSurfaceDesc->Height;
@@ -292,8 +287,6 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
 
     g_HUD.SetLocation( 100, 20 );
     g_HUD.SetSize( 170, 170 );
-    g_SampleUI.SetLocation( pBackBufferSurfaceDesc->Width - 170, pBackBufferSurfaceDesc->Height - 300 );
-    g_SampleUI.SetSize( 170, 300 );
     return S_OK;
 }
 
@@ -345,7 +338,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
 
 	g_HUD.OnRender( fElapsedTime );
-    g_SampleUI.OnRender( fElapsedTime );
     DXUT_EndPerfEvent();
 
     static DWORD dwTimefirst = GetTickCount();
@@ -437,9 +429,6 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 
     // Give the dialogs a chance to handle the message first
     *pbNoFurtherProcessing = g_HUD.MsgProc( hWnd, uMsg, wParam, lParam );
-    if( *pbNoFurtherProcessing )
-        return 0;
-    *pbNoFurtherProcessing = g_SampleUI.MsgProc( hWnd, uMsg, wParam, lParam );
     if( *pbNoFurtherProcessing )
         return 0;
 

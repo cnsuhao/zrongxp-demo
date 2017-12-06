@@ -7,14 +7,6 @@
 #include "DXUTres.h"
 #include <atlstr.h>
 
-//-----------------------------------------------------------------------------
-HRESULT WINAPI DXUTCreateGUITextureFromInternalArray9( LPDIRECT3DDEVICE9 pd3dDevice, IDirect3DTexture9** ppTexture, D3DXIMAGE_INFO* pInfo )
-{
-	return D3DXCreateTextureFromFileInMemoryEx(pd3dDevice, NULL, NULL,
-                                                D3DX_DEFAULT, D3DX_DEFAULT, 1, 0, D3DFMT_UNKNOWN, D3DPOOL_MANAGED, 
-                                                D3DX_DEFAULT, D3DX_DEFAULT, 0, pInfo, NULL, ppTexture );
-}
-
 //--------------------------------------------------------------------------------------
 HRESULT WINAPI DXUTCreateGUITextureFromInternalArray11(ID3D11Device* pd3dDevice, ID3D11Texture2D** ppTexture, D3DX11_IMAGE_INFO* pInfo)
 {
