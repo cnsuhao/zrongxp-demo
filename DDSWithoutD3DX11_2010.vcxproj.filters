@@ -22,9 +22,6 @@
     <ClCompile Include="DXUT11\DXUT.cpp">
       <Filter>DXUT</Filter>
     </ClCompile>
-    <ClCompile Include="DXUT11\DXUTcamera.cpp">
-      <Filter>DXUT</Filter>
-    </ClCompile>
     <ClCompile Include="DXUT11\DXUTDevice11.cpp">
       <Filter>DXUT</Filter>
     </ClCompile>
