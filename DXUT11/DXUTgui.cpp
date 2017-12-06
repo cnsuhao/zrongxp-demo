@@ -5252,7 +5252,7 @@ CDXUTEditBox::CDXUTEditBox( CDXUTDialog* pDialog )
 
     m_bCaretOn = true;
     m_dfBlink = GetCaretBlinkTime() * 0.001f;
-    m_dfLastBlink = DXUTGetGlobalTimer()->GetAbsoluteTime();
+	m_dfLastBlink = 0;// XUTGetGlobalTimer()->GetAbsoluteTime();
     s_bHideCaret = false;
     m_nFirstVisible = 0;
     m_TextColor = D3DCOLOR_ARGB( 255, 16, 16, 16 );
@@ -5866,10 +5866,10 @@ void CDXUTEditBox::Render( float fElapsedTime )
     //
     // Blink the caret
     //
-    if( DXUTGetGlobalTimer()->GetAbsoluteTime() - m_dfLastBlink >= m_dfBlink )
+    //if( DXUTGetGlobalTimer()->GetAbsoluteTime() - m_dfLastBlink >= m_dfBlink )
     {
         m_bCaretOn = !m_bCaretOn;
-        m_dfLastBlink = DXUTGetGlobalTimer()->GetAbsoluteTime();
+		m_dfLastBlink = 0;// DXUTGetGlobalTimer()->GetAbsoluteTime();
     }
 
     //
@@ -6361,7 +6361,7 @@ void CUniBuffer::GetNextItemPos( int nCP, int* pPrior )
 void CDXUTEditBox::ResetCaretBlink()
 {
     m_bCaretOn = true;
-    m_dfLastBlink = DXUTGetGlobalTimer()->GetAbsoluteTime();
+	m_dfLastBlink = 0;// DXUTGetGlobalTimer()->GetAbsoluteTime();
 }
 
 

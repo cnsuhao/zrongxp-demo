@@ -728,8 +728,6 @@ HRESULT WINAPI DXUTInit( bool bParseCommandLine,
         DXUTParseCommandLine( strExtraCommandLineParams, false );
 
     // Reset the timer
-    DXUTGetGlobalTimer()->Reset();
-
     GetDXUTState().SetDXUTInited( true );
 
     return S_OK;
@@ -1541,7 +1539,6 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
                     // QPC may lose consistency when suspending, so reset the timer
                     // upon resume.
-                    DXUTGetGlobalTimer()->Reset();
                     GetDXUTState().SetLastStatsUpdateTime( 0 );
                     return true;
             }
@@ -3160,14 +3157,12 @@ void DXUTRender3DEnvironment11()
     }
 
     // Get the app's time, in seconds. Skip rendering if no time elapsed
-    double fTime, fAbsTime; float fElapsedTime;
-    DXUTGetGlobalTimer()->GetTimeValues( &fTime, &fAbsTime, &fElapsedTime );
-
+	double fTime = 0, fAbsTime = 0; float fElapsedTime = 0;
     // Store the time for the app
     if( GetDXUTState().GetConstantFrameTime() )
     {
         fElapsedTime = GetDXUTState().GetTimePerFrame();
-        fTime = DXUTGetTime() + fElapsedTime;
+		fTime = 0;// DXUTGetTime() + fElapsedTime;
     }
 
     GetDXUTState().SetTime( fTime );
@@ -3631,17 +3626,6 @@ void WINAPI DXUTPause( bool bPauseTime, bool bPauseRendering )
         nPauseRenderingCount--;
     if( nPauseRenderingCount < 0 ) nPauseRenderingCount = 0;
     GetDXUTState().SetPauseRenderingCount( nPauseRenderingCount );
-
-    if( nPauseTimeCount > 0 )
-    {
-        // Stop the scene from animating
-        DXUTGetGlobalTimer()->Stop();
-    }
-    else
-    {
-        // Restart the timer
-        DXUTGetGlobalTimer()->Start();
-    }
 
     GetDXUTState().SetRenderingPaused( nPauseRenderingCount > 0 );
     GetDXUTState().SetTimePaused( nPauseTimeCount > 0 );
