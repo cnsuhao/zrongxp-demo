@@ -102,20 +102,11 @@ class CDXUTElement
 public:
     void    SetTexture( UINT iTexture, RECT* prcTexture, D3DCOLOR defaultTextureColor = D3DCOLOR_ARGB( 255, 255, 255,
                                                                                                        255 ) );
-    void    SetFont( UINT iFont, D3DCOLOR defaultFontColor = D3DCOLOR_ARGB( 255, 255, 255,
-                                                                            255 ), DWORD dwTextFormat = DT_CENTER |
-                     DT_VCENTER );
 
     void    Refresh();
-
     UINT iTexture;          // Index of the texture for this Element 
-    UINT iFont;             // Index of the font for this Element
-    DWORD dwTextFormat;     // The format argument to DrawText 
-
-    RECT rcTexture;         // Bounding rect of this element on the composite texture
-
+    RECT rcTexture;         // Bounding rect of this element on the composite textur
     DXUTBlendColor TextureColor;
-    DXUTBlendColor FontColor;
 };
 
 
@@ -201,7 +192,6 @@ public:
     HRESULT             DrawRect( RECT* pRect, D3DCOLOR color );
     HRESULT             DrawSprite( CDXUTElement* pElement, RECT* prcDest, float fDepth );
     HRESULT             DrawSprite11( CDXUTElement* pElement, RECT* prcDest, float fDepth );
-    HRESULT             CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, int nCount = -1 );
 
     // Attributes
     bool                GetVisible()
@@ -628,7 +618,6 @@ public:
         return m_pUserData;
     }
 
-    virtual void    SetTextColor( D3DCOLOR Color );
     CDXUTElement* GetElement( UINT iElement )
     {
         return m_Elements.GetAt( iElement );

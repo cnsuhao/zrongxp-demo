@@ -1800,28 +1800,6 @@ HRESULT CDXUTDialog::DrawSprite11( CDXUTElement* pElement, RECT* prcDest, float 
     return S_OK;
 }
 
-
-//--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, int nCount )
-{
-    HRESULT hr = S_OK;
-
-    DXUTFontNode* pFontNode = GetFont( pElement->iFont );
-    if( pFontNode == NULL )
-        return E_FAIL;
-
-    DWORD dwTextFormat = pElement->dwTextFormat | DT_CALCRECT;
-    // Since we are only computing the rectangle, we don't need a sprite.
-    if( pFontNode->pFont9 )
-    {
-        hr = pFontNode->pFont9->DrawText( NULL, strText, nCount, prcDest, dwTextFormat, pElement->FontColor.Current );
-        if( FAILED( hr ) )
-            return hr;
-    }
-
-    return S_OK;
-}
-
 ID3D11InputLayout* g_pInputLayout11 = NULL;
 
 //--------------------------------------------------------------------------------------
@@ -2119,21 +2097,14 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     // Element for the caption
     //-------------------------------------
-    m_CapElement.SetFont( 0 );
     SetRect( &rcTexture, 17, 269, 241, 287 );
     m_CapElement.SetTexture( 0, &rcTexture );
     m_CapElement.TextureColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 255, 255, 255, 255 );
-    m_CapElement.FontColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 255, 255, 255, 255 );
-    m_CapElement.SetFont( 0, D3DCOLOR_ARGB( 255, 255, 255, 255 ), DT_LEFT | DT_VCENTER );
     // Pre-blend as we don't need to transition the state
     m_CapElement.TextureColor.Blend( DXUT_STATE_NORMAL, 10.0f );
-    m_CapElement.FontColor.Blend( DXUT_STATE_NORMAL, 10.0f );
-
     //-------------------------------------
     // CDXUTStatic
     //-------------------------------------
-    Element.SetFont( 0 );
-    Element.FontColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB( 200, 200, 200, 200 );
 
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_STATIC, 0, &Element );
@@ -2144,11 +2115,8 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 0, 0, 136, 54 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0 );
     Element.TextureColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 150, 255, 255, 255 );
     Element.TextureColor.States[ DXUT_STATE_PRESSED ] = D3DCOLOR_ARGB( 200, 255, 255, 255 );
-    Element.FontColor.States[ DXUT_STATE_MOUSEOVER ] = D3DCOLOR_ARGB( 255, 0, 0, 0 );
-
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_BUTTON, 0, &Element );
 
@@ -2172,8 +2140,6 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 0, 54, 27, 81 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 255, 255, 255 ), DT_LEFT | DT_VCENTER );
-    Element.FontColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB( 200, 200, 200, 200 );
     Element.TextureColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 150, 255, 255, 255 );
     Element.TextureColor.States[ DXUT_STATE_FOCUS ] = D3DCOLOR_ARGB( 200, 255, 255, 255 );
     Element.TextureColor.States[ DXUT_STATE_PRESSED ] = D3DCOLOR_ARGB( 255, 255, 255, 255 );
@@ -2197,8 +2163,6 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 54, 54, 81, 81 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 255, 255, 255 ), DT_LEFT | DT_VCENTER );
-    Element.FontColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB( 200, 200, 200, 200 );
     Element.TextureColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 150, 255, 255, 255 );
     Element.TextureColor.States[ DXUT_STATE_FOCUS ] = D3DCOLOR_ARGB( 200, 255, 255, 255 );
     Element.TextureColor.States[ DXUT_STATE_PRESSED ] = D3DCOLOR_ARGB( 255, 255, 255, 255 );
@@ -2222,13 +2186,9 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 7, 81, 247, 123 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0 );
     Element.TextureColor.States[ DXUT_STATE_NORMAL ] = D3DCOLOR_ARGB( 150, 200, 200, 200 );
     Element.TextureColor.States[ DXUT_STATE_FOCUS ] = D3DCOLOR_ARGB( 170, 230, 230, 230 );
     Element.TextureColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB( 70, 200, 200, 200 );
-    Element.FontColor.States[ DXUT_STATE_MOUSEOVER ] = D3DCOLOR_ARGB( 255, 0, 0, 0 );
-    Element.FontColor.States[ DXUT_STATE_PRESSED ] = D3DCOLOR_ARGB( 255, 0, 0, 0 );
-    Element.FontColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB( 200, 200, 200, 200 );
 
 
     // Assign the Element
@@ -2254,8 +2214,6 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 13, 123, 241, 160 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 0, 0, 0 ), DT_LEFT | DT_TOP );
-
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_COMBOBOX, 2, &Element );
 
@@ -2265,8 +2223,6 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 12, 163, 239, 183 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 255, 255, 255 ), DT_LEFT | DT_TOP );
-
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_COMBOBOX, 3, &Element );
 
@@ -2350,8 +2306,6 @@ void CDXUTDialog::InitDefaultElements()
     //   7 - lower border
     //   8 - lower right border
 
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 0, 0, 0 ), DT_LEFT | DT_TOP );
-
     // Assign the style
     SetRect( &rcTexture, 14, 90, 241, 113 );
     Element.SetTexture( 0, &rcTexture );
@@ -2386,7 +2340,6 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     SetRect( &rcTexture, 13, 123, 241, 160 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 0, 0, 0 ), DT_LEFT | DT_TOP );
 
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_LISTBOX, 0, &Element );
@@ -2397,7 +2350,6 @@ void CDXUTDialog::InitDefaultElements()
 
     SetRect( &rcTexture, 16, 166, 240, 183 );
     Element.SetTexture( 0, &rcTexture );
-    Element.SetFont( 0, D3DCOLOR_ARGB( 255, 255, 255, 255 ), DT_LEFT | DT_TOP );
 
     // Assign the Element
     SetDefaultElement( DXUT_CONTROL_LISTBOX, 1, &Element );
@@ -2443,17 +2395,6 @@ CDXUTControl::~CDXUTControl()
     }
     m_Elements.RemoveAll();
 }
-
-
-//--------------------------------------------------------------------------------------
-void CDXUTControl::SetTextColor( D3DCOLOR Color )
-{
-    CDXUTElement* pElement = m_Elements.GetAt( 0 );
-
-    if( pElement )
-        pElement->FontColor.States[DXUT_STATE_NORMAL] = Color;
-}
-
 
 //--------------------------------------------------------------------------------------
 HRESULT CDXUTControl::SetElement( UINT iElement, CDXUTElement* pElement )
@@ -2618,10 +2559,6 @@ void CDXUTButton::Render( float fElapsedTime )
 	pElement->TextureColor.Current.r = 1.0f;
 	pElement->TextureColor.Current.g = 1.0f;
 	pElement->TextureColor.Current.b = 1.0f;
-	pElement->FontColor.Current.a = 1.0f;
-	pElement->FontColor.Current.r = 1.0f;
-	pElement->FontColor.Current.g = 1.0f;
-	pElement->FontColor.Current.b = 1.0f;
 
 	pElement->rcTexture.right = 328;
 	pElement->rcTexture.bottom = 175;
@@ -2677,22 +2614,10 @@ void CDXUTElement::SetTexture( UINT iTexture, RECT* prcTexture, D3DCOLOR default
     TextureColor.Init( defaultTextureColor );
 }
 
-
-//--------------------------------------------------------------------------------------
-void CDXUTElement::SetFont( UINT iFont, D3DCOLOR defaultFontColor, DWORD dwTextFormat )
-{
-    this->iFont = iFont;
-    this->dwTextFormat = dwTextFormat;
-
-    FontColor.Init( defaultFontColor );
-}
-
-
 //--------------------------------------------------------------------------------------
 void CDXUTElement::Refresh()
 {
     TextureColor.Current = TextureColor.States[ DXUT_STATE_HIDDEN ];
-    FontColor.Current = FontColor.States[ DXUT_STATE_HIDDEN ];
 }
 
 
