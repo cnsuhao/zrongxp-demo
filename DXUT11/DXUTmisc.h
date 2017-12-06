@@ -81,30 +81,6 @@ protected:
 };
 
 //--------------------------------------------------------------------------------------
-// Returns the string for the given D3DFORMAT.
-//       bWithPrefix determines whether the string should include the "D3DFMT_"
-//--------------------------------------------------------------------------------------
-LPCWSTR WINAPI DXUTD3DFormatToString( D3DFORMAT format, bool bWithPrefix );
-
-
-//--------------------------------------------------------------------------------------
-// Returns the string for the given DXGI_FORMAT.
-//       bWithPrefix determines whether the string should include the "DXGI_FORMAT_"
-//--------------------------------------------------------------------------------------
-LPCWSTR WINAPI DXUTDXGIFormatToString( DXGI_FORMAT format, bool bWithPrefix );
-
-
-//--------------------------------------------------------------------------------------
-// Device settings conversion
-//--------------------------------------------------------------------------------------
-void WINAPI DXUTConvertDeviceSettings11to9( DXUTD3D11DeviceSettings* pIn, DXUTD3D9DeviceSettings* pOut );
-void WINAPI DXUTConvertDeviceSettings9to11( DXUTD3D9DeviceSettings* pIn, DXUTD3D11DeviceSettings* pOut );
-
-DXGI_FORMAT WINAPI ConvertFormatD3D9ToDXGI( D3DFORMAT fmt );
-D3DFORMAT WINAPI ConvertFormatDXGIToD3D9( DXGI_FORMAT fmt );
-
-
-//--------------------------------------------------------------------------------------
 // Debug printing support
 // See dxerr.h for more debug printing support
 //--------------------------------------------------------------------------------------
@@ -143,49 +119,6 @@ HRESULT WINAPI DXUT_Dynamic_D3D11CreateDevice( IDXGIAdapter* pAdapter,
                                                ID3D11DeviceContext** ppImmediateContext );
 
 bool DXUT_EnsureD3D11APIs( void );
-
-
-//--------------------------------------------------------------------------------------
-// Profiling/instrumentation support
-//--------------------------------------------------------------------------------------
-
-// Use DXUT_SetDebugName() to attach names to D3D objects for use by 
-// SDKDebugLayer, PIX's object table, etc.
-#if defined(PROFILE) || defined(DEBUG)
-inline void DXUT_SetDebugName( IDirect3DResource9* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-        pObj->SetPrivateData( WKPDID_D3DDebugObjectName, pstrName, lstrlenA(pstrName), 0 );
-}
-inline void DXUT_SetDebugName( IDXGIObject* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-       pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D10Device* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-        pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D10DeviceChild* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-        pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D11Device* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-        pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-inline void DXUT_SetDebugName( ID3D11DeviceChild* pObj, const CHAR* pstrName )
-{
-    if ( pObj )
-        pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
-}
-#else
-#define DXUT_SetDebugName( pObj, pstrName )
-#endif
-
 
 //--------------------------------------------------------------------------------------
 // Some D3DPERF APIs take a color that can be used when displaying user events in 

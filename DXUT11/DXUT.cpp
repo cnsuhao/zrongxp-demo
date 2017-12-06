@@ -2557,7 +2557,6 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
     SAFE_RELEASE( pBackBuffer );
     if( FAILED( hr ) )
         return hr;
-    DXUT_SetDebugName( pRTV, "DXUT" );
     GetDXUTState().SetD3D11RenderTargetView( pRTV );
 
     if( pDeviceSettings->d3d11.AutoCreateDepthStencil )
@@ -2579,7 +2578,6 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
         hr = pd3dDevice->CreateTexture2D( &descDepth, NULL, &pDepthStencil );
         if( FAILED( hr ) )
             return hr;
-        DXUT_SetDebugName( pDepthStencil, "DXUT" );
         GetDXUTState().SetD3D11DepthStencil( pDepthStencil );
 
         // Create the depth stencil view
@@ -2594,7 +2592,6 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
         hr = pd3dDevice->CreateDepthStencilView( pDepthStencil, &descDSV, &pDSV );
         if( FAILED( hr ) )
             return hr;
-        DXUT_SetDebugName( pDSV, "DXUT" );
         GetDXUTState().SetD3D11DepthStencilView( pDSV );
     }
 
@@ -2733,7 +2730,6 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         {
             return DXUTERR_CREATINGDEVICE;
         }
-        DXUT_SetDebugName( pRS, "DXUT Default" );
         GetDXUTState().SetD3D11RasterizerState(pRS);
         pd3dImmediateContext->RSSetState(pRS);
 

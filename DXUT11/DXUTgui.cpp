@@ -444,14 +444,11 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
 
     // Create Shaders
     V_RETURN( pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_pVSRenderUI11 ) );
-    DXUT_SetDebugName( m_pVSRenderUI11, "CDXUTDialogResourceManager" );
 
     V_RETURN( pd3dDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &m_pPSRenderUI11 ) );
-    DXUT_SetDebugName( m_pPSRenderUI11, "CDXUTDialogResourceManager" );
 
     V_RETURN( pd3dDevice->CreatePixelShader( pPSUntexBlob->GetBufferPointer(), pPSUntexBlob->GetBufferSize(), NULL, &m_pPSRenderUIUntex11 ) );
-    DXUT_SetDebugName( m_pPSRenderUIUntex11, "CDXUTDialogResourceManager" );
-    
+ 
     // States
     D3D11_DEPTH_STENCIL_DESC DSDesc;
     ZeroMemory( &DSDesc, sizeof( D3D11_DEPTH_STENCIL_DESC ) );
@@ -460,8 +457,7 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
     DSDesc.DepthFunc = D3D11_COMPARISON_LESS;
     DSDesc.StencilEnable = FALSE;
     V_RETURN( pd3dDevice->CreateDepthStencilState( &DSDesc, &m_pDepthStencilStateUI11 ) );
-    DXUT_SetDebugName( m_pDepthStencilStateUI11, "CDXUTDialogResourceManager" );
-
+ 
     D3D11_RASTERIZER_DESC RSDesc;
     RSDesc.AntialiasedLineEnable = FALSE;
     RSDesc.CullMode = D3D11_CULL_BACK;
@@ -474,7 +470,6 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
     RSDesc.ScissorEnable = FALSE;
     RSDesc.SlopeScaledDepthBias = 0.0f;
     V_RETURN( pd3dDevice->CreateRasterizerState( &RSDesc, &m_pRasterizerStateUI11 ) );
-    DXUT_SetDebugName( m_pRasterizerStateUI11, "CDXUTDialogResourceManager" );
 
     D3D11_BLEND_DESC BSDesc;
     ZeroMemory( &BSDesc, sizeof( D3D11_BLEND_DESC ) );
@@ -489,7 +484,6 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
     BSDesc.RenderTarget[0].RenderTargetWriteMask = 0x0F;
 
     V_RETURN( pd3dDevice->CreateBlendState( &BSDesc, &m_pBlendStateUI11 ) );
-    DXUT_SetDebugName( m_pBlendStateUI11, "CDXUTDialogResourceManager" );
 
     D3D11_SAMPLER_DESC SSDesc;
     ZeroMemory( &SSDesc, sizeof( D3D11_SAMPLER_DESC ) );
@@ -506,7 +500,6 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
         SSDesc.MaxAnisotropy = 0;
     }
     V_RETURN( pd3dDevice->CreateSamplerState( &SSDesc, &m_pSamplerStateUI11 ) );
-    DXUT_SetDebugName( m_pSamplerStateUI11, "CDXUTDialogResourceManager" );
 
     // Create the font and texture objects in the cache arrays.
     int i = 0;
@@ -533,7 +526,6 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
         };
 
     V_RETURN( pd3dDevice->CreateInputLayout( layout, ARRAYSIZE( layout ), pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), &m_pInputLayout11 ) );
-    DXUT_SetDebugName( m_pInputLayout11, "CDXUTDialogResourceManager" );
 
     // Release the blobs
     SAFE_RELEASE( pVSBlob );
@@ -548,7 +540,6 @@ HRESULT CDXUTDialogResourceManager::OnD3D11CreateDevice( ID3D11Device* pd3dDevic
     BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     BufDesc.MiscFlags = 0;
     V_RETURN( pd3dDevice->CreateBuffer( &BufDesc, NULL, &m_pVBScreenQuad11 ) );
-    DXUT_SetDebugName( m_pVBScreenQuad11, "CDXUTDialogResourceManager" );
 
     return S_OK;
 }
@@ -695,7 +686,6 @@ void CDXUTDialogResourceManager::EndSprites11( ID3D11Device* pd3dDevice, ID3D11D
         BufferDesc.MiscFlags = 0;
 
         pd3dDevice->CreateBuffer( &BufferDesc, NULL, &m_pSpriteBuffer11 );
-        DXUT_SetDebugName( m_pSpriteBuffer11, "CDXUTDialogResourceManager" );
     }
 
     // Copy the sprites over
@@ -1992,7 +1982,6 @@ HRESULT CDXUTDialogResourceManager::CreateTexture11( UINT iTexture )
             hr = DXUTCreateGUITextureFromInternalArray11( m_pd3d11Device, &pTextureNode->pTexture11, NULL );
             if( FAILED( hr ) )
                 return DXTRACE_ERR( L"D3DX11CreateResourceFromFileInMemory", hr );
-            DXUT_SetDebugName( pTextureNode->pTexture11, "DXUT GUI Texture" );
         }
         //else
         //{
@@ -2080,7 +2069,6 @@ HRESULT CDXUTDialogResourceManager::CreateTexture11( UINT iTexture )
     SRVDesc.Texture2D.MipLevels = 1;
     SRVDesc.Texture2D.MostDetailedMip = 0;
     hr = m_pd3d11Device->CreateShaderResourceView( pTextureNode->pTexture11, &SRVDesc, &pTextureNode->pTexResView11 );
-    DXUT_SetDebugName( pTextureNode->pTexResView11, "DXUT GUI Texture" );
 
     return hr;
 }

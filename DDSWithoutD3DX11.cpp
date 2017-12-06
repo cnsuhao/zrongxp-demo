@@ -203,12 +203,9 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
     // Create the shaders
     V_RETURN( pd3dDevice->CreateVertexShader( pVertexShaderBuffer->GetBufferPointer(),
                                               pVertexShaderBuffer->GetBufferSize(), NULL, &g_pVertexShader11 ) );
-    DXUT_SetDebugName( g_pVertexShader11, "RenderSceneVS" );
 
     V_RETURN( pd3dDevice->CreatePixelShader( pPixelShaderBuffer->GetBufferPointer(),
                                              pPixelShaderBuffer->GetBufferSize(), NULL, &g_pPixelShader11 ) );
-    DXUT_SetDebugName( g_pPixelShader11, "RenderScenePS" );
-
     // Create a layout for the object data
     const D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -220,7 +217,6 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
     V_RETURN( pd3dDevice->CreateInputLayout( layout, ARRAYSIZE( layout ), pVertexShaderBuffer->GetBufferPointer(),
                                              pVertexShaderBuffer->GetBufferSize(), &g_pLayout11 ) );
-    DXUT_SetDebugName( g_pLayout11, "Primary" );
 
     // No longer need the shader blobs
     SAFE_RELEASE( pVertexShaderBuffer );
@@ -235,7 +231,6 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
     samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
     V_RETURN( pd3dDevice->CreateSamplerState( &samDesc, &g_pSamLinear ) );
-    DXUT_SetDebugName( g_pSamLinear, "Linear" );
 
     // Create constant buffers
     D3D11_BUFFER_DESC cbDesc;
@@ -246,11 +241,9 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
 
     cbDesc.ByteWidth = sizeof( CB_VS_PER_OBJECT );
     V_RETURN( pd3dDevice->CreateBuffer( &cbDesc, NULL, &g_pcbVSPerObject11 ) );
-    DXUT_SetDebugName( g_pcbVSPerObject11, "CB_VS_PER_OBJECT" );
 
     cbDesc.ByteWidth = sizeof( CB_VS_PER_FRAME );
     V_RETURN( pd3dDevice->CreateBuffer( &cbDesc, NULL, &g_pcbVSPerFrame11 ) );
-    DXUT_SetDebugName( g_pcbVSPerFrame11, "CB_VS_PER_FRAME" );
 
     // load the mesh
   // g_Mesh.Create( pd3dDevice, L"misc\\ball.sdkmesh"  );

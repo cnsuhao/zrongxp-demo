@@ -36,7 +36,6 @@ HRESULT WINAPI DXUTCreateGUITextureFromInternalArray11(ID3D11Device* pd3dDevice,
 	hr = D3DX11CreateTextureFromFile(pd3dDevice, path, &loadInfo, NULL, &pRes, NULL);
     if( FAILED( hr ) )
         return hr;
-    DXUT_SetDebugName( pRes, "DXUT" );
     hr = pRes->QueryInterface( __uuidof( ID3D11Texture2D ), (LPVOID*)ppTexture );
     SAFE_RELEASE( pRes );
 
