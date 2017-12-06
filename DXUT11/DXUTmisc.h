@@ -166,30 +166,12 @@ WCHAR* WINAPI DXUTTraceWindowsMessage( UINT uMsg );
 #define DXUTOutputDebugString DXUTOutputDebugStringA
 #endif
 
-// These macros are very similar to dxerr's but it special cases the HRESULT defined
-// by DXUT to pop better message boxes. 
-#if defined(DEBUG) || defined(_DEBUG)
-#define DXUTTRACE                  DXUTOutputDebugString
-#else
-#define DXUT_ERR(str,hr)           (hr)
-#define DXUT_ERR_MSGBOX(str,hr)    (hr)
-#define DXUTTRACE                  (__noop)
-#endif
-
 
 //--------------------------------------------------------------------------------------
 // Direct3D9 dynamic linking support -- calls top-level D3D9 APIs with graceful
 // failure if APIs are not present.
 //--------------------------------------------------------------------------------------
 
-IDirect3D9 * WINAPI DXUT_Dynamic_Direct3DCreate9(UINT SDKVersion);
-int WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName );
-int WINAPI DXUT_Dynamic_D3DPERF_EndEvent( void );
-void WINAPI DXUT_Dynamic_D3DPERF_SetMarker( D3DCOLOR col, LPCWSTR wszName );
-void WINAPI DXUT_Dynamic_D3DPERF_SetRegion( D3DCOLOR col, LPCWSTR wszName );
-BOOL WINAPI DXUT_Dynamic_D3DPERF_QueryRepeatFrame( void );
-void WINAPI DXUT_Dynamic_D3DPERF_SetOptions( DWORD dwOptions );
-DWORD WINAPI DXUT_Dynamic_D3DPERF_GetStatus( void );
 HRESULT WINAPI DXUT_Dynamic_CreateDXGIFactory1( REFIID rInterface, void** ppOut );
 
 HRESULT WINAPI DXUT_Dynamic_D3D11CreateDevice( IDXGIAdapter* pAdapter,
@@ -267,17 +249,6 @@ const D3DCOLOR              DXUT_PERFEVENTCOLOR3 = D3DCOLOR_XRGB( 100, 100, 200 
 //     Profile (optimized code, asserts disabled, PROFILE defined to assist optimization)
 //     Release (optimized code, asserts disabled, PROFILE not defined)
 //--------------------------------------------------------------------------------------
-#ifdef PROFILE
-// PROFILE is defined, so these macros call the D3DPERF functions
-#define DXUT_BeginPerfEvent( color, pstrMessage )   DXUT_Dynamic_D3DPERF_BeginEvent( color, pstrMessage )
-#define DXUT_EndPerfEvent()                         DXUT_Dynamic_D3DPERF_EndEvent()
-#define DXUT_SetPerfMarker( color, pstrMessage )    DXUT_Dynamic_D3DPERF_SetMarker( color, pstrMessage )
-#else
-// PROFILE is not defined, so these macros do nothing
-#define DXUT_BeginPerfEvent( color, pstrMessage )   (__noop)
-#define DXUT_EndPerfEvent()                         (__noop)
-#define DXUT_SetPerfMarker( color, pstrMessage )    (__noop)
-#endif
 
 //--------------------------------------------------------------------------------------
 // Multimon handling to support OSes with or without multimon API support.  
