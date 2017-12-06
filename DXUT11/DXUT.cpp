@@ -2394,32 +2394,6 @@ HRESULT DXUTDelayLoadDXGI()
     return S_OK;
 }
 
-
-//--------------------------------------------------------------------------------------
-// Creates a Direct3D object if one has not already been created  
-//--------------------------------------------------------------------------------------
-HRESULT DXUTDelayLoadD3D9()
-{
-    IDirect3D9* pD3D = GetDXUTState().GetD3D9();
-    if( pD3D == NULL )
-    {
-        // This may fail if Direct3D 9 isn't installed
-        // This may also fail if the Direct3D headers are somehow out of sync with the installed Direct3D DLLs
-        pD3D = DXUT_Dynamic_Direct3DCreate9( D3D_SDK_VERSION );
-        if( pD3D == NULL )
-        {
-            // If still NULL, then D3D9 is not availible
-            return DXUTERR_NODIRECT3D;
-        }
-
-        GetDXUTState().SetD3D9( pD3D );
-    }
-
-    return S_OK;
-}
-
-
-
 //--------------------------------------------------------------------------------------
 // Updates the device settings with default values..  
 //--------------------------------------------------------------------------------------

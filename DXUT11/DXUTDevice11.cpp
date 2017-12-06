@@ -113,7 +113,6 @@ CD3D11Enumeration::~CD3D11Enumeration()
 HRESULT CD3D11Enumeration::Enumerate( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE IsD3D11DeviceAcceptableFunc,
                                       void* pIsD3D11DeviceAcceptableFuncUserContext )
 {
-    CDXUTPerfEventGenerator eventGenerator( DXUT_PERFEVENTCOLOR, L"DXUT D3D11 Enumeration" );
     HRESULT hr;
     IDXGIFactory1* pFactory = DXUTGetDXGIFactory();
     if( pFactory == NULL )

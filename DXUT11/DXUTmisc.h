@@ -282,27 +282,6 @@ const D3DCOLOR              DXUT_PERFEVENTCOLOR3 = D3DCOLOR_XRGB( 100, 100, 200 
 #endif
 
 //--------------------------------------------------------------------------------------
-// CDXUTPerfEventGenerator is a helper class that makes it easy to attach begin and end
-// events to a block of code.  Simply define a CDXUTPerfEventGenerator variable anywhere 
-// in a block of code, and the class's constructor will call DXUT_BeginPerfEvent when 
-// the block of code begins, and the class's destructor will call DXUT_EndPerfEvent when 
-// the block ends.
-//--------------------------------------------------------------------------------------
-class CDXUTPerfEventGenerator
-{
-public:
-CDXUTPerfEventGenerator( D3DCOLOR color, LPCWSTR pstrMessage )
-{
-    DXUT_BeginPerfEvent( color, pstrMessage );
-}
-~CDXUTPerfEventGenerator( void )
-{
-    DXUT_EndPerfEvent();
-}
-};
-
-
-//--------------------------------------------------------------------------------------
 // Multimon handling to support OSes with or without multimon API support.  
 // Purposely avoiding the use of multimon.h so DXUT.lib doesn't require 
 // COMPILE_MULTIMON_STUBS and cause complication with MFC or other users of multimon.h

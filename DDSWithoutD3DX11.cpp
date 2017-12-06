@@ -320,18 +320,7 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->PSSetShaderResources( 0, 1, &g_pSRV11 );
     pd3dImmediateContext->PSSetSamplers( 0, 1, &g_pSamLinear );
 
-    DXUT_BeginPerfEvent( DXUT_PERFEVENTCOLOR, L"HUD / Stats" );
-
 	g_HUD.OnRender( fElapsedTime );
-    DXUT_EndPerfEvent();
-
-    static DWORD dwTimefirst = GetTickCount();
-    if ( GetTickCount() - dwTimefirst > 5000 )
-    {    
-        OutputDebugString( DXUTGetFrameStats( DXUTIsVsyncEnabled() ) );
-        OutputDebugString( L"\n" );
-        dwTimefirst = GetTickCount();
-    }
 }
 
 
