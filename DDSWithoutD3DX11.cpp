@@ -20,7 +20,6 @@
 //--------------------------------------------------------------------------------------
 // Global variables
 //--------------------------------------------------------------------------------------
-CModelViewerCamera                  g_Camera;               // A model viewing camera
 CDXUTDialogResourceManager          g_DialogResourceManager;// manager for shared resources of dialogs
 CDXUTDialog                         g_HUD;                  // dialog for standard controls
 
@@ -264,8 +263,7 @@ HRESULT CALLBACK OnD3D11CreateDevice( ID3D11Device* pd3dDevice, const DXGI_SURFA
     // Setup the camera's view parameters
     D3DXVECTOR3 vecEye( 0.0f, 0.0f, -5.0f );
     D3DXVECTOR3 vecAt ( 0.0f, 0.0f, -0.0f );
-    g_Camera.SetViewParams( &vecEye, &vecAt );
-
+ 
     return S_OK;
 }
 
@@ -279,11 +277,6 @@ HRESULT CALLBACK OnD3D11ResizedSwapChain( ID3D11Device* pd3dDevice, IDXGISwapCha
     HRESULT hr;
     V_RETURN( g_DialogResourceManager.OnD3D11ResizedSwapChain( pd3dDevice, pBackBufferSurfaceDesc ) );
 
-    // Setup the camera's projection parameters
-    float fAspectRatio = pBackBufferSurfaceDesc->Width / ( FLOAT )pBackBufferSurfaceDesc->Height;
-    g_Camera.SetProjParams( D3DX_PI / 4, fAspectRatio, 0.1f, 1000.0f );
-    g_Camera.SetWindow( pBackBufferSurfaceDesc->Width, pBackBufferSurfaceDesc->Height );
-    g_Camera.SetButtonMasks( MOUSE_LEFT_BUTTON, MOUSE_WHEEL, MOUSE_MIDDLE_BUTTON );
 
     g_HUD.SetLocation( 100, 20 );
     g_HUD.SetSize( 170, 170 );
@@ -308,10 +301,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->ClearDepthStencilView( pDSV, D3D11_CLEAR_DEPTH, 1.0, 0 );
 
     // Get the projection & view matrix from the camera class
-    D3DXMATRIX mWorld = *g_Camera.GetWorldMatrix();
-    D3DXMATRIX mView = *g_Camera.GetViewMatrix();
-    D3DXMATRIX mProj = *g_Camera.GetProjMatrix();
-    D3DXMATRIX mWorldViewProjection = mWorld * mView * mProj;
 
     // Set the constant buffers
     D3D11_MAPPED_SUBRESOURCE MappedResource;
@@ -322,9 +311,6 @@ void CALLBACK OnD3D11FrameRender( ID3D11Device* pd3dDevice, ID3D11DeviceContext*
     pd3dImmediateContext->VSSetConstantBuffers( 1, 1, &g_pcbVSPerFrame11 );
 
     V( pd3dImmediateContext->Map( g_pcbVSPerObject11, 0, D3D11_MAP_WRITE_DISCARD, 0, &MappedResource ) );
-    CB_VS_PER_OBJECT* pVSPerObject = ( CB_VS_PER_OBJECT* )MappedResource.pData;
-    D3DXMatrixTranspose( &pVSPerObject->m_mWorldViewProjection, &mWorldViewProjection );
-    D3DXMatrixTranspose( &pVSPerObject->m_mWorld, &mWorld );
     pd3dImmediateContext->Unmap( g_pcbVSPerObject11, 0 );
     pd3dImmediateContext->VSSetConstantBuffers( 0, 1, &g_pcbVSPerObject11 );
 
@@ -404,8 +390,6 @@ bool CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, void* p
 //--------------------------------------------------------------------------------------
 void CALLBACK OnFrameMove( double fTime, float fElapsedTime, void* pUserContext )
 {
-    // Update the camera's position based on user input 
-    g_Camera.FrameMove( fElapsedTime );
 }
 
 
@@ -431,9 +415,6 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
     *pbNoFurtherProcessing = g_HUD.MsgProc( hWnd, uMsg, wParam, lParam );
     if( *pbNoFurtherProcessing )
         return 0;
-
-    // Pass all remaining windows messages to camera so it can respond to user input
-    g_Camera.HandleMessages( hWnd, uMsg, wParam, lParam );
 
     return 0;
 }
