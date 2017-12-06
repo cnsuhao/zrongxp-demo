@@ -1671,7 +1671,8 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
 // Direct3D section
 //======================================================================================
 //======================================================================================
-HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nSuggestedWidth, int nSuggestedHeight) {
+HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nSuggestedWidth, int nSuggestedHeight) 
+{
     HRESULT hr = S_OK;
     
    
@@ -1715,49 +1716,6 @@ HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nS
     // Change to a Direct3D device created from the new device settings.  
     // If there is an existing device, then either reset or recreated the scene
     hr = DXUTChangeDevice( &deviceSettings, NULL, NULL, false, true );
-
-    if ( hr ==  DXUTERR_NODIRECT3D11 && GetDXUTState().GetMessageWhenD3D11NotAvailable() ) {
-        
-        OSVERSIONINFOEX osv;
-        memset( &osv, 0, sizeof(osv) );
-        osv.dwOSVersionInfoSize = sizeof(osv);
-        GetVersionEx( (LPOSVERSIONINFO)&osv );
-        
-
-        if ( ( osv.dwMajorVersion > 6 )
-            || ( osv.dwMajorVersion == 6 && osv.dwMinorVersion >= 1 ) 
-            || ( osv.dwMajorVersion == 6 && osv.dwMinorVersion == 0 && osv.dwBuildNumber > 6002 ) )
-        {
-
-            MessageBox( 0, L"Direct3D 11 components were not found.", L"Error", MB_ICONEXCLAMATION );
-           // This should not happen, but is here for completeness as the system could be
-           // corrupted or some future OS version could pull D3D11.DLL for some reason
-        }
-        else if ( osv.dwMajorVersion == 6 && osv.dwMinorVersion == 0 && osv.dwBuildNumber == 6002 )
-        {
-
-            MessageBox( 0, L"Direct3D 11 components were not found, but are available for"\
-            L" this version of Windows.\n"\
-            L"For details see Microsoft Knowledge Base Article #971644\n"\
-            L"http://go.microsoft.com/fwlink/?LinkId=160189", L"Error", MB_ICONEXCLAMATION );
-           
-        }
-        else if ( osv.dwMajorVersion == 6 && osv.dwMinorVersion == 0 )
-        {
-            MessageBox( 0, L"Direct3D 11 components were not found. Please install the latest Service Pack.\n"\
-            L"For details see Microsoft Knowledge Base Article #935791\n"\
-            L"http://support.microsoft.com/kb/935791/", L"Error", MB_ICONEXCLAMATION );
-            
-        }
-        else
-        {
-            MessageBox( 0, L"Direct3D 11 is not supported on this OS.", L"Error", MB_ICONEXCLAMATION );
-        }
-
-
-
-    }
-
 
     if( FAILED( hr ) )
         return hr;
