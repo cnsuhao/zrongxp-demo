@@ -38,18 +38,9 @@
 class CDXUTDialogResourceManager;
 class CDXUTControl;
 class CDXUTButton;
-class CDXUTStatic;
-class CDXUTCheckBox;
-class CDXUTRadioButton;
-class CDXUTComboBox;
-class CDXUTSlider;
-class CDXUTEditBox;
-class CDXUTListBox;
-class CDXUTScrollBar;
 class CDXUTElement;
 struct DXUTElementHolder;
 struct DXUTTextureNode;
-struct DXUTFontNode;
 typedef VOID ( CALLBACK*PCALLBACKDXUTGUIEVENT )( UINT nEvent, int nControlID, CDXUTControl* pControl,
                                                  void* pUserContext );
 
@@ -138,40 +129,6 @@ public:
  
     HRESULT             AddControl( CDXUTControl* pControl );
     HRESULT             InitControl( CDXUTControl* pControl );
-
-    // Control retrieval
-    CDXUTStatic* GetStatic( int ID )
-    {
-        return ( CDXUTStatic* )GetControl( ID, DXUT_CONTROL_STATIC );
-    }
-    CDXUTButton* GetButton( int ID )
-    {
-        return ( CDXUTButton* )GetControl( ID, DXUT_CONTROL_BUTTON );
-    }
-    CDXUTCheckBox* GetCheckBox( int ID )
-    {
-        return ( CDXUTCheckBox* )GetControl( ID, DXUT_CONTROL_CHECKBOX );
-    }
-    CDXUTRadioButton* GetRadioButton( int ID )
-    {
-        return ( CDXUTRadioButton* )GetControl( ID, DXUT_CONTROL_RADIOBUTTON );
-    }
-    CDXUTComboBox* GetComboBox( int ID )
-    {
-        return ( CDXUTComboBox* )GetControl( ID, DXUT_CONTROL_COMBOBOX );
-    }
-    CDXUTSlider* GetSlider( int ID )
-    {
-        return ( CDXUTSlider* )GetControl( ID, DXUT_CONTROL_SLIDER );
-    }
-    CDXUTEditBox* GetEditBox( int ID )
-    {
-        return ( CDXUTEditBox* )GetControl( ID, DXUT_CONTROL_EDITBOX );
-    }
-    CDXUTListBox* GetListBox( int ID )
-    {
-        return ( CDXUTListBox* )GetControl( ID, DXUT_CONTROL_LISTBOX );
-    }
 
     CDXUTControl* GetControl( int ID );
     CDXUTControl* GetControl( int ID, UINT nControlType );
@@ -287,10 +244,6 @@ public:
     void                Refresh();
     HRESULT             OnRender( float fElapsedTime );
 
-    // Shared resource access. Indexed fonts and textures are shared among
-    // all the controls.
-    HRESULT             SetFont( UINT index, LPCWSTR strFaceName, LONG height, LONG weight );
-    DXUTFontNode* GetFont( UINT index );
 
     HRESULT             SetTexture( UINT index, LPCWSTR strFilename );
     HRESULT             SetTexture( UINT index, LPCWSTR strResourceName, HMODULE hResourceModule );
