@@ -2485,10 +2485,10 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         IDXGIAdapter1* pAdapter = NULL;
 
         hr = S_OK;
-        D3D_DRIVER_TYPE ddt = pNewDeviceSettings->d3d11.DriverType;
+		D3D_DRIVER_TYPE ddt = D3D_DRIVER_TYPE_HARDWARE;
         if( pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_HARDWARE ) 
         {
-            hr = pDXGIFactory->EnumAdapters1( pNewDeviceSettings->d3d11.AdapterOrdinal, &pAdapter );
+            hr = pDXGIFactory->EnumAdapters1(0, &pAdapter );
             if ( FAILED( hr) ) 
             {
                 return E_FAIL;
