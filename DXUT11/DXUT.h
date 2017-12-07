@@ -278,7 +278,6 @@ HRESULT                  WINAPI DXUTSetupD3D11Views( ID3D11DeviceContext* pd3dDe
 D3D_FEATURE_LEVEL	     WINAPI DXUTGetD3D11DeviceFeatureLevel(); // Returns the D3D11 devices current feature level
 ID3D11RenderTargetView*  WINAPI DXUTGetD3D11RenderTargetView(); // Does not addref unlike typical Get* APIs
 ID3D11DepthStencilView*  WINAPI DXUTGetD3D11DepthStencilView(); // Does not addref unlike typical Get* APIs
-bool                     WINAPI DXUTDoesAppSupportD3D11();
 bool                     WINAPI DXUTIsAppRenderingWithD3D11();
 
 

@@ -7,9 +7,7 @@
 //--------------------------------------------------------------------------------------
 #include "dxut.h"
 #include <xinput.h>
-#define DXUT_GAMEPAD_TRIGGER_THRESHOLD      30
-#undef min // use __min instead
-#undef max // use __max instead
+
 
 //--------------------------------------------------------------------------------------
 // Direct3D9 dynamic linking support -- calls top-level D3D9 APIs with graceful
@@ -28,14 +26,6 @@ typedef HRESULT     (WINAPI * LPCREATEDXGIFACTORY)(REFIID, void ** );
 typedef HRESULT     (WINAPI * LPD3D11CREATEDEVICE)( IDXGIAdapter*, D3D_DRIVER_TYPE, HMODULE, UINT32, D3D_FEATURE_LEVEL*, UINT, UINT32, ID3D11Device**, D3D_FEATURE_LEVEL*, ID3D11DeviceContext** );
 
 // Module and function pointers
-static HMODULE                              s_hModD3D9 = NULL;
-static LPD3DPERF_BEGINEVENT                 s_DynamicD3DPERF_BeginEvent = NULL;
-static LPD3DPERF_ENDEVENT                   s_DynamicD3DPERF_EndEvent = NULL;
-static LPD3DPERF_SETMARKER                  s_DynamicD3DPERF_SetMarker = NULL;
-static LPD3DPERF_SETREGION                  s_DynamicD3DPERF_SetRegion = NULL;
-static LPD3DPERF_QUERYREPEATFRAME           s_DynamicD3DPERF_QueryRepeatFrame = NULL;
-static LPD3DPERF_SETOPTIONS                 s_DynamicD3DPERF_SetOptions = NULL;
-static LPD3DPERF_GETSTATUS                  s_DynamicD3DPERF_GetStatus = NULL;
 static HMODULE                              s_hModDXGI = NULL;
 static LPCREATEDXGIFACTORY                  s_DynamicCreateDXGIFactory = NULL;
 static HMODULE                              s_hModD3D11 = NULL;
@@ -96,8 +86,6 @@ HRESULT WINAPI DXUT_Dynamic_D3D11CreateDevice( IDXGIAdapter* pAdapter,
     else
         return DXUTERR_NODIRECT3D11;
 }
-
-#define TRACE_ID(iD) case iD: return L#iD;
 
 //--------------------------------------------------------------------------------------
 // Multimon API handling for OSes with or without multimon API support
@@ -218,67 +206,6 @@ typedef DWORD ( WINAPI* LPXINPUTSETSTATE )( DWORD dwUserIndex, XINPUT_VIBRATION*
 typedef DWORD ( WINAPI* LPXINPUTGETCAPABILITIES )( DWORD dwUserIndex, DWORD dwFlags,
                                                    XINPUT_CAPABILITIES* pCapabilities );
 typedef void ( WINAPI* LPXINPUTENABLE )( BOOL bEnable );
-
-//--------------------------------------------------------------------------------------
-// Helper functions to create SRGB formats from typeless formats and vice versa
-//--------------------------------------------------------------------------------------
-DXGI_FORMAT MAKE_SRGB( DXGI_FORMAT format )
-{
-    if( !DXUTIsInGammaCorrectMode() )
-        return format;
-
-    switch( format )
-    {
-        case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-        case DXGI_FORMAT_R8G8B8A8_UNORM:
-        case DXGI_FORMAT_R8G8B8A8_UINT:
-        case DXGI_FORMAT_R8G8B8A8_SNORM:
-        case DXGI_FORMAT_R8G8B8A8_SINT:
-            return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-
-        case DXGI_FORMAT_BC1_TYPELESS:
-        case DXGI_FORMAT_BC1_UNORM:
-            return DXGI_FORMAT_BC1_UNORM_SRGB;
-        case DXGI_FORMAT_BC2_TYPELESS:
-        case DXGI_FORMAT_BC2_UNORM:
-            return DXGI_FORMAT_BC2_UNORM_SRGB;
-        case DXGI_FORMAT_BC3_TYPELESS:
-        case DXGI_FORMAT_BC3_UNORM:
-            return DXGI_FORMAT_BC3_UNORM_SRGB;
-
-    };
-
-    return format;
-}
-
-//--------------------------------------------------------------------------------------
-DXGI_FORMAT MAKE_TYPELESS( DXGI_FORMAT format )
-{
-    if( !DXUTIsInGammaCorrectMode() )
-        return format;
-
-    switch( format )
-    {
-        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-        case DXGI_FORMAT_R8G8B8A8_UNORM:
-        case DXGI_FORMAT_R8G8B8A8_UINT:
-        case DXGI_FORMAT_R8G8B8A8_SNORM:
-        case DXGI_FORMAT_R8G8B8A8_SINT:
-            return DXGI_FORMAT_R8G8B8A8_TYPELESS;
-
-        case DXGI_FORMAT_BC1_UNORM_SRGB:
-        case DXGI_FORMAT_BC1_UNORM:
-            return DXGI_FORMAT_BC1_TYPELESS;
-        case DXGI_FORMAT_BC2_UNORM_SRGB:
-        case DXGI_FORMAT_BC2_UNORM:
-            return DXGI_FORMAT_BC2_TYPELESS;
-        case DXGI_FORMAT_BC3_UNORM_SRGB:
-        case DXGI_FORMAT_BC3_UNORM:
-            return DXGI_FORMAT_BC3_TYPELESS;
-    };
-
-    return format;
-}
 
 //-------------------------------------------------------------------------------------- 
 HRESULT DXUTSnapD3D11Screenshot( LPCTSTR szFileName, D3DX11_IMAGE_FILE_FORMAT iff )

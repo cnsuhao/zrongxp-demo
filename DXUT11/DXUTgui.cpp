@@ -2065,7 +2065,7 @@ HRESULT CDXUTDialogResourceManager::CreateTexture11( UINT iTexture )
     // Create resource view
     D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
     SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    SRVDesc.Format = MAKE_SRGB( desc.Format );
+	SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     SRVDesc.Texture2D.MipLevels = 1;
     SRVDesc.Texture2D.MostDetailedMip = 0;
     hr = m_pd3d11Device->CreateShaderResourceView( pTextureNode->pTexture11, &SRVDesc, &pTextureNode->pTexResView11 );

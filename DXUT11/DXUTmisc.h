@@ -6,8 +6,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved
 //--------------------------------------------------------------------------------------
 #pragma once
-#ifndef DXUT_MISC_H
-#define DXUT_MISC_H
 
 #ifndef MAX_FVF_DECL_SIZE
 #define MAX_FVF_DECL_SIZE MAXD3DDECLLENGTH + 1 // +1 for END
@@ -406,23 +404,3 @@ template<typename TYPE> HRESULT CGrowableArray <TYPE>::Remove( int nIndex )
 
     return S_OK;
 }
-
-//--------------------------------------------------------------------------------------
-// Creates a REF or NULLREF D3D9 device and returns that device.  The caller should call
-// Release() when done with the device.
-//--------------------------------------------------------------------------------------
-IDirect3DDevice9*           WINAPI DXUTCreateRefDevice9( HWND hWnd, bool bNullRef = true );
-
-//--------------------------------------------------------------------------------------
-// Creates a REF or NULLREF D3D10 device and returns the device.  The caller should call
-// Release() when done with the device.
-//--------------------------------------------------------------------------------------
-//test d3d10 version ID3D10Device*               WINAPI DXUTCreateRefDevice10( bool bNullRef = true );
-
-//--------------------------------------------------------------------------------------
-// Helper functions to create SRGB formats from typeless formats and vice versa
-//--------------------------------------------------------------------------------------
-DXGI_FORMAT MAKE_SRGB( DXGI_FORMAT format );
-DXGI_FORMAT MAKE_TYPELESS( DXGI_FORMAT format );
-
-#endif

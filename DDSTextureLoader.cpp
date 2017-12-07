@@ -895,8 +895,7 @@ static HRESULT CreateTextureFromDDS( ID3D11Device* pDev, DDS_HEADER* pHeader, __
         }
     }
     
-    if ( bSRGB )
-        desc.Format = MAKE_SRGB( desc.Format );
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     // Create the texture
     desc.Width = iWidth;

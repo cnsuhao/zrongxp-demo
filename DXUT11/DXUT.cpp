@@ -1705,7 +1705,7 @@ HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nS
     deviceSettings.d3d11.sd.BufferDesc.Height = nSuggestedHeight;
     deviceSettings.d3d11.sd.Windowed = bWindowed;
 
-    bool bAppSupportsD3D11 = DXUTDoesAppSupportD3D11();
+    bool bAppSupportsD3D11 = true;
 
     if (bAppSupportsD3D11) {
         deviceSettings.ver = DXUT_D3D11_DEVICE;
@@ -2262,24 +2262,6 @@ void WINAPI DXUTSetD3DVersionSupport( bool bAppCanUseD3D9,  bool bAppCanUseD3D11
 bool WINAPI DXUTDoesAppSupportD3D9()
 {
 	return false;
-}
-
-
-//--------------------------------------------------------------------------------------
-// Returns true if app has registered any D3D11 callbacks or 
-// used the DXUTSetD3DVersionSupport API and passed true for bAppCanUseD3D11
-//--------------------------------------------------------------------------------------
-bool WINAPI DXUTDoesAppSupportD3D11()
-{
-    if( GetDXUTState().GetUseD3DVersionOverride() )
-        return GetDXUTState().GetAppSupportsD3D11Override();
-    else
-        return GetDXUTState().GetIsD3D11DeviceAcceptableFunc() ||
-            GetDXUTState().GetD3D11DeviceCreatedFunc() ||
-            GetDXUTState().GetD3D11SwapChainResizedFunc() ||
-            GetDXUTState().GetD3D11FrameRenderFunc() ||
-            GetDXUTState().GetD3D11SwapChainReleasingFunc() ||
-            GetDXUTState().GetD3D11DeviceDestroyedFunc();
 }
 
 //--------------------------------------------------------------------------------------
@@ -3382,7 +3364,7 @@ void DXUTDisplayErrorMessage( HRESULT hr )
         case DXUTERR_NODIRECT3D:
         {
             nExitCode = 2;
-            if( DXUTDoesAppSupportD3D11() && !DXUTDoesAppSupportD3D9() )
+            if( !DXUTDoesAppSupportD3D9() )
                 wcscpy_s( strBuffer, ARRAYSIZE(strBuffer), L"Could not initialize Direct3D 11. " );
             else
                 wcscpy_s( strBuffer, ARRAYSIZE(strBuffer), L"Could not initialize Direct3D 9. Check that the latest version of DirectX is correctly installed on your system.  Also make sure that this program was compiled with header files that match the installed DirectX DLLs." );
@@ -4283,7 +4265,7 @@ void DXUTApplyDefaultDeviceSettings(DXUTDeviceSettings *modifySettings) {
 //--------------------------------------------------------------------------------------
 HRESULT DXUTSnapDeviceSettingsToEnumDevice( DXUTDeviceSettings* pDeviceSettings, bool forceEnum,  D3D_FEATURE_LEVEL forceFL )
 {
-    bool bAppSupportsD3D11 = DXUTDoesAppSupportD3D11();
+    bool bAppSupportsD3D11 = true;
 
     if( GetSystemMetrics(0x1000) != 0 ) 
 	{// SM_REMOTESESSION
