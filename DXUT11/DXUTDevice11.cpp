@@ -956,7 +956,6 @@ UINT WINAPI DXUTGetDXGIColorChannelBits( DXGI_FORMAT fmt )
             return 0;
     }
 }
-
 //--------------------------------------------------------------------------------------
 // Returns a ranking number that describes how closely this device 
 // combo matches the optimal combo based on the match options and the optimal device settings
