@@ -1704,12 +1704,7 @@ HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nS
     deviceSettings.d3d11.sd.BufferDesc.Width = nSuggestedWidth;
     deviceSettings.d3d11.sd.BufferDesc.Height = nSuggestedHeight;
     deviceSettings.d3d11.sd.Windowed = bWindowed;
-
-    bool bAppSupportsD3D11 = true;
-
-    if (bAppSupportsD3D11) {
-        deviceSettings.ver = DXUT_D3D11_DEVICE;
-    }
+	deviceSettings.ver = DXUT_D3D11_DEVICE;
 
     DXUTUpdateDeviceSettingsWithOverrides(&deviceSettings); 
 
