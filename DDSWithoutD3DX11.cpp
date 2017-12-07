@@ -103,13 +103,6 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     DXUTSetCallbackFrameMove( OnFrameMove );
     DXUTSetCallbackDeviceChanging( ModifyDeviceSettings );
 
-    //DXUTSetCallbackD3D9DeviceAcceptable( IsD3D9DeviceAcceptable );
-    //DXUTSetCallbackD3D9DeviceCreated( OnD3D9CreateDevice );
-    //DXUTSetCallbackD3D9DeviceReset( OnD3D9ResetDevice );
-    //DXUTSetCallbackD3D9DeviceLost( OnD3D9LostDevice );
-    //DXUTSetCallbackD3D9DeviceDestroyed( OnD3D9DestroyDevice );
-    //DXUTSetCallbackD3D9FrameRender( OnD3D9FrameRender );
-
     DXUTSetCallbackD3D11DeviceAcceptable( IsD3D11DeviceAcceptable );
     DXUTSetCallbackD3D11DeviceCreated( OnD3D11CreateDevice );
     DXUTSetCallbackD3D11SwapChainResized( OnD3D11ResizedSwapChain );

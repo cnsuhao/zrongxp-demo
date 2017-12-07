@@ -72,11 +72,8 @@ protected:
     struct STATE
     {
         // D3D9 specific
-        IDirect3D9*             m_D3D9;                    // the main D3D9 object
-        IDirect3DDevice9*       m_D3D9Device;              // the D3D9 rendering device
         DXUTDeviceSettings*     m_CurrentDeviceSettings;   // current device settings
         D3DSURFACE_DESC         m_BackBufferSurfaceDesc9;  // D3D9 back buffer surface description
-        D3DCAPS9                m_Caps;                    // D3D caps for current device
 
         // D3D11 specific
         IDXGIFactory1*           m_DXGIFactory;             // DXGI Factory object
@@ -294,12 +291,6 @@ public:
 
     // Macros to define access functions for thread safe access into m_state 
     GET_SET_ACCESSOR( DXUTDeviceSettings*, CurrentDeviceSettings );
-
-    // D3D9 specific
-    GET_SET_ACCESSOR( IDirect3D9*, D3D9 );
-    GET_SET_ACCESSOR( IDirect3DDevice9*, D3D9Device );
-    GETP_SETP_ACCESSOR( D3DSURFACE_DESC, BackBufferSurfaceDesc9 );
-    GETP_SETP_ACCESSOR( D3DCAPS9, Caps );
 
     // D3D11 specific
     GET_SET_ACCESSOR( IDXGIFactory1*, DXGIFactory );
@@ -592,9 +583,6 @@ BOOL WINAPI DXUTGetMSAASwapChainCreated() {
     }
     else return false;
 }
-IDirect3DDevice9* WINAPI DXUTGetD3D9Device()               { return GetDXUTState().GetD3D9Device(); }
-const D3DSURFACE_DESC* WINAPI DXUTGetD3D9BackBufferSurfaceDesc() { return GetDXUTState().GetBackBufferSurfaceDesc9(); }
-const D3DCAPS9* WINAPI DXUTGetD3D9DeviceCaps()             { return GetDXUTState().GetCaps(); }
 ID3D11Device* WINAPI DXUTGetD3D11Device()                  { return GetDXUTState().GetD3D11Device(); }
 D3D_FEATURE_LEVEL	 WINAPI DXUTGetD3D11DeviceFeatureLevel() { return GetDXUTState().GetD3D11FeatureLevel(); }
 ID3D11DeviceContext* WINAPI DXUTGetD3D11DeviceContext()    { return GetDXUTState().GetD3D11DeviceContext(); }
@@ -627,7 +615,6 @@ bool WINAPI DXUTIsWindowed()                               { return DXUTGetIsWin
 bool WINAPI DXUTIsInGammaCorrectMode()                     { return GetDXUTState().GetIsInGammaCorrectMode(); }
 IDXGIFactory1* WINAPI DXUTGetDXGIFactory()                  { DXUTDelayLoadDXGI(); return GetDXUTState().GetDXGIFactory(); }
 bool WINAPI DXUTIsD3D11Available()                         { DXUTDelayLoadDXGI(); return GetDXUTState().GetD3D11Available(); }
-bool WINAPI DXUTIsAppRenderingWithD3D9()                   { return (GetDXUTState().GetD3D9Device() != NULL); }
 bool WINAPI DXUTIsAppRenderingWithD3D11()                  { return (GetDXUTState().GetD3D11Device() != NULL); }
 
 //--------------------------------------------------------------------------------------
@@ -1501,20 +1488,16 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             {
                 case VK_RETURN:
                 {
-                    if( GetDXUTState().GetHandleAltEnter() && DXUTIsAppRenderingWithD3D9() )
+                    // Toggle full screen upon alt-enter 
+                    DWORD dwMask = ( 1 << 29 );
+                    if( ( lParam & dwMask ) != 0 ) // Alt is down also
                     {
-                        // Toggle full screen upon alt-enter 
-                        DWORD dwMask = ( 1 << 29 );
-                        if( ( lParam & dwMask ) != 0 ) // Alt is down also
-                        {
-                            // Toggle the full screen/window mode
-                            DXUTPause( true, true );
-                            DXUTToggleFullScreen();
-                            DXUTPause( false, false );
-                            return 0;
-                        }
+                        // Toggle the full screen/window mode
+                        DXUTPause( true, true );
+                        DXUTToggleFullScreen();
+                        DXUTPause( false, false );
+                        return 0;
                     }
-                   
                 }
             }
             break;
@@ -1816,11 +1799,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
                 DXUTDisplayErrorMessage( DXUTERR_NOCOMPATIBLEDEVICES );
             SAFE_DELETE( pNewDeviceSettings );
             return E_ABORT;
-        }
-        if( GetDXUTState().GetD3D9() == NULL && GetDXUTState().GetDXGIFactory() == NULL ) // if DXUTShutdown() was called in the modify callback, just return
-        {
-            SAFE_DELETE( pNewDeviceSettings );
-            return S_FALSE;
         }
         DXUTSnapDeviceSettingsToEnumDevice(pNewDeviceSettingsOnHeap, false); // modify the app specified settings to the closed enumerated settigns
 
@@ -4198,11 +4176,6 @@ void WINAPI DXUTShutdown( int nExitCode )
     // If the app crashes without restoring the settings, this is also true so it
     // would be wise to backup/restore the settings from a file so they can be 
     // restored when the crashed app is run again.
-
-    // Shutdown D3D9
-    IDirect3D9* pD3D = GetDXUTState().GetD3D9();
-    SAFE_RELEASE( pD3D );
-    GetDXUTState().SetD3D9( NULL );
 
     // Shutdown D3D11
     IDXGIFactory1* pDXGIFactory = GetDXUTState().GetDXGIFactory();
