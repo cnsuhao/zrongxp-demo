@@ -280,6 +280,8 @@ ID3D11RenderTargetView*  WINAPI DXUTGetD3D11RenderTargetView(); // Does not addr
 ID3D11DepthStencilView*  WINAPI DXUTGetD3D11DepthStencilView(); // Does not addref unlike typical Get* APIs
 bool                     WINAPI DXUTIsAppRenderingWithD3D11();
 
+HRESULT WINAPI DXUTCreateGUITextureFromInternalArray11(ID3D11Device* pd3dDevice, ID3D11Texture2D** ppTexture,
+	D3DX11_IMAGE_INFO* pInfo);
 
 // General
 DXUTDeviceSettings WINAPI DXUTGetDeviceSettings(); 

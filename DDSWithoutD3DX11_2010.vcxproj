@@ -400,10 +400,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="DXUT11\DXUTres.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DDSTextureLoader.cpp">
@@ -420,7 +416,6 @@
     <ClInclude Include="DXUT11\DXUTDevice11.h" />
     <ClInclude Include="DXUT11\DXUTgui.h" />
     <ClInclude Include="DXUT11\DXUTmisc.h" />
-    <ClInclude Include="DXUT11\DXUTres.h" />
     <CLInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

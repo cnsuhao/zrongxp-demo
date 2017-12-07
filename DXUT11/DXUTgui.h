@@ -4,8 +4,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 #pragma once
-#ifndef DXUT_GUI_H
-#define DXUT_GUI_H
 
 #include <usp10.h>
 #include <dimm.h>
@@ -15,22 +13,6 @@
 // Defines and macros 
 //--------------------------------------------------------------------------------------
 #define EVENT_BUTTON_CLICKED                0x0101
-#define EVENT_COMBOBOX_SELECTION_CHANGED    0x0201
-#define EVENT_RADIOBUTTON_CHANGED           0x0301
-#define EVENT_CHECKBOX_CHANGED              0x0401
-#define EVENT_SLIDER_VALUE_CHANGED          0x0501
-#define EVENT_SLIDER_VALUE_CHANGED_UP       0x0502
-
-#define EVENT_EDITBOX_STRING                0x0601
-// EVENT_EDITBOX_CHANGE is sent when the listbox content changes
-// due to user input.
-#define EVENT_EDITBOX_CHANGE                0x0602
-#define EVENT_LISTBOX_ITEM_DBLCLK           0x0701
-// EVENT_LISTBOX_SELECTION is fired off when the selection changes in
-// a single selection list box.
-#define EVENT_LISTBOX_SELECTION             0x0702
-#define EVENT_LISTBOX_SELECTION_END         0x0703
-
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -632,5 +614,3 @@ public:
 protected:
     bool m_bPressed;
 };
-
-#endif // DXUT_GUI_H
