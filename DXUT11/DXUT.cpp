@@ -39,12 +39,12 @@ public:
 //--------------------------------------------------------------------------------------
 // Helper macros to build member functions that access member variables with thread safety
 //--------------------------------------------------------------------------------------
-#define SET_ACCESSOR( x, y )       inline void Set##y( x t )   { DXUTLock l; m_state.m_##y = t; };
-#define GET_ACCESSOR( x, y )       inline x Get##y()           { DXUTLock l; return m_state.m_##y; };
+#define SET_ACCESSOR( x, y )       inline void Set##y( x t )   { DXUTLock l; m_##y = t; };
+#define GET_ACCESSOR( x, y )       inline x Get##y()           { DXUTLock l; return m_##y; };
 #define GET_SET_ACCESSOR( x, y )   SET_ACCESSOR( x, y ) GET_ACCESSOR( x, y )
 
-#define SETP_ACCESSOR( x, y )      inline void Set##y( x* t )  { DXUTLock l; m_state.m_##y = *t; };
-#define GETP_ACCESSOR( x, y )      inline x* Get##y()          { DXUTLock l; return &m_state.m_##y; };
+#define SETP_ACCESSOR( x, y )      inline void Set##y( x* t )  { DXUTLock l; m_##y = *t; };
+#define GETP_ACCESSOR( x, y )      inline x* Get##y()          { DXUTLock l; return &m_##y; };
 #define GETP_SETP_ACCESSOR( x, y ) SETP_ACCESSOR( x, y ) GETP_ACCESSOR( x, y )
 
 
@@ -69,8 +69,8 @@ struct DXUT_TIMER
 class DXUTState
 {
 protected:
-    struct STATE
-    {
+   // struct STATE
+   // {
         // D3D9 specific
         DXUTDeviceSettings*     m_CurrentDeviceSettings;   // current device settings
         D3DSURFACE_DESC         m_BackBufferSurfaceDesc9;  // D3D9 back buffer surface description
@@ -197,7 +197,6 @@ protected:
         bool  m_OverrideRelaunchMCE;            // if true, then force relaunch of MCE at exit
         bool  m_AppCalledWasKeyPressed;         // true if the app ever calls DXUTWasKeyPressed().  Allows for optimzation
         bool  m_ReleasingSwapChain;		        // if true, the app is releasing its swapchain
-        bool  m_IsInGammaCorrectMode;		    // Tell DXUTRes and DXUTMisc that we are in gamma correct mode
 
         LPDXUTCALLBACKMODIFYDEVICESETTINGS      m_ModifyDeviceSettingsFunc;     // modify Direct3D device settings callback
         LPDXUTCALLBACKDEVICEREMOVED             m_DeviceRemovedFunc;            // Direct3D device removed callback
@@ -221,13 +220,6 @@ protected:
         void* m_MouseFuncUserContext;                    // user context for mouse callback
         void* m_WindowMsgFuncUserContext;                // user context for window messages callback
 
-        void* m_IsD3D9DeviceAcceptableFuncUserContext;   // user context for is D3D9 device acceptable callback
-        void* m_D3D9DeviceCreatedFuncUserContext;        // user context for D3D9 device created callback
-        void* m_D3D9DeviceResetFuncUserContext;          // user context for D3D9 device reset callback
-        void* m_D3D9DeviceLostFuncUserContext;           // user context for D3D9 device lost callback
-        void* m_D3D9DeviceDestroyedFuncUserContext;      // user context for D3D9 device destroyed callback
-        void* m_D3D9FrameRenderFuncUserContext;          // user context for D3D9 frame render callback
-
         void* m_IsD3D11DeviceAcceptableFuncUserContext;  // user context for is D3D11 device acceptable callback
         void* m_D3D11DeviceCreatedFuncUserContext;       // user context for D3D11 device created callback
         void* m_D3D11SwapChainResizedFuncUserContext;    // user context for D3D11 SwapChain resized callback
@@ -245,12 +237,15 @@ protected:
         WCHAR m_FrameStats[256];                         // frame stats (fps, width, etc)
         WCHAR m_DeviceStats[256];                        // device stats (description, device type, etc)
         WCHAR m_WindowTitle[256];                        // window title
-    };
+   // };
 
-    STATE m_state;
+    //STATE m_state;
 
 public:
-    DXUTState()  { Create(); }
+    DXUTState() 
+	{
+		Create();
+	}
     ~DXUTState() { Destroy(); }
 
     void                                                                                    Create()
@@ -258,33 +253,32 @@ public:
         g_bThreadSafe = true;
         InitializeCriticalSectionAndSpinCount( &g_cs, 1000 );
 
-        ZeroMemory( &m_state, sizeof( STATE ) );
-        m_state.m_OverrideStartX = -1;
-        m_state.m_OverrideStartY = -1;
-        m_state.m_OverrideForceFeatureLevel = (D3D_FEATURE_LEVEL)0;
-        m_state.m_ScreenShotName[0] = 0;
-        m_state.m_SaveScreenShot = false;
-        m_state.m_ExitAfterScreenShot = false;
-        m_state.m_OverrideForceAPI = -1;
-        m_state.m_OverrideAdapterOrdinal = -1;
-        m_state.m_OverrideOutput = -1;
-        m_state.m_OverrideForceVsync = -1;
-        m_state.m_AutoChangeAdapter = true;
-        m_state.m_ShowMsgBoxOnError = true;
-        m_state.m_AllowShortcutKeysWhenWindowed = true;
-        m_state.m_Active = true;
-        m_state.m_CallDefWindowProc = true;
-        m_state.m_HandleEscape = true;
-        m_state.m_HandleAltEnter = true;
-        m_state.m_HandlePause = true;
-        m_state.m_IsInGammaCorrectMode = true;
-		m_state.m_FPS = 1.0f;
-        m_state.m_MessageWhenD3D11NotAvailable = true;
+        //ZeroMemory( &m_state, sizeof( STATE ) );
+        m_OverrideStartX = -1;
+        m_OverrideStartY = -1;
+        m_OverrideForceFeatureLevel = (D3D_FEATURE_LEVEL)0;
+        m_ScreenShotName[0] = 0;
+        m_SaveScreenShot = false;
+       m_ExitAfterScreenShot = false;
+        m_OverrideForceAPI = -1;
+        m_OverrideAdapterOrdinal = -1;
+        m_OverrideOutput = -1;
+       m_OverrideForceVsync = -1;
+        m_AutoChangeAdapter = true;
+        m_ShowMsgBoxOnError = true;
+       m_AllowShortcutKeysWhenWindowed = true;
+       m_Active = true;
+      m_CallDefWindowProc = true;
+     m_HandleEscape = true;
+       m_HandleAltEnter = true;
+      m_HandlePause = true;
+		m_FPS = 1.0f;
+        m_MessageWhenD3D11NotAvailable = true;
     }
 
     void Destroy()
     {
-        SAFE_DELETE( m_state.m_TimerList );
+        SAFE_DELETE( m_TimerList );
         DXUTShutdown();
         DeleteCriticalSection( &g_cs );
     }
@@ -414,7 +408,6 @@ public:
     GET_SET_ACCESSOR( int, OverrideForceVsync );
     GET_SET_ACCESSOR( bool, OverrideRelaunchMCE );
     GET_SET_ACCESSOR( bool, ReleasingSwapChain );
-    GET_SET_ACCESSOR( bool, IsInGammaCorrectMode );
     
     GET_SET_ACCESSOR( LPDXUTCALLBACKMODIFYDEVICESETTINGS, ModifyDeviceSettingsFunc );
     GET_SET_ACCESSOR( LPDXUTCALLBACKDEVICEREMOVED, DeviceRemovedFunc );
@@ -436,13 +429,6 @@ public:
     GET_SET_ACCESSOR( void*, KeyboardFuncUserContext );
     GET_SET_ACCESSOR( void*, MouseFuncUserContext );
     GET_SET_ACCESSOR( void*, WindowMsgFuncUserContext );
-
-    GET_SET_ACCESSOR( void*, IsD3D9DeviceAcceptableFuncUserContext );
-    GET_SET_ACCESSOR( void*, D3D9DeviceCreatedFuncUserContext );
-    GET_SET_ACCESSOR( void*, D3D9DeviceResetFuncUserContext );
-    GET_SET_ACCESSOR( void*, D3D9DeviceLostFuncUserContext );
-    GET_SET_ACCESSOR( void*, D3D9DeviceDestroyedFuncUserContext );
-    GET_SET_ACCESSOR( void*, D3D9FrameRenderFuncUserContext );
 
     GET_SET_ACCESSOR( void*, IsD3D11DeviceAcceptableFuncUserContext );
     GET_SET_ACCESSOR( void*, D3D11DeviceCreatedFuncUserContext );
@@ -466,23 +452,7 @@ public:
 //--------------------------------------------------------------------------------------
 // Global state 
 //--------------------------------------------------------------------------------------
-DXUTState*          g_pDXUTState = NULL;
-
-HRESULT WINAPI DXUTCreateState()
-{
-    if( g_pDXUTState == NULL )
-    {
-        g_pDXUTState = new DXUTState;
-        if( NULL == g_pDXUTState )
-            return E_OUTOFMEMORY;
-    }
-    return S_OK;
-}
-
-void WINAPI DXUTDestroyState()
-{
-    SAFE_DELETE( g_pDXUTState );
-}
+DXUTState g_pDXUTState;
 
 class DXUTMemoryHelper
 {
@@ -494,11 +464,7 @@ public:
 
 DXUTState& GetDXUTState()
 {
-    // This class will auto create the memory when its first accessed and delete it after the program exits WinMain.
-    // However the application can also call DXUTCreateState() & DXUTDestroyState() independantly if its wants 
-    static DXUTMemoryHelper memory;
-    assert( g_pDXUTState != NULL );
-    return *g_pDXUTState;
+	return g_pDXUTState;
 }
 
 
@@ -612,7 +578,6 @@ int WINAPI DXUTGetExitCode()                               { return GetDXUTState
 bool WINAPI DXUTGetShowMsgBoxOnError()                     { return GetDXUTState().GetShowMsgBoxOnError(); }
 bool WINAPI DXUTGetAutomation()                            { return GetDXUTState().GetAutomation(); }
 bool WINAPI DXUTIsWindowed()                               { return DXUTGetIsWindowedFromDS( GetDXUTState().GetCurrentDeviceSettings() ); }
-bool WINAPI DXUTIsInGammaCorrectMode()                     { return GetDXUTState().GetIsInGammaCorrectMode(); }
 IDXGIFactory1* WINAPI DXUTGetDXGIFactory()                  { DXUTDelayLoadDXGI(); return GetDXUTState().GetDXGIFactory(); }
 bool WINAPI DXUTIsD3D11Available()                         { DXUTDelayLoadDXGI(); return GetDXUTState().GetD3D11Available(); }
 bool WINAPI DXUTIsAppRenderingWithD3D11()                  { return (GetDXUTState().GetD3D11Device() != NULL); }
@@ -1758,8 +1723,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     if( !pNewDeviceSettings )
         return S_FALSE;
-
-
 
     if ( pNewDeviceSettings->ver == DXUT_D3D11_DEVICE ) {
         hr = DXUTDelayLoadDXGI();
@@ -4183,15 +4146,6 @@ void WINAPI DXUTShutdown( int nExitCode )
     GetDXUTState().SetDXGIFactory( NULL );
 }
 
-//--------------------------------------------------------------------------------------
-// Tells DXUT whether to operate in gamma correct mode
-//--------------------------------------------------------------------------------------
-void WINAPI DXUTSetIsInGammaCorrectMode( bool bGammaCorrect )
-{
-    GetDXUTState().SetIsInGammaCorrectMode( bGammaCorrect );
-}
-
-
 void DXUTApplyDefaultDeviceSettings(DXUTDeviceSettings *modifySettings) {
     ZeroMemory( modifySettings, sizeof( DXUTDeviceSettings ) );
 
@@ -4233,8 +4187,6 @@ void DXUTApplyDefaultDeviceSettings(DXUTDeviceSettings *modifySettings) {
 //--------------------------------------------------------------------------------------
 HRESULT DXUTSnapDeviceSettingsToEnumDevice( DXUTDeviceSettings* pDeviceSettings, bool forceEnum,  D3D_FEATURE_LEVEL forceFL )
 {
-    bool bAppSupportsD3D11 = true;
-
     if( GetSystemMetrics(0x1000) != 0 ) 
 	{// SM_REMOTESESSION
         pDeviceSettings->d3d11.sd.Windowed = 1;
@@ -4244,10 +4196,11 @@ HRESULT DXUTSnapDeviceSettingsToEnumDevice( DXUTDeviceSettings* pDeviceSettings,
 
 
     //DXUTSetDefaultDeviceSettings
-    if (bAppSupportsD3D11 && pDeviceSettings->ver == DXUT_D3D11_DEVICE ) {
+    if (pDeviceSettings->ver == DXUT_D3D11_DEVICE )
+	{
         CD3D11Enumeration *pEnum = NULL;
 
-
+		// Ã¶¾ÙD3D11²ÎÊý
         pEnum = DXUTGetD3D11Enumeration( forceEnum, false, forceFL);
 
         CD3D11EnumAdapterInfo* pAdapterInfo = NULL; 

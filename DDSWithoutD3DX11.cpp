@@ -93,10 +93,6 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 
     // DXUT will create and use the best device (either D3D9 or D3D11) 
     // that is available on the system depending on which D3D callbacks are set below
-
-    // Disable gamma correction in DXUT
-    DXUTSetIsInGammaCorrectMode( false );
-
     // Set DXUT callbacks
     DXUTSetCallbackMsgProc( MsgProc );
     DXUTSetCallbackKeyboard( OnKeyboard );

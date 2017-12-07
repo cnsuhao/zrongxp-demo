@@ -174,27 +174,27 @@ HRESULT CD3D11Enumeration::Enumerate( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE IsD3
 
 
     //  If we did not get an adapter then we should still enumerate WARP and Ref.
-    if (m_AdapterInfoList.GetSize() == 0) {
+    //if (m_AdapterInfoList.GetSize() == 0) {
 
 
-        CD3D11EnumAdapterInfo* pAdapterInfo = new CD3D11EnumAdapterInfo;
-        if( !pAdapterInfo )
-        {
-            return E_OUTOFMEMORY;
-        }
-        ZeroMemory( pAdapterInfo, sizeof( CD3D11EnumAdapterInfo ) );
-        pAdapterInfo->bAdapterUnavailable = true;
+    //    CD3D11EnumAdapterInfo* pAdapterInfo = new CD3D11EnumAdapterInfo;
+    //    if( !pAdapterInfo )
+    //    {
+    //        return E_OUTOFMEMORY;
+    //    }
+    //    ZeroMemory( pAdapterInfo, sizeof( CD3D11EnumAdapterInfo ) );
+    //    pAdapterInfo->bAdapterUnavailable = true;
 
-        hr = EnumerateDevices( pAdapterInfo );
+    //    hr = EnumerateDevices( pAdapterInfo );
 
-        // Get info for each devicecombo on this device
-        if( FAILED( hr = EnumerateDeviceCombosNoAdapter(  pAdapterInfo ) ) )
-        {
-            delete pAdapterInfo;
-        }
+    //    // Get info for each devicecombo on this device
+    //    if( FAILED( hr = EnumerateDeviceCombosNoAdapter(  pAdapterInfo ) ) )
+    //    {
+    //        delete pAdapterInfo;
+    //    }
 
-        if (!FAILED(hr)) hr = m_AdapterInfoList.Add( pAdapterInfo );
-    }
+    //    if (!FAILED(hr)) hr = m_AdapterInfoList.Add( pAdapterInfo );
+    //}
 
     //
     // Check for 2 or more adapters with the same name. Append the name
@@ -305,12 +305,11 @@ HRESULT CD3D11Enumeration::EnumerateDisplayModes( CD3D11EnumOutputInfo* pOutputI
 
     // Swap perferred modes for apps running in linear space
     DXGI_FORMAT RemoteMode = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-    if( !DXUTIsInGammaCorrectMode() )
-    {
+
         allowedAdapterFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         allowedAdapterFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
         RemoteMode = DXGI_FORMAT_R8G8B8A8_UNORM;
-    }
+
 
     // The fast path only enumerates R8G8B8A8_UNORM_SRGB modes
     if( !m_bEnumerateAllAdapterFormats )
@@ -552,11 +551,8 @@ HRESULT CD3D11Enumeration::EnumerateDeviceCombosNoAdapter(  CD3D11EnumAdapterInf
                 ( BufferFormatArray[0] );
 
             // Swap perferred modes for apps running in linear space
-            if( !DXUTIsInGammaCorrectMode() )
-            {
-                BufferFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-                BufferFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-            }
+            BufferFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+            BufferFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
             for( UINT iBufferFormat = 0; iBufferFormat < BufferFormatArrayCount; iBufferFormat++ )
             {
@@ -627,31 +623,28 @@ HRESULT CD3D11Enumeration::EnumerateDeviceCombos( IDXGIFactory1* pFactory, CD3D1
 
             DXGI_FORMAT backBufferFormatArray[] =
             {
-                DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,   //This is DXUT's preferred mode
+               // DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,   //This is DXUT's preferred mode
 
-                DXGI_FORMAT_R8G8B8A8_UNORM,		
-                DXGI_FORMAT_R16G16B16A16_FLOAT,
-                DXGI_FORMAT_R10G10B10A2_UNORM
+                DXGI_FORMAT_R8G8B8A8_UNORM	
+               // DXGI_FORMAT_R16G16B16A16_FLOAT,
+               // DXGI_FORMAT_R10G10B10A2_UNORM
             };
             const UINT backBufferFormatArrayCount = sizeof( backBufferFormatArray ) / sizeof
                 ( backBufferFormatArray[0] );
 
             // Swap perferred modes for apps running in linear space
-            if( !DXUTIsInGammaCorrectMode() )
-            {
-                backBufferFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-                backBufferFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-            }
+            //backBufferFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+           // backBufferFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
             for( UINT iBackBufferFormat = 0; iBackBufferFormat < backBufferFormatArrayCount; iBackBufferFormat++ )
             {
                 DXGI_FORMAT backBufferFormat = backBufferFormatArray[iBackBufferFormat];
 
-                for( int nWindowed = 0; nWindowed < 2; nWindowed++ )
+               // for( int nWindowed = 0; nWindowed < 2; nWindowed++ )
                 {
-                    if( !nWindowed && pOutputInfo->displayModeList.GetSize() == 0 )
+                   /* if( !nWindowed && pOutputInfo->displayModeList.GetSize() == 0 )
                         continue;
-
+*/
                     // determine if there are any modes for this particular format
                     UINT iModes = 0;
                     for( int i = 0; i < pOutputInfo->displayModeList.GetSize(); i++ )
@@ -668,7 +661,7 @@ HRESULT CD3D11Enumeration::EnumerateDeviceCombos( IDXGIFactory1* pFactory, CD3D1
                     {
                         if( !m_IsD3D11DeviceAcceptableFunc( pAdapterInfo, output,
                                                             pDeviceInfo, backBufferFormat,
-                                                            FALSE != nWindowed,
+                                                            TRUE,
                                                             m_pIsD3D11DeviceAcceptableFuncUserContext ) )
                             continue;
                     }
@@ -684,7 +677,7 @@ HRESULT CD3D11Enumeration::EnumerateDeviceCombos( IDXGIFactory1* pFactory, CD3D1
                     pDeviceCombo->AdapterOrdinal = pDeviceInfo->AdapterOrdinal;
                     pDeviceCombo->DeviceType = pDeviceInfo->DeviceType;
                     pDeviceCombo->BackBufferFormat = backBufferFormat;
-                    pDeviceCombo->Windowed = ( nWindowed != 0 );
+                    pDeviceCombo->Windowed = TRUE;
                     pDeviceCombo->Output = pOutputInfo->Output;
                     pDeviceCombo->pAdapterInfo = pAdapterInfo;
                     pDeviceCombo->pDeviceInfo = pDeviceInfo;
@@ -737,28 +730,20 @@ void CD3D11Enumeration::SetEnumerateAllAdapterFormats( bool bEnumerateAllAdapter
 
 
 //--------------------------------------------------------------------------------------
-void CD3D11Enumeration::BuildMultiSampleQualityList( DXGI_FORMAT fmt, CD3D11EnumDeviceSettingsCombo* pDeviceCombo )
+void CD3D11Enumeration::BuildMultiSampleQualityList( DXGI_FORMAT fmt, CD3D11EnumDeviceSettingsCombo* pDeviceCombo2 )
 {
     ID3D11Device* pd3dDevice = NULL;
     ID3D11DeviceContext* pd3dDeviceContext = NULL;
-    IDXGIAdapter* pAdapter = NULL;
-    
-    //if( pDeviceCombo->DeviceType == D3D_DRIVER_TYPE_HARDWARE )
-    //    DXUTGetDXGIFactory()->EnumAdapters( pDeviceCombo->pAdapterInfo->AdapterOrdinal, &pAdapter );
-
-    //DXGI_ADAPTER_DESC dad;
-    //pAdapter->GetDesc(&dad);
-
-    D3D_FEATURE_LEVEL *FeatureLevels = &(pDeviceCombo->pDeviceInfo->SelectedLevel);
+	D3D_FEATURE_LEVEL FeatureLevels = D3D_FEATURE_LEVEL_11_0;
     D3D_FEATURE_LEVEL returnedFeatureLevel;
 
     UINT NumFeatureLevels = 1;
 
-    HRESULT hr = DXUT_Dynamic_D3D11CreateDevice( pAdapter, 
-                                                pDeviceCombo->DeviceType,
+    HRESULT hr = DXUT_Dynamic_D3D11CreateDevice( NULL, 
+												D3D_DRIVER_TYPE_HARDWARE,
                                                 ( HMODULE )0,
                                                 0,
-                                                FeatureLevels,
+                                                &FeatureLevels,
                                                 NumFeatureLevels,
                                                 D3D11_SDK_VERSION,
                                                 &pd3dDevice,
@@ -767,26 +752,9 @@ void CD3D11Enumeration::BuildMultiSampleQualityList( DXGI_FORMAT fmt, CD3D11Enum
 
     if( FAILED( hr))  return;
 
-    if (returnedFeatureLevel != pDeviceCombo->pDeviceInfo->SelectedLevel) return;
+	pDeviceCombo2->multiSampleCountList.Add(1);
+	pDeviceCombo2->multiSampleQualityList.Add(1);
 
-    for( int i = 1; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; ++i )
-    {
-        UINT Quality;
-        if( SUCCEEDED( pd3dDevice->CheckMultisampleQualityLevels( fmt, i, &Quality ) ) && Quality > 0 )
-        {
-            //From D3D10 docs: When multisampling a texture, the number of quality levels available for an adapter is dependent on the texture 
-            //format used and the number of samples requested. The maximum sample count is defined by 
-            //D3D10_MAX_MULTISAMPLE_SAMPLE_COUNT in d3d10.h. If the returned value of pNumQualityLevels is 0, 
-            //the format and sample count combination is not supported for the installed adapter.
-
-            if (Quality != 0) {
-                pDeviceCombo->multiSampleCountList.Add( i );
-                pDeviceCombo->multiSampleQualityList.Add( Quality );
-            }
-        }
-    }
-
-    SAFE_RELEASE( pAdapter );
     SAFE_RELEASE( pd3dDevice );
     SAFE_RELEASE (pd3dDeviceContext);
 }

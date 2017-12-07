@@ -260,7 +260,6 @@ HRESULT WINAPI DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutI
 HRESULT WINAPI DXUTKillTimer( UINT nIDEvent );
 void    WINAPI DXUTResetFrameworkState();
 void    WINAPI DXUTShutdown( int nExitCode = 0 );
-void    WINAPI DXUTSetIsInGammaCorrectMode( bool bGammaCorrect );
 BOOL    WINAPI DXUTGetMSAASwapChainCreated();
 
 //--------------------------------------------------------------------------------------
@@ -298,7 +297,6 @@ RECT      WINAPI DXUTGetFullsceenClientRectAtModeChange(); // Useful for returni
 double    WINAPI DXUTGetTime();
 float     WINAPI DXUTGetElapsedTime();
 bool      WINAPI DXUTIsWindowed();
-bool	  WINAPI DXUTIsInGammaCorrectMode();
 float     WINAPI DXUTGetFPS();
 LPCWSTR   WINAPI DXUTGetWindowTitle();
 LPCWSTR   WINAPI DXUTGetFrameStats( bool bIncludeFPS = false );
