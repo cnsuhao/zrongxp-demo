@@ -92,8 +92,8 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\dxsdk\Include;.\DXUT11;$(IncludePath)</IncludePath>
-    <LibraryPath>d:\dxsdk\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>e:\dxsdk\Include;.\DXUT11;$(IncludePath)</IncludePath>
+    <LibraryPath>e:\dxsdk\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|X64'">
     <LinkIncremental>true</LinkIncremental>
@@ -106,8 +106,8 @@
     <LinkIncremental>false</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>D:\dxsdk\Include;.\DXUT11;$(IncludePath)</IncludePath>
-    <LibraryPath>d:\dxsdk\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>e:\dxsdk\Include;.\DXUT11;$(IncludePath)</IncludePath>
+    <LibraryPath>e:\dxsdk\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|X64'">
     <LinkIncremental>false</LinkIncremental>
