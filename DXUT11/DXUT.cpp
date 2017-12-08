@@ -68,7 +68,7 @@ struct DXUT_TIMER
 //--------------------------------------------------------------------------------------
 class DXUTState
 {
-protected:
+public:
    // struct STATE
    // {
         // D3D9 specific
@@ -461,13 +461,6 @@ public:
     ~DXUTMemoryHelper() { DXUTDestroyState(); }
 };
 
-
-DXUTState& GetDXUTState()
-{
-	return g_pDXUTState;
-}
-
-
 //--------------------------------------------------------------------------------------
 // Internal functions forward declarations
 //--------------------------------------------------------------------------------------
@@ -543,65 +536,65 @@ bool DXUTGetIsWindowedFromDS( DXUTDeviceSettings* pNewDeviceSettings )
 // External state access functions
 //--------------------------------------------------------------------------------------
 BOOL WINAPI DXUTGetMSAASwapChainCreated() { 
-    DXUTDeviceSettings *psettings = GetDXUTState().GetCurrentDeviceSettings();
+	DXUTDeviceSettings *psettings = g_pDXUTState.GetCurrentDeviceSettings();
     if (psettings->ver == DXUT_D3D11_DEVICE) {
         return psettings->d3d11.sd.SampleDesc.Count > 1;
     }
     else return false;
 }
-ID3D11Device* WINAPI DXUTGetD3D11Device()                  { return GetDXUTState().GetD3D11Device(); }
-D3D_FEATURE_LEVEL	 WINAPI DXUTGetD3D11DeviceFeatureLevel() { return GetDXUTState().GetD3D11FeatureLevel(); }
-ID3D11DeviceContext* WINAPI DXUTGetD3D11DeviceContext()    { return GetDXUTState().GetD3D11DeviceContext(); }
-IDXGISwapChain* WINAPI DXUTGetDXGISwapChain()              { return GetDXUTState().GetDXGISwapChain(); }
-ID3D11RenderTargetView* WINAPI DXUTGetD3D11RenderTargetView() { return GetDXUTState().GetD3D11RenderTargetView(); }
-ID3D11DepthStencilView* WINAPI DXUTGetD3D11DepthStencilView() { return GetDXUTState().GetD3D11DepthStencilView(); }
-const DXGI_SURFACE_DESC* WINAPI DXUTGetDXGIBackBufferSurfaceDesc() { return GetDXUTState().GetBackBufferSurfaceDescDXGI(); }
-HINSTANCE WINAPI DXUTGetHINSTANCE()                        { return GetDXUTState().GetHInstance(); }
-HWND WINAPI DXUTGetHWND()                                  { return DXUTIsWindowed() ? GetDXUTState().GetHWNDDeviceWindowed() : GetDXUTState().GetHWNDDeviceFullScreen(); }
-HWND WINAPI DXUTGetHWNDFocus()                             { return GetDXUTState().GetHWNDFocus(); }
-HWND WINAPI DXUTGetHWNDDeviceFullScreen()                  { return GetDXUTState().GetHWNDDeviceFullScreen(); }
-HWND WINAPI DXUTGetHWNDDeviceWindowed()                    { return GetDXUTState().GetHWNDDeviceWindowed(); }
+ID3D11Device* WINAPI DXUTGetD3D11Device()                  { return g_pDXUTState.GetD3D11Device(); }
+D3D_FEATURE_LEVEL	 WINAPI DXUTGetD3D11DeviceFeatureLevel() { return g_pDXUTState.GetD3D11FeatureLevel(); }
+ID3D11DeviceContext* WINAPI DXUTGetD3D11DeviceContext()    { return g_pDXUTState.GetD3D11DeviceContext(); }
+IDXGISwapChain* WINAPI DXUTGetDXGISwapChain()              { return g_pDXUTState.GetDXGISwapChain(); }
+ID3D11RenderTargetView* WINAPI DXUTGetD3D11RenderTargetView() { return g_pDXUTState.GetD3D11RenderTargetView(); }
+ID3D11DepthStencilView* WINAPI DXUTGetD3D11DepthStencilView() { return g_pDXUTState.GetD3D11DepthStencilView(); }
+const DXGI_SURFACE_DESC* WINAPI DXUTGetDXGIBackBufferSurfaceDesc() { return g_pDXUTState.GetBackBufferSurfaceDescDXGI(); }
+HINSTANCE WINAPI DXUTGetHINSTANCE()                        { return g_pDXUTState.GetHInstance(); }
+HWND WINAPI DXUTGetHWND()                                  { return DXUTIsWindowed() ? g_pDXUTState.GetHWNDDeviceWindowed() : g_pDXUTState.GetHWNDDeviceFullScreen(); }
+HWND WINAPI DXUTGetHWNDFocus()                             { return g_pDXUTState.GetHWNDFocus(); }
+HWND WINAPI DXUTGetHWNDDeviceFullScreen()                  { return g_pDXUTState.GetHWNDDeviceFullScreen(); }
+HWND WINAPI DXUTGetHWNDDeviceWindowed()                    { return g_pDXUTState.GetHWNDDeviceWindowed(); }
 RECT WINAPI DXUTGetWindowClientRect()                      { RECT rc; GetClientRect( DXUTGetHWND(), &rc ); return rc; }
 LONG WINAPI DXUTGetWindowWidth()                           { RECT rc = DXUTGetWindowClientRect(); return ((LONG)rc.right - rc.left); }
 LONG WINAPI DXUTGetWindowHeight()                          { RECT rc = DXUTGetWindowClientRect(); return ((LONG)rc.bottom - rc.top); }
-RECT WINAPI DXUTGetWindowClientRectAtModeChange()          { RECT rc = { 0, 0, GetDXUTState().GetWindowBackBufferWidthAtModeChange(), GetDXUTState().GetWindowBackBufferHeightAtModeChange() }; return rc; }
-RECT WINAPI DXUTGetFullsceenClientRectAtModeChange()       { RECT rc = { 0, 0, GetDXUTState().GetFullScreenBackBufferWidthAtModeChange(), GetDXUTState().GetFullScreenBackBufferHeightAtModeChange() }; return rc; }
-double WINAPI DXUTGetTime()                                { return GetDXUTState().GetTime(); }
-float WINAPI DXUTGetElapsedTime()                          { return GetDXUTState().GetElapsedTime(); }
-float WINAPI DXUTGetFPS()                                  { return GetDXUTState().GetFPS(); }
-LPCWSTR WINAPI DXUTGetWindowTitle()                        { return GetDXUTState().GetWindowTitle(); }
-LPCWSTR WINAPI DXUTGetDeviceStats()                        { return GetDXUTState().GetDeviceStats(); }
-bool WINAPI DXUTIsRenderingPaused()                        { return GetDXUTState().GetPauseRenderingCount() > 0; }
-bool WINAPI DXUTIsTimePaused()                             { return GetDXUTState().GetPauseTimeCount() > 0; }
-bool WINAPI DXUTIsActive()                                 { return GetDXUTState().GetActive(); }
-int WINAPI DXUTGetExitCode()                               { return GetDXUTState().GetExitCode(); }
-bool WINAPI DXUTGetShowMsgBoxOnError()                     { return GetDXUTState().GetShowMsgBoxOnError(); }
-bool WINAPI DXUTGetAutomation()                            { return GetDXUTState().GetAutomation(); }
-bool WINAPI DXUTIsWindowed()                               { return DXUTGetIsWindowedFromDS( GetDXUTState().GetCurrentDeviceSettings() ); }
-IDXGIFactory1* WINAPI DXUTGetDXGIFactory()                  { DXUTDelayLoadDXGI(); return GetDXUTState().GetDXGIFactory(); }
-bool WINAPI DXUTIsD3D11Available()                         { DXUTDelayLoadDXGI(); return GetDXUTState().GetD3D11Available(); }
-bool WINAPI DXUTIsAppRenderingWithD3D11()                  { return (GetDXUTState().GetD3D11Device() != NULL); }
+RECT WINAPI DXUTGetWindowClientRectAtModeChange()          { RECT rc = { 0, 0, g_pDXUTState.GetWindowBackBufferWidthAtModeChange(), g_pDXUTState.GetWindowBackBufferHeightAtModeChange() }; return rc; }
+RECT WINAPI DXUTGetFullsceenClientRectAtModeChange()       { RECT rc = { 0, 0, g_pDXUTState.GetFullScreenBackBufferWidthAtModeChange(), g_pDXUTState.GetFullScreenBackBufferHeightAtModeChange() }; return rc; }
+double WINAPI DXUTGetTime()                                { return g_pDXUTState.GetTime(); }
+float WINAPI DXUTGetElapsedTime()                          { return g_pDXUTState.GetElapsedTime(); }
+float WINAPI DXUTGetFPS()                                  { return g_pDXUTState.GetFPS(); }
+LPCWSTR WINAPI DXUTGetWindowTitle()                        { return g_pDXUTState.GetWindowTitle(); }
+LPCWSTR WINAPI DXUTGetDeviceStats()                        { return g_pDXUTState.GetDeviceStats(); }
+bool WINAPI DXUTIsRenderingPaused()                        { return g_pDXUTState.GetPauseRenderingCount() > 0; }
+bool WINAPI DXUTIsTimePaused()                             { return g_pDXUTState.GetPauseTimeCount() > 0; }
+bool WINAPI DXUTIsActive()                                 { return g_pDXUTState.GetActive(); }
+int WINAPI DXUTGetExitCode()                               { return g_pDXUTState.GetExitCode(); }
+bool WINAPI DXUTGetShowMsgBoxOnError()                     { return g_pDXUTState.GetShowMsgBoxOnError(); }
+bool WINAPI DXUTGetAutomation()                            { return g_pDXUTState.GetAutomation(); }
+bool WINAPI DXUTIsWindowed()                               { return DXUTGetIsWindowedFromDS( g_pDXUTState.GetCurrentDeviceSettings() ); }
+IDXGIFactory1* WINAPI DXUTGetDXGIFactory()                  { DXUTDelayLoadDXGI(); return g_pDXUTState.GetDXGIFactory(); }
+bool WINAPI DXUTIsD3D11Available()                         { DXUTDelayLoadDXGI(); return g_pDXUTState.GetD3D11Available(); }
+bool WINAPI DXUTIsAppRenderingWithD3D11()                  { return (g_pDXUTState.GetD3D11Device() != NULL); }
 
 //--------------------------------------------------------------------------------------
 // External callback setup functions
 //--------------------------------------------------------------------------------------
 
 // General callbacks
-void WINAPI DXUTSetCallbackDeviceChanging( LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallback, void* pUserContext )                  { GetDXUTState().SetModifyDeviceSettingsFunc( pCallback ); GetDXUTState().SetModifyDeviceSettingsFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackDeviceRemoved( LPDXUTCALLBACKDEVICEREMOVED pCallback, void* pUserContext )                          { GetDXUTState().SetDeviceRemovedFunc( pCallback ); GetDXUTState().SetDeviceRemovedFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackFrameMove( LPDXUTCALLBACKFRAMEMOVE pCallback, void* pUserContext )                                  { GetDXUTState().SetFrameMoveFunc( pCallback );  GetDXUTState().SetFrameMoveFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackKeyboard( LPDXUTCALLBACKKEYBOARD pCallback, void* pUserContext )                                    { GetDXUTState().SetKeyboardFunc( pCallback );  GetDXUTState().SetKeyboardFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackMouse( LPDXUTCALLBACKMOUSE pCallback, bool bIncludeMouseMove, void* pUserContext )                  { GetDXUTState().SetMouseFunc( pCallback ); GetDXUTState().SetNotifyOnMouseMove( bIncludeMouseMove );  GetDXUTState().SetMouseFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackMsgProc( LPDXUTCALLBACKMSGPROC pCallback, void* pUserContext )                                      { GetDXUTState().SetWindowMsgFunc( pCallback );  GetDXUTState().SetWindowMsgFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackDeviceChanging( LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallback, void* pUserContext )                  { g_pDXUTState.SetModifyDeviceSettingsFunc( pCallback ); g_pDXUTState.SetModifyDeviceSettingsFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackDeviceRemoved( LPDXUTCALLBACKDEVICEREMOVED pCallback, void* pUserContext )                          { g_pDXUTState.SetDeviceRemovedFunc( pCallback ); g_pDXUTState.SetDeviceRemovedFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackFrameMove( LPDXUTCALLBACKFRAMEMOVE pCallback, void* pUserContext )                                  { g_pDXUTState.SetFrameMoveFunc( pCallback );  g_pDXUTState.SetFrameMoveFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackKeyboard( LPDXUTCALLBACKKEYBOARD pCallback, void* pUserContext )                                    { g_pDXUTState.SetKeyboardFunc( pCallback );  g_pDXUTState.SetKeyboardFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackMouse( LPDXUTCALLBACKMOUSE pCallback, bool bIncludeMouseMove, void* pUserContext )                  { g_pDXUTState.SetMouseFunc( pCallback ); g_pDXUTState.SetNotifyOnMouseMove( bIncludeMouseMove );  g_pDXUTState.SetMouseFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackMsgProc( LPDXUTCALLBACKMSGPROC pCallback, void* pUserContext )                                      { g_pDXUTState.SetWindowMsgFunc( pCallback );  g_pDXUTState.SetWindowMsgFuncUserContext( pUserContext ); }
 
 // Direct3D 11 callbacks
-void WINAPI DXUTSetCallbackD3D11DeviceAcceptable( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE pCallback, void* pUserContext )        { GetDXUTState().SetIsD3D11DeviceAcceptableFunc( pCallback ); GetDXUTState().SetIsD3D11DeviceAcceptableFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackD3D11DeviceCreated( LPDXUTCALLBACKD3D11DEVICECREATED pCallback, void* pUserContext )                { GetDXUTState().SetD3D11DeviceCreatedFunc( pCallback ); GetDXUTState().SetD3D11DeviceCreatedFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackD3D11SwapChainResized( LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallback, void* pUserContext )          { GetDXUTState().SetD3D11SwapChainResizedFunc( pCallback );  GetDXUTState().SetD3D11SwapChainResizedFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackD3D11FrameRender( LPDXUTCALLBACKD3D11FRAMERENDER pCallback, void* pUserContext )                    { GetDXUTState().SetD3D11FrameRenderFunc( pCallback );  GetDXUTState().SetD3D11FrameRenderFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackD3D11SwapChainReleasing( LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallback, void* pUserContext )      { GetDXUTState().SetD3D11SwapChainReleasingFunc( pCallback );  GetDXUTState().SetD3D11SwapChainReleasingFuncUserContext( pUserContext ); }
-void WINAPI DXUTSetCallbackD3D11DeviceDestroyed( LPDXUTCALLBACKD3D11DEVICEDESTROYED pCallback, void* pUserContext )            { GetDXUTState().SetD3D11DeviceDestroyedFunc( pCallback );  GetDXUTState().SetD3D11DeviceDestroyedFuncUserContext( pUserContext ); }
-void DXUTGetCallbackD3D11DeviceAcceptable( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE* ppCallback, void** ppUserContext )           { *ppCallback = GetDXUTState().GetIsD3D11DeviceAcceptableFunc(); *ppUserContext = GetDXUTState().GetIsD3D11DeviceAcceptableFuncUserContext(); }
+void WINAPI DXUTSetCallbackD3D11DeviceAcceptable( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE pCallback, void* pUserContext )        { g_pDXUTState.SetIsD3D11DeviceAcceptableFunc( pCallback ); g_pDXUTState.SetIsD3D11DeviceAcceptableFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackD3D11DeviceCreated( LPDXUTCALLBACKD3D11DEVICECREATED pCallback, void* pUserContext )                { g_pDXUTState.SetD3D11DeviceCreatedFunc( pCallback ); g_pDXUTState.SetD3D11DeviceCreatedFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackD3D11SwapChainResized( LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallback, void* pUserContext )          { g_pDXUTState.SetD3D11SwapChainResizedFunc( pCallback );  g_pDXUTState.SetD3D11SwapChainResizedFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackD3D11FrameRender( LPDXUTCALLBACKD3D11FRAMERENDER pCallback, void* pUserContext )                    { g_pDXUTState.SetD3D11FrameRenderFunc( pCallback );  g_pDXUTState.SetD3D11FrameRenderFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackD3D11SwapChainReleasing( LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallback, void* pUserContext )      { g_pDXUTState.SetD3D11SwapChainReleasingFunc( pCallback );  g_pDXUTState.SetD3D11SwapChainReleasingFuncUserContext( pUserContext ); }
+void WINAPI DXUTSetCallbackD3D11DeviceDestroyed( LPDXUTCALLBACKD3D11DEVICEDESTROYED pCallback, void* pUserContext )            { g_pDXUTState.SetD3D11DeviceDestroyedFunc( pCallback );  g_pDXUTState.SetD3D11DeviceDestroyedFuncUserContext( pUserContext ); }
+void DXUTGetCallbackD3D11DeviceAcceptable( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE* ppCallback, void** ppUserContext )           { *ppCallback = g_pDXUTState.GetIsD3D11DeviceAcceptableFunc(); *ppUserContext = g_pDXUTState.GetIsD3D11DeviceAcceptableFuncUserContext(); }
 
 
 //--------------------------------------------------------------------------------------
@@ -639,7 +632,7 @@ HRESULT WINAPI DXUTInit( bool bParseCommandLine,
 {
     g_bThreadSafe = bThreadSafeDXUT;
 
-    GetDXUTState().SetDXUTInitCalled( true );
+    g_pDXUTState.SetDXUTInitCalled( true );
 
     // Not always needed, but lets the app create GDI dialogs
     InitCommonControls();
@@ -647,17 +640,17 @@ HRESULT WINAPI DXUTInit( bool bParseCommandLine,
     // Save the current sticky/toggle/filter key settings so DXUT can restore them later
     STICKYKEYS sk = {sizeof(STICKYKEYS), 0};
     SystemParametersInfo(SPI_GETSTICKYKEYS, sizeof(STICKYKEYS), &sk, 0);
-    GetDXUTState().SetStartupStickyKeys( sk );
+    g_pDXUTState.SetStartupStickyKeys( sk );
 
     TOGGLEKEYS tk = {sizeof(TOGGLEKEYS), 0};
     SystemParametersInfo(SPI_GETTOGGLEKEYS, sizeof(TOGGLEKEYS), &tk, 0);
-    GetDXUTState().SetStartupToggleKeys( tk );
+    g_pDXUTState.SetStartupToggleKeys( tk );
 
     FILTERKEYS fk = {sizeof(FILTERKEYS), 0};
     SystemParametersInfo(SPI_GETFILTERKEYS, sizeof(FILTERKEYS), &fk, 0);
-    GetDXUTState().SetStartupFilterKeys( fk );
+    g_pDXUTState.SetStartupFilterKeys( fk );
 
-    GetDXUTState().SetShowMsgBoxOnError( bShowMsgBoxOnError );
+    g_pDXUTState.SetShowMsgBoxOnError( bShowMsgBoxOnError );
 
     if( bParseCommandLine )
         DXUTParseCommandLine( GetCommandLine() );
@@ -665,7 +658,7 @@ HRESULT WINAPI DXUTInit( bool bParseCommandLine,
         DXUTParseCommandLine( strExtraCommandLineParams, false );
 
     // Reset the timer
-    GetDXUTState().SetDXUTInited( true );
+    g_pDXUTState.SetDXUTInited( true );
 
     return S_OK;
 }
@@ -699,17 +692,17 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_11_0", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_11_0);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_11_0);
                     }else if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_10_1", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_10_1);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_10_1);
                     }else if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_10_0", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_10_0);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_10_0);
                     }else if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_9_3", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_3);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_3);
                     }else if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_9_2", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_2);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_2);
                     }else if (_wcsnicmp( strFlag, L"D3D_FEATURE_LEVEL_9_1", MAX_PATH) == 0 ) {
-                        GetDXUTState().SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_1);
+                        g_pDXUTState.SetOverrideForceFeatureLevel(D3D_FEATURE_LEVEL_9_1);
                     }
 
 
@@ -722,7 +715,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nAPIVersion = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideForceAPI( nAPIVersion );
+                    g_pDXUTState.SetOverrideForceAPI( nAPIVersion );
                     continue;
                 }
             }
@@ -732,14 +725,14 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nAdapter = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideAdapterOrdinal( nAdapter );
+                    g_pDXUTState.SetOverrideAdapterOrdinal( nAdapter );
                     continue;
                 }
             }
 
             if( DXUTIsNextArg( strCmdLine, L"windowed" ) )
             {
-                GetDXUTState().SetOverrideWindowed( true );
+                g_pDXUTState.SetOverrideWindowed( true );
                 continue;
             }
 
@@ -748,34 +741,34 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int Output = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideOutput( Output );
+                    g_pDXUTState.SetOverrideOutput( Output );
                     continue;
                 }
             }
 
             if( DXUTIsNextArg( strCmdLine, L"fullscreen" ) )
             {
-                GetDXUTState().SetOverrideFullScreen( true );
+                g_pDXUTState.SetOverrideFullScreen( true );
                 continue;
             }
 
             if( DXUTIsNextArg( strCmdLine, L"forcehal" ) )
             {
-                GetDXUTState().SetOverrideForceHAL( true );
+                g_pDXUTState.SetOverrideForceHAL( true );
                 continue;
             }
             if( DXUTIsNextArg( strCmdLine, L"screenshotexit" ) ) {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    GetDXUTState().SetExitAfterScreenShot( true );
-                    GetDXUTState().SetSaveScreenShot( true );
-                    swprintf_s( GetDXUTState().GetScreenShotName(), 256, L"%s.bmp", strFlag );
+                    g_pDXUTState.SetExitAfterScreenShot( true );
+                    g_pDXUTState.SetSaveScreenShot( true );
+                    swprintf_s( g_pDXUTState.GetScreenShotName(), 256, L"%s.bmp", strFlag );
                     continue;
                 }
             }
             if( DXUTIsNextArg( strCmdLine, L"forceref" ) )
             {
-                GetDXUTState().SetOverrideForceREF( true );
+                g_pDXUTState.SetOverrideForceREF( true );
                 continue;
             }
 
@@ -784,7 +777,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nOn = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideForceVsync( nOn );
+                    g_pDXUTState.SetOverrideForceVsync( nOn );
                     continue;
                 }
             }
@@ -794,7 +787,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nWidth = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideWidth( nWidth );
+                    g_pDXUTState.SetOverrideWidth( nWidth );
                     continue;
                 }
             }
@@ -804,7 +797,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nHeight = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideHeight( nHeight );
+                    g_pDXUTState.SetOverrideHeight( nHeight );
                     continue;
                 }
             }
@@ -814,7 +807,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nX = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideStartX( nX );
+                    g_pDXUTState.SetOverrideStartX( nX );
                     continue;
                 }
             }
@@ -824,7 +817,7 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nY = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideStartY( nY );
+                    g_pDXUTState.SetOverrideStartY( nY );
                     continue;
                 }
             }
@@ -836,8 +829,8 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                     fTimePerFrame = ( float )wcstod( strFlag, NULL );
                 else
                     fTimePerFrame = 0.0333f;
-                GetDXUTState().SetOverrideConstantFrameTime( true );
-                GetDXUTState().SetOverrideConstantTimePerFrame( fTimePerFrame );
+                g_pDXUTState.SetOverrideConstantFrameTime( true );
+                g_pDXUTState.SetOverrideConstantTimePerFrame( fTimePerFrame );
                 DXUTSetConstantFrameTime( true, fTimePerFrame );
                 continue;
             }
@@ -847,32 +840,32 @@ void DXUTParseCommandLine(__inout WCHAR* strCommandLine,
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
                     int nFrame = _wtoi( strFlag );
-                    GetDXUTState().SetOverrideQuitAfterFrame( nFrame );
+                    g_pDXUTState.SetOverrideQuitAfterFrame( nFrame );
                     continue;
                 }
             }
 
             if( DXUTIsNextArg( strCmdLine, L"noerrormsgboxes" ) )
             {
-                GetDXUTState().SetShowMsgBoxOnError( false );
+                g_pDXUTState.SetShowMsgBoxOnError( false );
                 continue;
             }
 
             if( DXUTIsNextArg( strCmdLine, L"nostats" ) )
             {
-                GetDXUTState().SetNoStats( true );
+                g_pDXUTState.SetNoStats( true );
                 continue;
             }
 
             if( DXUTIsNextArg( strCmdLine, L"relaunchmce" ) )
             {
-                GetDXUTState().SetOverrideRelaunchMCE( true );
+                g_pDXUTState.SetOverrideRelaunchMCE( true );
                 continue;
             }
 
             if( DXUTIsNextArg( strCmdLine, L"automation" ) )
             {
-                GetDXUTState().SetAutomation( true );
+                g_pDXUTState.SetAutomation( true );
                 continue;
             }
         }
@@ -953,16 +946,16 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
     HRESULT hr;
 
     // Not allowed to call this from inside the device callbacks
-    if( GetDXUTState().GetInsideDeviceCallback() )
+    if( g_pDXUTState.GetInsideDeviceCallback() )
         return E_FAIL;
 
-    GetDXUTState().SetWindowCreateCalled( true );
+    g_pDXUTState.SetWindowCreateCalled( true );
 
-    if( !GetDXUTState().GetDXUTInited() )
+    if( !g_pDXUTState.GetDXUTInited() )
     {
         // If DXUTInit() was already called and failed, then fail.
         // DXUTInit() must first succeed for this function to succeed
-        if( GetDXUTState().GetDXUTInitCalled() )
+        if( g_pDXUTState.GetDXUTInitCalled() )
             return E_FAIL;
 
         // If DXUTInit() hasn't been called, then automatically call it
@@ -976,7 +969,7 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
     {
         if( hInstance == NULL )
             hInstance = ( HINSTANCE )GetModuleHandle( NULL );
-        GetDXUTState().SetHInstance( hInstance );
+        g_pDXUTState.SetHInstance( hInstance );
 
         WCHAR szExePath[MAX_PATH];
         GetModuleFileName( NULL, szExePath, MAX_PATH );
@@ -1004,28 +997,28 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
         }
 
         // Override the window's initial & size position if there were cmd line args
-        if( GetDXUTState().GetOverrideStartX() != -1 )
-            x = GetDXUTState().GetOverrideStartX();
-        if( GetDXUTState().GetOverrideStartY() != -1 )
-            y = GetDXUTState().GetOverrideStartY();
+        if( g_pDXUTState.GetOverrideStartX() != -1 )
+            x = g_pDXUTState.GetOverrideStartX();
+        if( g_pDXUTState.GetOverrideStartY() != -1 )
+            y = g_pDXUTState.GetOverrideStartY();
 
-        GetDXUTState().SetWindowCreatedWithDefaultPositions( false );
+        g_pDXUTState.SetWindowCreatedWithDefaultPositions( false );
         if( x == CW_USEDEFAULT && y == CW_USEDEFAULT )
-            GetDXUTState().SetWindowCreatedWithDefaultPositions( true );
+            g_pDXUTState.SetWindowCreatedWithDefaultPositions( true );
 
         // Find the window's initial size, but it might be changed later
         int nDefaultWidth = 640;
         int nDefaultHeight = 480;
-        if( GetDXUTState().GetOverrideWidth() != 0 )
-            nDefaultWidth = GetDXUTState().GetOverrideWidth();
-        if( GetDXUTState().GetOverrideHeight() != 0 )
-            nDefaultHeight = GetDXUTState().GetOverrideHeight();
+        if( g_pDXUTState.GetOverrideWidth() != 0 )
+            nDefaultWidth = g_pDXUTState.GetOverrideWidth();
+        if( g_pDXUTState.GetOverrideHeight() != 0 )
+            nDefaultHeight = g_pDXUTState.GetOverrideHeight();
 
         RECT rc;
         SetRect( &rc, 0, 0, nDefaultWidth, nDefaultHeight );
         AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, ( hMenu != NULL ) ? true : false );
 
-        WCHAR* strCachedWindowTitle = GetDXUTState().GetWindowTitle();
+        WCHAR* strCachedWindowTitle = g_pDXUTState.GetWindowTitle();
         wcscpy_s( strCachedWindowTitle, 256, strWindowTitle );
 
         // Create the render window
@@ -1038,10 +1031,10 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
             return HRESULT_FROM_WIN32(dwError);
         }
 
-        GetDXUTState().SetWindowCreated( true );
-        GetDXUTState().SetHWNDFocus( hWnd );
-        GetDXUTState().SetHWNDDeviceFullScreen( hWnd );
-        GetDXUTState().SetHWNDDeviceWindowed( hWnd );
+        g_pDXUTState.SetWindowCreated( true );
+        g_pDXUTState.SetHWNDFocus( hWnd );
+        g_pDXUTState.SetHWNDDeviceFullScreen( hWnd );
+        g_pDXUTState.SetHWNDDeviceWindowed( hWnd );
     }
 
     return S_OK;
@@ -1058,10 +1051,10 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
     HRESULT hr;
 
     // Not allowed to call this from inside the device callbacks
-	if (GetDXUTState().GetInsideDeviceCallback())
+	if (g_pDXUTState.GetInsideDeviceCallback())
 		return E_FAIL;
 
-    GetDXUTState().SetWindowCreateCalled( true );
+    g_pDXUTState.SetWindowCreateCalled( true );
 
     // To avoid confusion, we do not allow any HWND to be NULL here.  The
     // caller must pass in valid HWND for all three parameters.  The same
@@ -1080,11 +1073,11 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
             return HRESULT_FROM_WIN32(dwError);
     }
 
-    if( !GetDXUTState().GetDXUTInited() )
+    if( !g_pDXUTState.GetDXUTInited() )
     {
         // If DXUTInit() was already called and failed, then fail.
         // DXUTInit() must first succeed for this function to succeed
-        if( GetDXUTState().GetDXUTInitCalled() )
+        if( g_pDXUTState.GetDXUTInitCalled() )
             return E_FAIL;
 
         // If DXUTInit() hasn't been called, then automatically call it
@@ -1094,17 +1087,17 @@ HRESULT WINAPI DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hW
             return hr;
     }
 
-    WCHAR* strCachedWindowTitle = GetDXUTState().GetWindowTitle();
+    WCHAR* strCachedWindowTitle = g_pDXUTState.GetWindowTitle();
     GetWindowText( hWndFocus, strCachedWindowTitle, 255 );
     strCachedWindowTitle[255] = 0;
 
     HINSTANCE hInstance = ( HINSTANCE )( LONG_PTR )GetWindowLongPtr( hWndFocus, GWLP_HINSTANCE );
-    GetDXUTState().SetHInstance( hInstance );
-    GetDXUTState().SetWindowCreatedWithDefaultPositions( false );
-    GetDXUTState().SetWindowCreated( true );
-    GetDXUTState().SetHWNDFocus( hWndFocus );
-    GetDXUTState().SetHWNDDeviceFullScreen( hWndDeviceFullScreen );
-    GetDXUTState().SetHWNDDeviceWindowed( hWndDeviceWindowed );
+    g_pDXUTState.SetHInstance( hInstance );
+    g_pDXUTState.SetWindowCreatedWithDefaultPositions( false );
+    g_pDXUTState.SetWindowCreated( true );
+    g_pDXUTState.SetHWNDFocus( hWndFocus );
+    g_pDXUTState.SetHWNDDeviceFullScreen( hWndDeviceFullScreen );
+    g_pDXUTState.SetHWNDDeviceWindowed( hWndDeviceWindowed );
 
     return S_OK;
 }
@@ -1126,12 +1119,12 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         DWORD dwMask = ( 1 << 29 );
         bool bAltDown = ( ( lParam & dwMask ) != 0 );
 
-        bool* bKeys = GetDXUTState().GetKeys();
+        bool* bKeys = g_pDXUTState.GetKeys();
         bKeys[ ( BYTE )( wParam & 0xFF ) ] = bKeyDown;
 
-        LPDXUTCALLBACKKEYBOARD pCallbackKeyboard = GetDXUTState().GetKeyboardFunc();
+        LPDXUTCALLBACKKEYBOARD pCallbackKeyboard = g_pDXUTState.GetKeyboardFunc();
         if( pCallbackKeyboard )
-            pCallbackKeyboard( ( UINT )wParam, bKeyDown, bAltDown, GetDXUTState().GetKeyboardFuncUserContext() );
+            pCallbackKeyboard( ( UINT )wParam, bKeyDown, bAltDown, g_pDXUTState.GetKeyboardFuncUserContext() );
     }
 
     // Consolidate the mouse button messages and pass them to the app's mouse callback
@@ -1148,7 +1141,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         uMsg == WM_XBUTTONUP ||
         uMsg == WM_XBUTTONDBLCLK ||
         uMsg == WM_MOUSEWHEEL ||
-        ( GetDXUTState().GetNotifyOnMouseMove() && uMsg == WM_MOUSEMOVE ) )
+        ( g_pDXUTState.GetNotifyOnMouseMove() && uMsg == WM_MOUSEMOVE ) )
     {
         int xPos = ( short )LOWORD( lParam );
         int yPos = ( short )HIWORD( lParam );
@@ -1174,27 +1167,27 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         bool bSideButton1 = ( ( nMouseButtonState & MK_XBUTTON1 ) != 0 );
         bool bSideButton2 = ( ( nMouseButtonState & MK_XBUTTON2 ) != 0 );
 
-        bool* bMouseButtons = GetDXUTState().GetMouseButtons();
+        bool* bMouseButtons = g_pDXUTState.GetMouseButtons();
         bMouseButtons[0] = bLeftButton;
         bMouseButtons[1] = bMiddleButton;
         bMouseButtons[2] = bRightButton;
         bMouseButtons[3] = bSideButton1;
         bMouseButtons[4] = bSideButton2;
 
-        LPDXUTCALLBACKMOUSE pCallbackMouse = GetDXUTState().GetMouseFunc();
+        LPDXUTCALLBACKMOUSE pCallbackMouse = g_pDXUTState.GetMouseFunc();
         if( pCallbackMouse )
             pCallbackMouse( bLeftButton, bRightButton, bMiddleButton, bSideButton1, bSideButton2, nMouseWheelDelta,
-                            xPos, yPos, GetDXUTState().GetMouseFuncUserContext() );
+                            xPos, yPos, g_pDXUTState.GetMouseFuncUserContext() );
     }
 
     // Pass all messages to the app's MsgProc callback, and don't 
     // process further messages if the apps says not to.
-    LPDXUTCALLBACKMSGPROC pCallbackMsgProc = GetDXUTState().GetWindowMsgFunc();
+    LPDXUTCALLBACKMSGPROC pCallbackMsgProc = g_pDXUTState.GetWindowMsgFunc();
     if( pCallbackMsgProc )
     {
         bool bNoFurtherProcessing = false;
         LRESULT nResult = pCallbackMsgProc( hWnd, uMsg, wParam, lParam, &bNoFurtherProcessing,
-                                            GetDXUTState().GetWindowMsgFuncUserContext() );
+                                            g_pDXUTState.GetWindowMsgFuncUserContext() );
         if( bNoFurtherProcessing )
             return nResult;
     }
@@ -1206,7 +1199,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             
             // Handle paint messages when the app is paused
             if( DXUTIsRenderingPaused() &&
-                GetDXUTState().GetDeviceObjectsCreated() && GetDXUTState().GetDeviceObjectsReset() )
+                g_pDXUTState.GetDeviceObjectsCreated() && g_pDXUTState.GetDeviceObjectsReset() )
             {
                 HRESULT hr;
                 double fTime = DXUTGetTime();
@@ -1216,35 +1209,35 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                     ID3D11DeviceContext *pDeferred = DXUTGetD3D11DeviceContext();
                     if( pd3dDevice )
                     {
-                        LPDXUTCALLBACKD3D11FRAMERENDER pCallbackFrameRender = GetDXUTState().GetD3D11FrameRenderFunc();
+                        LPDXUTCALLBACKD3D11FRAMERENDER pCallbackFrameRender = g_pDXUTState.GetD3D11FrameRenderFunc();
                         if( pCallbackFrameRender != NULL &&
-                            !GetDXUTState().GetRenderingOccluded() )
+                            !g_pDXUTState.GetRenderingOccluded() )
                         {
                             pCallbackFrameRender( pd3dDevice,pDeferred, fTime, fElapsedTime,
-                                                  GetDXUTState().GetD3D11FrameRenderFuncUserContext() );
+                                                  g_pDXUTState.GetD3D11FrameRenderFuncUserContext() );
                         }
 
                         DWORD dwFlags = 0;
-                        if( GetDXUTState().GetRenderingOccluded() )
+                        if( g_pDXUTState.GetRenderingOccluded() )
                             dwFlags = DXGI_PRESENT_TEST;
                         else
-                            dwFlags = GetDXUTState().GetCurrentDeviceSettings()->d3d11.PresentFlags;
+                            dwFlags = g_pDXUTState.GetCurrentDeviceSettings()->d3d11.PresentFlags;
 
                         IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
-                        hr = pSwapChain->Present( 0, GetDXUTState().GetCurrentDeviceSettings()->d3d11.PresentFlags );
+                        hr = pSwapChain->Present( 0, g_pDXUTState.GetCurrentDeviceSettings()->d3d11.PresentFlags );
                         if( DXGI_STATUS_OCCLUDED == hr )
                         {
                             // There is a window covering our entire rendering area.
                             // Don't render until we're visible again.
-                            GetDXUTState().SetRenderingOccluded( true );
+                            g_pDXUTState.SetRenderingOccluded( true );
                         }
                         else if( SUCCEEDED( hr ) )
                         {
-                            if( GetDXUTState().GetRenderingOccluded() )
+                            if( g_pDXUTState.GetRenderingOccluded() )
                             {
                                 // Now that we're no longer occluded
                                 // allow us to render again
-                                GetDXUTState().SetRenderingOccluded( false );
+                                g_pDXUTState.SetRenderingOccluded( false );
                             }
                         }
                     }
@@ -1258,8 +1251,8 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             {
                 DXUTPause( true, true ); // Pause while we're minimized
 
-                GetDXUTState().SetMinimized( true );
-                GetDXUTState().SetMaximized( false );
+                g_pDXUTState.SetMinimized( true );
+                g_pDXUTState.SetMaximized( false );
             }
             else
             {
@@ -1274,30 +1267,30 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 }
                 else if( SIZE_MAXIMIZED == wParam )
                 {
-                    if( GetDXUTState().GetMinimized() )
+                    if( g_pDXUTState.GetMinimized() )
                         DXUTPause( false, false ); // Unpause since we're no longer minimized
-                    GetDXUTState().SetMinimized( false );
-                    GetDXUTState().SetMaximized( true );
+                    g_pDXUTState.SetMinimized( false );
+                    g_pDXUTState.SetMaximized( true );
                     DXUTCheckForWindowSizeChange();
                     DXUTCheckForWindowChangingMonitors();
                 }
                 else if( SIZE_RESTORED == wParam )
                 {
                     //DXUTCheckForDXGIFullScreenSwitch();
-                    if( GetDXUTState().GetMaximized() )
+                    if( g_pDXUTState.GetMaximized() )
                     {
-                        GetDXUTState().SetMaximized( false );
+                        g_pDXUTState.SetMaximized( false );
                         DXUTCheckForWindowSizeChange();
                         DXUTCheckForWindowChangingMonitors();
                     }
-                    else if( GetDXUTState().GetMinimized() )
+                    else if( g_pDXUTState.GetMinimized() )
                     {
                         DXUTPause( false, false ); // Unpause since we're no longer minimized
-                        GetDXUTState().SetMinimized( false );
+                        g_pDXUTState.SetMinimized( false );
                         DXUTCheckForWindowSizeChange();
                         DXUTCheckForWindowChangingMonitors();
                     }
-                    else if( GetDXUTState().GetInSizeMove() )
+                    else if( g_pDXUTState.GetInSizeMove() )
                     {
                         // If we're neither maximized nor minimized, the window size 
                         // is changing by the user dragging the window edges.  In this 
@@ -1325,14 +1318,14 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_ENTERSIZEMOVE:
             // Halt frame movement while the app is sizing or moving
             DXUTPause( true, true );
-            GetDXUTState().SetInSizeMove( true );
+            g_pDXUTState.SetInSizeMove( true );
             break;
 
         case WM_EXITSIZEMOVE:
             DXUTPause( false, false );
             DXUTCheckForWindowSizeChange();
             DXUTCheckForWindowChangingMonitors();
-            GetDXUTState().SetInSizeMove( false );
+            g_pDXUTState.SetInSizeMove( false );
             break;
 
         case WM_MOUSEMOVE:
@@ -1341,7 +1334,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_SETCURSOR:
             if( DXUTIsActive() && !DXUTIsWindowed() )
             {
-                 if( !GetDXUTState().GetShowCursorWhenFullScreen() )
+                 if( !g_pDXUTState.GetShowCursorWhenFullScreen() )
                         SetCursor( NULL );
                 return true; // prevent Windows from setting cursor to window class cursor
             }
@@ -1350,16 +1343,16 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_ACTIVATEAPP:
             if( wParam == TRUE && !DXUTIsActive() ) // Handle only if previously not active 
             {
-                GetDXUTState().SetActive( true );
+                g_pDXUTState.SetActive( true );
 
                 // Enable controller rumble & input when activating app
 
                 // The GetMinimizedWhileFullscreen() varible is used instead of !DXUTIsWindowed()
                 // to handle the rare case toggling to windowed mode while the fullscreen application 
                 // is minimized and thus making the pause count wrong
-                if( GetDXUTState().GetMinimizedWhileFullscreen() )
+                if( g_pDXUTState.GetMinimizedWhileFullscreen() )
                 {
-                    GetDXUTState().SetMinimizedWhileFullscreen( false );
+                    g_pDXUTState.SetMinimizedWhileFullscreen( false );
 
                     if( DXUTIsAppRenderingWithD3D11() )
                     {
@@ -1370,7 +1363,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             }
             else if( wParam == FALSE && DXUTIsActive() ) // Handle only if previously active 
             {
-                GetDXUTState().SetActive( false );
+                g_pDXUTState.SetActive( false );
 
                 // Disable any controller rumble & input when de-activating app
 
@@ -1378,7 +1371,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 {
                     // Going from full screen to a minimized state 
                     ClipCursor( NULL );      // don't limit the cursor anymore
-                    GetDXUTState().SetMinimizedWhileFullscreen( true );
+                    g_pDXUTState.SetMinimizedWhileFullscreen( true );
                 }
             }
             break;
@@ -1428,7 +1421,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
                     // QPC may lose consistency when suspending, so reset the timer
                     // upon resume.
-                    GetDXUTState().SetLastStatsUpdateTime( 0 );
+                    g_pDXUTState.SetLastStatsUpdateTime( 0 );
                     return true;
             }
             break;
@@ -1474,14 +1467,14 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             {
                 case VK_ESCAPE:
                 {
-                    if( GetDXUTState().GetHandleEscape() )
+                    if( g_pDXUTState.GetHandleEscape() )
                         SendMessage( hWnd, WM_CLOSE, 0, 0 );
                     break;
                 }
 
                 case VK_PAUSE:
                 {
-                    if( GetDXUTState().GetHandlePause() )
+                    if( g_pDXUTState.GetHandlePause() )
                     {
                         bool bTimePaused = DXUTIsTimePaused();
                         bTimePaused = !bTimePaused;
@@ -1504,9 +1497,9 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 DestroyMenu( hMenu );
             DestroyWindow( hWnd );
             UnregisterClass( L"Direct3DWindowClass", NULL );
-            GetDXUTState().SetHWNDFocus( NULL );
-            GetDXUTState().SetHWNDDeviceFullScreen( NULL );
-            GetDXUTState().SetHWNDDeviceWindowed( NULL );
+            g_pDXUTState.SetHWNDFocus( NULL );
+            g_pDXUTState.SetHWNDDeviceFullScreen( NULL );
+            g_pDXUTState.SetHWNDDeviceWindowed( NULL );
             return 0;
         }
 
@@ -1518,7 +1511,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
     // Don't allow the F10 key to act as a shortcut to the menu bar
     // by not passing these messages to the DefWindowProc only when
     // there's no menu present
-    if( !GetDXUTState().GetCallDefWindowProc() || GetDXUTState().GetMenu() == NULL &&
+    if( !g_pDXUTState.GetCallDefWindowProc() || g_pDXUTState.GetMenu() == NULL &&
         ( uMsg == WM_SYSKEYDOWN || uMsg == WM_SYSKEYUP ) && wParam == VK_F10 )
         return 0;
     else
@@ -1535,31 +1528,31 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
     HRESULT hr;
 
     // Not allowed to call this from inside the device callbacks or reenter
-    if( GetDXUTState().GetInsideDeviceCallback() || GetDXUTState().GetInsideMainloop() )
+    if( g_pDXUTState.GetInsideDeviceCallback() || g_pDXUTState.GetInsideMainloop() )
     {
-        if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
-            GetDXUTState().SetExitCode( 1 );
+        if( ( g_pDXUTState.GetExitCode() == 0 ) || ( g_pDXUTState.GetExitCode() == 10 ) )
+            g_pDXUTState.SetExitCode( 1 );
         return E_FAIL;
     }
 
-    GetDXUTState().SetInsideMainloop( true );
+    g_pDXUTState.SetInsideMainloop( true );
 
     // If DXUTCreateDevice() or DXUTSetD3D*Device() has not already been called, 
     // then call DXUTCreateDevice() with the default parameters.         
-    if( !GetDXUTState().GetDeviceCreated() )
+    if( !g_pDXUTState.GetDeviceCreated() )
     {
-        if( GetDXUTState().GetDeviceCreateCalled() )
+        if( g_pDXUTState.GetDeviceCreateCalled() )
         {
-            if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
-                GetDXUTState().SetExitCode( 1 );
+            if( ( g_pDXUTState.GetExitCode() == 0 ) || ( g_pDXUTState.GetExitCode() == 10 ) )
+                g_pDXUTState.SetExitCode( 1 );
             return E_FAIL; // DXUTCreateDevice() must first succeed for this function to succeed
         }
 
         hr = DXUTCreateDevice(D3D_FEATURE_LEVEL_10_0, true, 640, 480);
         if( FAILED( hr ) )
         {
-            if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
-                GetDXUTState().SetExitCode( 1 );
+            if( ( g_pDXUTState.GetExitCode() == 0 ) || ( g_pDXUTState.GetExitCode() == 10 ) )
+                g_pDXUTState.SetExitCode( 1 );
             return hr;
         }
     }
@@ -1569,10 +1562,10 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
     // DXUTInit() must have been called and succeeded for this function to proceed
     // DXUTCreateWindow() or DXUTSetWindow() must have been called and succeeded for this function to proceed
     // DXUTCreateDevice() or DXUTCreateDeviceFromSettings() or DXUTSetD3D*Device() must have been called and succeeded for this function to proceed
-    if( !GetDXUTState().GetDXUTInited() || !GetDXUTState().GetWindowCreated() || !GetDXUTState().GetDeviceCreated() )
+    if( !g_pDXUTState.GetDXUTInited() || !g_pDXUTState.GetWindowCreated() || !g_pDXUTState.GetDeviceCreated() )
     {
-        if( ( GetDXUTState().GetExitCode() == 0 ) || ( GetDXUTState().GetExitCode() == 10 ) )
-            GetDXUTState().SetExitCode( 1 );
+        if( ( g_pDXUTState.GetExitCode() == 0 ) || ( g_pDXUTState.GetExitCode() == 10 ) )
+            g_pDXUTState.SetExitCode( 1 );
         return E_FAIL;
     }
 
@@ -1608,7 +1601,7 @@ HRESULT WINAPI DXUTMainLoop( HACCEL hAccel )
     if( hAccel != NULL )
         DestroyAcceleratorTable( hAccel );
 
-    GetDXUTState().SetInsideMainloop( false );
+    g_pDXUTState.SetInsideMainloop( false );
 
     return S_OK;
 }
@@ -1625,18 +1618,18 @@ HRESULT WINAPI DXUTCreateDevice(D3D_FEATURE_LEVEL reqFL,  bool bWindowed, int nS
     
    
     // Not allowed to call this from inside the device callbacks
-    if( GetDXUTState().GetInsideDeviceCallback() )
+    if( g_pDXUTState.GetInsideDeviceCallback() )
         return E_FAIL;
 
-    GetDXUTState().SetDeviceCreateCalled( true );
+    g_pDXUTState.SetDeviceCreateCalled( true );
 
     // If DXUTCreateWindow() or DXUTSetWindow() has not already been called, 
     // then call DXUTCreateWindow() with the default parameters.         
-    if( !GetDXUTState().GetWindowCreated() )
+    if( !g_pDXUTState.GetWindowCreated() )
     {
         // If DXUTCreateWindow() or DXUTSetWindow() was already called and failed, then fail.
         // DXUTCreateWindow() or DXUTSetWindow() must first succeed for this function to succeed
-        if( GetDXUTState().GetWindowCreateCalled() )
+        if( g_pDXUTState.GetWindowCreateCalled() )
             return E_FAIL;
 
         // If DXUTCreateWindow() or DXUTSetWindow() hasn't been called, then 
@@ -1677,15 +1670,15 @@ HRESULT WINAPI DXUTCreateDeviceFromSettings( DXUTDeviceSettings* pDeviceSettings
 {
     HRESULT hr;
 
-    GetDXUTState().SetDeviceCreateCalled( true );
+    g_pDXUTState.SetDeviceCreateCalled( true );
 
     // If DXUTCreateWindow() or DXUTSetWindow() has not already been called, 
     // then call DXUTCreateWindow() with the default parameters.         
-    if( !GetDXUTState().GetWindowCreated() )
+    if( !g_pDXUTState.GetWindowCreated() )
     {
         // If DXUTCreateWindow() or DXUTSetWindow() was already called and failed, then fail.
         // DXUTCreateWindow() or DXUTSetWindow() must first succeed for this function to succeed
-        if( GetDXUTState().GetWindowCreateCalled() )
+        if( g_pDXUTState.GetWindowCreateCalled() )
             return E_FAIL;
 
         // If DXUTCreateWindow() or DXUTSetWindow() hasn't been called, then 
@@ -1719,7 +1712,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
                           bool bForceRecreate, bool bClipWindowToSingleAdapter )
 {
     HRESULT hr = S_OK;
-    DXUTDeviceSettings* pOldDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pOldDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
 
     if( !pNewDeviceSettings )
         return S_FALSE;
@@ -1739,7 +1732,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
     pNewDeviceSettings = pNewDeviceSettingsOnHeap;
 
 
-    GetDXUTState().SetCurrentDeviceSettings(pNewDeviceSettingsOnHeap);
+    g_pDXUTState.SetCurrentDeviceSettings(pNewDeviceSettingsOnHeap);
     DXUTSnapDeviceSettingsToEnumDevice(pNewDeviceSettingsOnHeap, false);
 
     if( FAILED( hr ) ) // the call will fail if no valid devices were found
@@ -1750,11 +1743,11 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     // If the ModifyDeviceSettings callback is non-NULL, then call it to let the app 
     // change the settings or reject the device change by returning false.
-    LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallbackModifyDeviceSettings = GetDXUTState().GetModifyDeviceSettingsFunc();
+    LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallbackModifyDeviceSettings = g_pDXUTState.GetModifyDeviceSettingsFunc();
     if( pCallbackModifyDeviceSettings && pd3d9DeviceFromApp == NULL )
     {
         bool bContinue = pCallbackModifyDeviceSettings( pNewDeviceSettings,
-                                                        GetDXUTState().GetModifyDeviceSettingsFuncUserContext() );
+                                                        g_pDXUTState.GetModifyDeviceSettingsFuncUserContext() );
         if( !bContinue )
         {
             // The app rejected the device change by returning false, so just use the current device if there is one.
@@ -1773,7 +1766,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     }
 
-    GetDXUTState().SetCurrentDeviceSettings( pNewDeviceSettingsOnHeap );
+    g_pDXUTState.SetCurrentDeviceSettings( pNewDeviceSettingsOnHeap );
 
     DXUTPause( true, true );
 
@@ -1796,12 +1789,12 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
            if( pOldDeviceSettings && !DXUTGetIsWindowedFromDS( pOldDeviceSettings ) )
             {
                 // Going from fullscreen -> windowed
-                GetDXUTState().SetFullScreenBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
+                g_pDXUTState.SetFullScreenBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
                                                                          pOldDeviceSettings ) );
-                GetDXUTState().SetFullScreenBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
+                g_pDXUTState.SetFullScreenBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
                                                                           pOldDeviceSettings ) );
                 //DXGI should handle this, but in the case where switching from d3d9 full screen to windowed d3d11 it does not.
-                SetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE, GetDXUTState().GetWindowedStyleAtModeChange() );
+                SetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE, g_pDXUTState.GetWindowedStyleAtModeChange() );
 
            }
         }
@@ -1813,9 +1806,9 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
                 // Transistioning to full screen mode from a standard window so 
                 if( pOldDeviceSettings )
                 {
-                    GetDXUTState().SetWindowBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
+                    g_pDXUTState.SetWindowBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
                                                                          pOldDeviceSettings ) );
-                    GetDXUTState().SetWindowBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
+                    g_pDXUTState.SetWindowBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
                                                                           pOldDeviceSettings ) );
                 }
             }
@@ -1833,12 +1826,12 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         DXUTCleanup3DEnvironment( true );
         DXUTDisplayErrorMessage( hr );
         DXUTPause( false, false );
-        GetDXUTState().SetIgnoreSizeChange( false );
+        g_pDXUTState.SetIgnoreSizeChange( false );
         return hr;
     }
 
     HMONITOR hAdapterMonitor = DXUTGetMonitorFromAdapter( pNewDeviceSettings );
-    GetDXUTState().SetAdapterMonitor( hAdapterMonitor );
+    g_pDXUTState.SetAdapterMonitor( hAdapterMonitor );
 
     // Update the device stats text
 
@@ -1851,11 +1844,11 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         // It is important to adjust the window size 
         // after resetting the device rather than beforehand to ensure 
         // that the monitor resolution is correct and does not limit the size of the new window.
-        WINDOWPLACEMENT* pwp = GetDXUTState().GetWindowedPlacement();
+        WINDOWPLACEMENT* pwp = g_pDXUTState.GetWindowedPlacement();
         SetWindowPlacement( DXUTGetHWNDDeviceWindowed(), pwp );
 
         // Also restore the z-order of window to previous state
-        HWND hWndInsertAfter = GetDXUTState().GetTopmostWhileWindowed() ? HWND_TOPMOST : HWND_NOTOPMOST;
+        HWND hWndInsertAfter = g_pDXUTState.GetTopmostWhileWindowed() ? HWND_TOPMOST : HWND_NOTOPMOST;
         SetWindowPos( DXUTGetHWNDDeviceWindowed(), hWndInsertAfter, 0, 0, 0, 0,
                       SWP_NOMOVE | SWP_NOREDRAW | SWP_NOSIZE );
     }
@@ -1897,7 +1890,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
                 // Use wp.rcNormalPosition to get the client rect, but wp.rcNormalPosition 
                 // includes the window frame so subtract it
                 RECT rcFrame = {0};
-                AdjustWindowRect( &rcFrame, GetDXUTState().GetWindowedStyleAtModeChange(), GetDXUTState().GetMenu() != NULL );
+                AdjustWindowRect( &rcFrame, g_pDXUTState.GetWindowedStyleAtModeChange(), g_pDXUTState.GetMenu() != NULL );
                 LONG nFrameWidth = rcFrame.right - rcFrame.left;
                 LONG nFrameHeight = rcFrame.bottom - rcFrame.top;
                 nClientWidth = ( UINT )( wp.rcNormalPosition.right - wp.rcNormalPosition.left - nFrameWidth );
@@ -1995,7 +1988,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             rcResizedWindow.top = 0;
             rcResizedWindow.bottom = nClientHeight;
             AdjustWindowRect( &rcResizedWindow, GetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE ),
-                              GetDXUTState().GetMenu() != NULL );
+                              g_pDXUTState.GetMenu() != NULL );
 
             int nWindowWidth = rcResizedWindow.right - rcResizedWindow.left;
             int nWindowHeight = rcResizedWindow.bottom - rcResizedWindow.top;
@@ -2031,7 +2024,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             RECT rcWindow = {0};
             rcWindow.right = (long)( DXUTGetBackBufferWidthFromDS(pNewDeviceSettings) );
             rcWindow.bottom = (long)( DXUTGetBackBufferHeightFromDS(pNewDeviceSettings) );
-            AdjustWindowRect( &rcWindow, GetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE ), GetDXUTState().GetMenu() != NULL );
+            AdjustWindowRect( &rcWindow, GetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE ), g_pDXUTState.GetMenu() != NULL );
 
             // Resize the window.  It is important to adjust the window size 
             // after resetting the device rather than beforehand to ensure 
@@ -2062,7 +2055,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
                 SAFE_DELETE( pOldDeviceSettings );
                 DXUTCleanup3DEnvironment( true );
                 DXUTPause( false, false );
-                GetDXUTState().SetIgnoreSizeChange( false );
+                g_pDXUTState.SetIgnoreSizeChange( false );
                 return hr;
             }
         }
@@ -2070,7 +2063,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     //if (DXUTGetIsWindowedFromDS( pNewDeviceSettings )) {
     //    RECT rcFrame = {0};
-    //    AdjustWindowRect( &rcFrame, GetDXUTState().GetWindowedStyleAtModeChange(), GetDXUTState().GetMenu() != NULL );
+    //    AdjustWindowRect( &rcFrame, g_pDXUTState.GetWindowedStyleAtModeChange(), g_pDXUTState.GetMenu() != NULL );
    // }
 
     // Make the window visible
@@ -2084,9 +2077,9 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         SetThreadExecutionState( ES_CONTINUOUS );
 
     SAFE_DELETE( pOldDeviceSettings );
-    GetDXUTState().SetIgnoreSizeChange( false );
+    g_pDXUTState.SetIgnoreSizeChange( false );
     DXUTPause( false, false );
-    GetDXUTState().SetDeviceCreated( true );
+    g_pDXUTState.SetDeviceCreated( true );
 
     return S_OK;
 }
@@ -2097,21 +2090,21 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 //--------------------------------------------------------------------------------------
 HRESULT DXUTDelayLoadDXGI()
 {
-    IDXGIFactory1* pDXGIFactory = GetDXUTState().GetDXGIFactory();
+    IDXGIFactory1* pDXGIFactory = g_pDXUTState.GetDXGIFactory();
     if( pDXGIFactory == NULL )
     {
         DXUT_Dynamic_CreateDXGIFactory1( __uuidof( IDXGIFactory1 ), ( LPVOID* )&pDXGIFactory );
-        GetDXUTState().SetDXGIFactory( pDXGIFactory );
+        g_pDXUTState.SetDXGIFactory( pDXGIFactory );
         if( pDXGIFactory == NULL )
         {
             // If still NULL, then DXGI is not availible
-            GetDXUTState().SetD3D11Available( false );
+            g_pDXUTState.SetD3D11Available( false );
             return DXUTERR_NODIRECT3D11;
         }
 
         // DXGI 1.1 implies Direct3D 11
 
-        GetDXUTState().SetD3D11Available( true );
+        g_pDXUTState.SetD3D11Available( true );
     }
 
     return S_OK;
@@ -2123,58 +2116,58 @@ HRESULT DXUTDelayLoadDXGI()
 void DXUTUpdateDeviceSettingsWithOverrides( DXUTDeviceSettings* pDeviceSettings )
 {
     // Override with settings from the command line
-    if( GetDXUTState().GetOverrideWidth() != 0 )
+    if( g_pDXUTState.GetOverrideWidth() != 0 )
     {
-        pDeviceSettings->d3d11.sd.BufferDesc.Width = GetDXUTState().GetOverrideWidth();
+        pDeviceSettings->d3d11.sd.BufferDesc.Width = g_pDXUTState.GetOverrideWidth();
     }
-    if( GetDXUTState().GetOverrideHeight() != 0 )
+    if( g_pDXUTState.GetOverrideHeight() != 0 )
     {
-        pDeviceSettings->d3d11.sd.BufferDesc.Height = GetDXUTState().GetOverrideHeight();
-    }
-
-    if( GetDXUTState().GetOverrideAdapterOrdinal() != -1 )
-    {
-        pDeviceSettings->d3d11.AdapterOrdinal = GetDXUTState().GetOverrideAdapterOrdinal();
+        pDeviceSettings->d3d11.sd.BufferDesc.Height = g_pDXUTState.GetOverrideHeight();
     }
 
-    if( GetDXUTState().GetOverrideFullScreen() )
+    if( g_pDXUTState.GetOverrideAdapterOrdinal() != -1 )
+    {
+        pDeviceSettings->d3d11.AdapterOrdinal = g_pDXUTState.GetOverrideAdapterOrdinal();
+    }
+
+    if( g_pDXUTState.GetOverrideFullScreen() )
     {
         pDeviceSettings->d3d11.sd.Windowed = FALSE;
     }
 
-    if( GetDXUTState().GetOverrideWindowed() ) {
+    if( g_pDXUTState.GetOverrideWindowed() ) {
         pDeviceSettings->d3d11.sd.Windowed = TRUE;
     }
 
-    if( GetDXUTState().GetOverrideForceHAL() )
+    if( g_pDXUTState.GetOverrideForceHAL() )
     {
         pDeviceSettings->d3d11.DriverType = D3D_DRIVER_TYPE_HARDWARE;
     }
 
-    if( GetDXUTState().GetOverrideForceREF() )
+    if( g_pDXUTState.GetOverrideForceREF() )
     {
         pDeviceSettings->d3d11.DriverType = D3D_DRIVER_TYPE_REFERENCE;
     }
 
-    if( GetDXUTState().GetOverrideForceVsync() == 0 )
+    if( g_pDXUTState.GetOverrideForceVsync() == 0 )
     {
         pDeviceSettings->d3d11.SyncInterval = 0;
     }
-    else if( GetDXUTState().GetOverrideForceVsync() == 1 )
+    else if( g_pDXUTState.GetOverrideForceVsync() == 1 )
     {
         pDeviceSettings->d3d11.SyncInterval = 1;
     }
 
-    if( GetDXUTState().GetOverrideForceAPI() != -1 )
+    if( g_pDXUTState.GetOverrideForceAPI() != -1 )
     {
-        if( GetDXUTState().GetOverrideForceAPI() == 11 )
+        if( g_pDXUTState.GetOverrideForceAPI() == 11 )
         {
             pDeviceSettings->ver = DXUT_D3D11_DEVICE;
         }
     }
     
-    if (GetDXUTState().GetOverrideForceFeatureLevel() != 0) {
-        pDeviceSettings->d3d11.DeviceFeatureLevel = (D3D_FEATURE_LEVEL)GetDXUTState().GetOverrideForceFeatureLevel();
+    if (g_pDXUTState.GetOverrideForceFeatureLevel() != 0) {
+        pDeviceSettings->d3d11.DeviceFeatureLevel = (D3D_FEATURE_LEVEL)g_pDXUTState.GetOverrideForceFeatureLevel();
     }
 }
 
@@ -2185,9 +2178,9 @@ void DXUTUpdateDeviceSettingsWithOverrides( DXUTDeviceSettings* pDeviceSettings 
 //--------------------------------------------------------------------------------------
 void WINAPI DXUTSetD3DVersionSupport( bool bAppCanUseD3D9,  bool bAppCanUseD3D11 )
 {
-    GetDXUTState().SetUseD3DVersionOverride( true );
-    GetDXUTState().SetAppSupportsD3D9Override( bAppCanUseD3D9 );
-    GetDXUTState().SetAppSupportsD3D11Override( bAppCanUseD3D11 );
+    g_pDXUTState.SetUseD3DVersionOverride( true );
+    g_pDXUTState.SetAppSupportsD3D9Override( bAppCanUseD3D9 );
+    g_pDXUTState.SetAppSupportsD3D11Override( bAppCanUseD3D11 );
 }
 
 
@@ -2381,8 +2374,8 @@ HRESULT WINAPI DXUTSetupD3D11Views( ID3D11DeviceContext* pd3dDeviceContext )
     pd3dDeviceContext->RSSetViewports( 1, &vp );
 
     // Set the render targets
-    ID3D11RenderTargetView* pRTV = GetDXUTState().GetD3D11RenderTargetView();
-    ID3D11DepthStencilView* pDSV = GetDXUTState().GetD3D11DepthStencilView();
+    ID3D11RenderTargetView* pRTV = g_pDXUTState.GetD3D11RenderTargetView();
+    ID3D11DepthStencilView* pDSV = g_pDXUTState.GetD3D11DepthStencilView();
     pd3dDeviceContext->OMSetRenderTargets( 1, &pRTV, pDSV );
 
     return hr;
@@ -2413,7 +2406,7 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
     SAFE_RELEASE( pBackBuffer );
     if( FAILED( hr ) )
         return hr;
-    GetDXUTState().SetD3D11RenderTargetView( pRTV );
+    g_pDXUTState.SetD3D11RenderTargetView( pRTV );
 
     if( pDeviceSettings->d3d11.AutoCreateDepthStencil )
     {
@@ -2434,7 +2427,7 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
         hr = pd3dDevice->CreateTexture2D( &descDepth, NULL, &pDepthStencil );
         if( FAILED( hr ) )
             return hr;
-        GetDXUTState().SetD3D11DepthStencil( pDepthStencil );
+        g_pDXUTState.SetD3D11DepthStencil( pDepthStencil );
 
         // Create the depth stencil view
         D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
@@ -2448,7 +2441,7 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
         hr = pd3dDevice->CreateDepthStencilView( pDepthStencil, &descDSV, &pDSV );
         if( FAILED( hr ) )
             return hr;
-        GetDXUTState().SetD3D11DepthStencilView( pDSV );
+        g_pDXUTState.SetD3D11DepthStencilView( pDSV );
     }
 
     hr = DXUTSetupD3D11Views( pd3dImmediateContext );
@@ -2471,7 +2464,7 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
     D3D_FEATURE_LEVEL FeatureLevel = D3D_FEATURE_LEVEL_11_0;
 
     IDXGISwapChain* pSwapChain = NULL;
-    DXUTDeviceSettings* pNewDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pNewDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
     assert( pNewDeviceSettings != NULL );
         
     IDXGIFactory1* pDXGIFactory = DXUTGetDXGIFactory();
@@ -2485,62 +2478,21 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         IDXGIAdapter1* pAdapter = NULL;
 
         hr = S_OK;
-		D3D_DRIVER_TYPE ddt = D3D_DRIVER_TYPE_HARDWARE;
-        if( pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_HARDWARE ) 
-        {
-            hr = pDXGIFactory->EnumAdapters1(0, &pAdapter );
-            if ( FAILED( hr) ) 
-            {
-                return E_FAIL;
-            }
-            ddt = D3D_DRIVER_TYPE_UNKNOWN;    
-        }
-        else if (pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_WARP) 
-        {
-            ddt = D3D_DRIVER_TYPE_WARP;  
-            pAdapter = NULL;
-        }
-        else if (pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_REFERENCE) 
-        {
-            ddt = D3D_DRIVER_TYPE_REFERENCE;
-            pAdapter = NULL;
-        }
 
         if( SUCCEEDED( hr ) )
         {
-
-            hr = DXUT_Dynamic_D3D11CreateDevice( pAdapter,
-                                                 ddt,
+			D3D_FEATURE_LEVEL DeviceFeatureLevel = D3D_FEATURE_LEVEL_11_0;
+            hr = DXUT_Dynamic_D3D11CreateDevice( NULL,
+												D3D_DRIVER_TYPE_HARDWARE,
                                                  ( HMODULE )0,
-                                                 pNewDeviceSettings->d3d11.CreateFlags,
-                                                 &pNewDeviceSettings->d3d11.DeviceFeatureLevel,
+                                                 0,
+												 &DeviceFeatureLevel,
                                                  1,
                                                  D3D11_SDK_VERSION,
                                                  &pd3d11Device,
                                                  &FeatureLevel,
                                                  &pd3dImmediateContext
                                                  );
-            
-            if ( FAILED( hr ) ) {
-                pAdapter = NULL;
-                // Remote desktop does not allow you to enumerate the adapter.  In this case, we let D3D11 do the enumeration.
-                if ( ddt == D3D_DRIVER_TYPE_UNKNOWN ) { 
-                    hr = DXUT_Dynamic_D3D11CreateDevice( pAdapter,
-                                                         D3D_DRIVER_TYPE_HARDWARE,
-                                                         ( HMODULE )0,
-                                                         pNewDeviceSettings->d3d11.CreateFlags,
-                                                         &pNewDeviceSettings->d3d11.DeviceFeatureLevel,
-                                                         1,
-                                                         D3D11_SDK_VERSION,
-                                                         &pd3d11Device,
-                                                         &FeatureLevel,
-                                                         &pd3dImmediateContext
-                                                         );
-                }
-                if ( FAILED ( hr ) ) {
-                    return DXUTERR_CREATINGDEVICE;
-                }
-            }
         }
 
         if( SUCCEEDED( hr ) )
@@ -2553,14 +2505,14 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
                 {
                     IDXGIAdapter *pTempAdapter;
                     pDXGIDev->GetAdapter( &pTempAdapter );
-                    V_RETURN( pTempAdapter->QueryInterface( __uuidof( IDXGIAdapter1 ), (LPVOID*) &pAdapter ) );
-                    V_RETURN( pAdapter->GetParent( __uuidof( IDXGIFactory1 ), (LPVOID*) &pDXGIFactory ) );
+                    pTempAdapter->QueryInterface( __uuidof( IDXGIAdapter1 ), (LPVOID*) &pAdapter );
+                    pAdapter->GetParent( __uuidof( IDXGIFactory1 ), (LPVOID*) &pDXGIFactory );
                     SAFE_RELEASE ( pTempAdapter );
-                    GetDXUTState().SetDXGIFactory( pDXGIFactory );
+                    g_pDXUTState.SetDXGIFactory( pDXGIFactory );
                 }
             }
             SAFE_RELEASE( pDXGIDev );
-            GetDXUTState().SetDXGIAdapter( pAdapter );
+            g_pDXUTState.SetDXGIAdapter( pAdapter );
         }
 
         if( FAILED( hr ) )
@@ -2586,15 +2538,15 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         {
             return DXUTERR_CREATINGDEVICE;
         }
-        GetDXUTState().SetD3D11RasterizerState(pRS);
+        g_pDXUTState.SetD3D11RasterizerState(pRS);
         pd3dImmediateContext->RSSetState(pRS);
 
         // Enumerate its outputs.
         UINT OutputCount, iOutput;
         for( OutputCount = 0; ; ++OutputCount )
         {
-            IDXGIOutput* pOutput;
-            if( FAILED( pAdapter->EnumOutputs( OutputCount, &pOutput ) ) )
+            IDXGIOutput* pOutput = 0;
+			if (FAILED( pAdapter->EnumOutputs(OutputCount, &pOutput)))
                 break;
             SAFE_RELEASE( pOutput );
         }
@@ -2603,11 +2555,40 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
             return E_OUTOFMEMORY;
         for( iOutput = 0; iOutput < OutputCount; ++iOutput )
             pAdapter->EnumOutputs( iOutput, ppOutputArray + iOutput );
-        GetDXUTState().SetDXGIOutputArray( ppOutputArray );
-        GetDXUTState().SetDXGIOutputArraySize( OutputCount );
+        g_pDXUTState.SetDXGIOutputArray( ppOutputArray );
+        g_pDXUTState.SetDXGIOutputArraySize( OutputCount );
 
         // Create the swapchain
-        hr = pDXGIFactory->CreateSwapChain( pd3d11Device, &pNewDeviceSettings->d3d11.sd, &pSwapChain );
+		//后备缓冲个数
+		DXGI_SWAP_CHAIN_DESC desc;
+		ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
+		desc.BufferCount = 1;
+		//后备缓冲大小
+		desc.BufferDesc.Width = 800;
+		desc.BufferDesc.Height = 600;
+		//像素格式 归一化
+		desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		//立即刷新
+		desc.BufferDesc.RefreshRate.Numerator = 60;
+		desc.BufferDesc.RefreshRate.Denominator = 1;
+		//扫描线设置
+		desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		//设为渲染目标缓冲
+		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		//窗口模式
+		desc.Windowed = TRUE;
+		desc.OutputWindow = g_pDXUTState.m_HWNDDeviceWindowed;
+
+		//不采用多重采样
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		//后备缓冲内容呈现屏幕后，放弃其内容
+		desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		//不设置标志
+		desc.Flags = 0;
+
+		hr = pDXGIFactory->CreateSwapChain(pd3d11Device, &desc, &pSwapChain);
         if( FAILED( hr ) )
         {
             return DXUTERR_CREATINGDEVICE;
@@ -2619,16 +2600,10 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
         pd3d11Device = pd3d11DeviceFromApp;
     }
 
-    GetDXUTState().SetD3D11Device( pd3d11Device );
-    GetDXUTState().SetD3D11DeviceContext( pd3dImmediateContext );
-    GetDXUTState().SetD3D11FeatureLevel( FeatureLevel );
-    GetDXUTState().SetDXGISwapChain( pSwapChain );
-
-    // If switching to REF, set the exit code to 11.  If switching to HAL and exit code was 11, then set it back to 0.
-    if( pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_REFERENCE && GetDXUTState().GetExitCode() == 0 )
-        GetDXUTState().SetExitCode( 10 );
-    else if( pNewDeviceSettings->d3d11.DriverType == D3D_DRIVER_TYPE_HARDWARE && GetDXUTState().GetExitCode() == 10 )
-        GetDXUTState().SetExitCode( 0 );
+    g_pDXUTState.SetD3D11Device( pd3d11Device );
+    g_pDXUTState.SetD3D11DeviceContext( pd3dImmediateContext );
+    g_pDXUTState.SetD3D11FeatureLevel( FeatureLevel );
+    g_pDXUTState.SetDXGISwapChain( pSwapChain );
 
     // Update back buffer desc before calling app's device callbacks
     DXUTUpdateBackBufferDesc();
@@ -2636,28 +2611,22 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
     // Setup cursor based on current settings (window/fullscreen mode, show cursor state, clip cursor state)
     DXUTSetupCursor();
 
-    // Update the device stats text
-    CD3D11Enumeration* pd3dEnum = DXUTGetD3D11Enumeration();
-    assert( pd3dEnum != NULL );
-    CD3D11EnumAdapterInfo* pAdapterInfo = pd3dEnum->GetAdapterInfo( pNewDeviceSettings->d3d11.AdapterOrdinal );
-    DXUTUpdateD3D11DeviceStats( pNewDeviceSettings->d3d11.DriverType, &pAdapterInfo->AdapterDesc );
-
     // Call the app's device created callback if non-NULL
     const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = DXUTGetDXGIBackBufferSurfaceDesc();
-    GetDXUTState().SetInsideDeviceCallback( true );
-    LPDXUTCALLBACKD3D11DEVICECREATED pCallbackDeviceCreated = GetDXUTState().GetD3D11DeviceCreatedFunc();
+    g_pDXUTState.SetInsideDeviceCallback( true );
+    LPDXUTCALLBACKD3D11DEVICECREATED pCallbackDeviceCreated = g_pDXUTState.GetD3D11DeviceCreatedFunc();
     hr = S_OK;
     if( pCallbackDeviceCreated != NULL )
         hr = pCallbackDeviceCreated( DXUTGetD3D11Device(), pBackBufferSurfaceDesc,
-                                     GetDXUTState().GetD3D11DeviceCreatedFuncUserContext() );
-    GetDXUTState().SetInsideDeviceCallback( false );
+                                     g_pDXUTState.GetD3D11DeviceCreatedFuncUserContext() );
+    g_pDXUTState.SetInsideDeviceCallback( false );
     if( DXUTGetD3D11Device() == NULL ) // Handle DXUTShutdown from inside callback
         return E_FAIL;
     if( FAILED( hr ) )
     {
         return ( hr == DXUTERR_MEDIANOTFOUND ) ? DXUTERR_MEDIANOTFOUND : DXUTERR_CREATINGDEVICEOBJECTS;
     }
-    GetDXUTState().SetDeviceObjectsCreated( true );
+    g_pDXUTState.SetDeviceObjectsCreated( true );
 
     // Setup the render target view and viewport
     hr = DXUTCreateD3D11Views( pd3d11Device, pd3dImmediateContext, pNewDeviceSettings );
@@ -2670,20 +2639,20 @@ HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3d11DeviceFromApp )
     //DXUTCreateD3D11Counters( pd3d11Device );
 
     // Call the app's swap chain reset callback if non-NULL
-    GetDXUTState().SetInsideDeviceCallback( true );
-    LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallbackSwapChainResized = GetDXUTState().GetD3D11SwapChainResizedFunc();
+    g_pDXUTState.SetInsideDeviceCallback( true );
+    LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallbackSwapChainResized = g_pDXUTState.GetD3D11SwapChainResizedFunc();
     hr = S_OK;
     if( pCallbackSwapChainResized != NULL )
         hr = pCallbackSwapChainResized( DXUTGetD3D11Device(), pSwapChain, pBackBufferSurfaceDesc,
-                                        GetDXUTState().GetD3D11SwapChainResizedFuncUserContext() );
-    GetDXUTState().SetInsideDeviceCallback( false );
+                                        g_pDXUTState.GetD3D11SwapChainResizedFuncUserContext() );
+    g_pDXUTState.SetInsideDeviceCallback( false );
     if( DXUTGetD3D11Device() == NULL ) // Handle DXUTShutdown from inside callback
         return E_FAIL;
     if( FAILED( hr ) )
     {
         return ( hr == DXUTERR_MEDIANOTFOUND ) ? DXUTERR_MEDIANOTFOUND : DXUTERR_RESETTINGDEVICEOBJECTS;
     }
-    GetDXUTState().SetDeviceObjectsReset( true );
+    g_pDXUTState.SetDeviceObjectsReset( true );
 
     return S_OK;
 }
@@ -2701,11 +2670,11 @@ HRESULT DXUTReset3DEnvironment11()
 {
     HRESULT hr;
 
-    GetDXUTState().SetDeviceObjectsReset( false );
+    g_pDXUTState.SetDeviceObjectsReset( false );
     DXUTPause( true, true );
 
     bool bDeferredDXGIAction = false;
-    DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
     IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
     assert( pSwapChain != NULL );
 
@@ -2746,9 +2715,9 @@ HRESULT DXUTReset3DEnvironment11()
             // pDeviceSettings->d3d11.sd.BufferDesc.  SetDoNotStoreBufferSize tells DXUTCheckForDXGIBufferChange
             // not to store the height and width so that we have the correct values when calling ResizeTarget.
 
-            GetDXUTState().SetDoNotStoreBufferSize( true );
+            g_pDXUTState.SetDoNotStoreBufferSize( true );
             V_RETURN( pSwapChain->SetFullscreenState( TRUE, NULL ) );
-            GetDXUTState().SetDoNotStoreBufferSize( false );
+            g_pDXUTState.SetDoNotStoreBufferSize( false );
 
             V_RETURN( pSwapChain->ResizeTarget( &pDeviceSettings->d3d11.sd.BufferDesc ) );
             bDeferredDXGIAction = true;
@@ -2775,7 +2744,7 @@ HRESULT DXUTReset3DEnvironment11()
     // If there is a deferred DXGI action, then the device isn't reset until DXGI sends us a 
     // window message.  Only then can we mark the device as reset.
     if( !bDeferredDXGIAction )
-        GetDXUTState().SetDeviceObjectsReset( true );
+        g_pDXUTState.SetDeviceObjectsReset( true );
     DXUTPause( false, false );
 
     return S_OK;
@@ -2805,7 +2774,7 @@ void DXUTRender3DEnvironment11()
     if( NULL == pSwapChain )
         return;
 
-    if( DXUTIsRenderingPaused() || !DXUTIsActive() || GetDXUTState().GetRenderingOccluded() )
+    if( DXUTIsRenderingPaused() || !DXUTIsActive() || g_pDXUTState.GetRenderingOccluded() )
     {
         // Window is minimized/paused/occluded/or not exclusive so yield CPU time to other processes
         Sleep( 50 );
@@ -2814,15 +2783,15 @@ void DXUTRender3DEnvironment11()
     // Get the app's time, in seconds. Skip rendering if no time elapsed
 	double fTime = 0, fAbsTime = 0; float fElapsedTime = 0;
     // Store the time for the app
-    if( GetDXUTState().GetConstantFrameTime() )
+    if( g_pDXUTState.GetConstantFrameTime() )
     {
-        fElapsedTime = GetDXUTState().GetTimePerFrame();
+        fElapsedTime = g_pDXUTState.GetTimePerFrame();
 		fTime = 0;// DXUTGetTime() + fElapsedTime;
     }
 
-    GetDXUTState().SetTime( fTime );
-    GetDXUTState().SetAbsoluteTime( fAbsTime );
-    GetDXUTState().SetElapsedTime( fElapsedTime );
+    g_pDXUTState.SetTime( fTime );
+    g_pDXUTState.SetAbsoluteTime( fAbsTime );
+    g_pDXUTState.SetElapsedTime( fElapsedTime );
 
     // Start Performance Counters
 
@@ -2832,23 +2801,23 @@ void DXUTRender3DEnvironment11()
     DXUTHandleTimers();
 
     // Animate the scene by calling the app's frame move callback
-    LPDXUTCALLBACKFRAMEMOVE pCallbackFrameMove = GetDXUTState().GetFrameMoveFunc();
+    LPDXUTCALLBACKFRAMEMOVE pCallbackFrameMove = g_pDXUTState.GetFrameMoveFunc();
     if( pCallbackFrameMove != NULL )
     {
-        pCallbackFrameMove( fTime, fElapsedTime, GetDXUTState().GetFrameMoveFuncUserContext() );
+        pCallbackFrameMove( fTime, fElapsedTime, g_pDXUTState.GetFrameMoveFuncUserContext() );
         pd3dDevice = DXUTGetD3D11Device();
         if( NULL == pd3dDevice ) // Handle DXUTShutdown from inside callback
             return;
     }
 
-    if( !GetDXUTState().GetRenderingPaused() )
+    if( !g_pDXUTState.GetRenderingPaused() )
     {
         // Render the scene by calling the app's render callback
-        LPDXUTCALLBACKD3D11FRAMERENDER pCallbackFrameRender = GetDXUTState().GetD3D11FrameRenderFunc();
-        if( pCallbackFrameRender != NULL && !GetDXUTState().GetRenderingOccluded() )
+        LPDXUTCALLBACKD3D11FRAMERENDER pCallbackFrameRender = g_pDXUTState.GetD3D11FrameRenderFunc();
+        if( pCallbackFrameRender != NULL && !g_pDXUTState.GetRenderingOccluded() )
         {
             pCallbackFrameRender( pd3dDevice, pd3dImmediateContext, fTime, fElapsedTime,
-                                  GetDXUTState().GetD3D11FrameRenderFuncUserContext() );
+                                  g_pDXUTState.GetD3D11FrameRenderFuncUserContext() );
             
             pd3dDevice = DXUTGetD3D11Device();
             if( NULL == pd3dDevice ) // Handle DXUTShutdown from inside callback
@@ -2870,20 +2839,20 @@ void DXUTRender3DEnvironment11()
 #endif
     }
 
-    if ( GetDXUTState().GetSaveScreenShot() ) {
-        DXUTSnapD3D11Screenshot( GetDXUTState().GetScreenShotName(), D3DX11_IFF_BMP );
+    if ( g_pDXUTState.GetSaveScreenShot() ) {
+        DXUTSnapD3D11Screenshot( g_pDXUTState.GetScreenShotName(), D3DX11_IFF_BMP );
     }
-    if ( GetDXUTState().GetExitAfterScreenShot() ) {
+    if ( g_pDXUTState.GetExitAfterScreenShot() ) {
         DXUTShutdown();
         return;
     }
 
     DWORD dwFlags = 0;
-    if( GetDXUTState().GetRenderingOccluded() )
+    if( g_pDXUTState.GetRenderingOccluded() )
         dwFlags = DXGI_PRESENT_TEST;
     else
-        dwFlags = GetDXUTState().GetCurrentDeviceSettings()->d3d11.PresentFlags;
-    UINT SyncInterval = GetDXUTState().GetCurrentDeviceSettings()->d3d11.SyncInterval;
+        dwFlags = g_pDXUTState.GetCurrentDeviceSettings()->d3d11.PresentFlags;
+    UINT SyncInterval = g_pDXUTState.GetCurrentDeviceSettings()->d3d11.SyncInterval;
 
     // Show the frame on the primary surface.
     hr = pSwapChain->Present( SyncInterval, dwFlags );
@@ -2891,7 +2860,7 @@ void DXUTRender3DEnvironment11()
     {
         // There is a window covering our entire rendering area.
         // Don't render until we're visible again.
-        GetDXUTState().SetRenderingOccluded( true );
+        g_pDXUTState.SetRenderingOccluded( true );
     }
     else if( DXGI_ERROR_DEVICE_RESET == hr )
     {
@@ -2909,7 +2878,7 @@ void DXUTRender3DEnvironment11()
             {
                 // Reset failed, but the device wasn't lost so something bad happened, 
                 // so recreate the device to try to recover
-                DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+                DXUTDeviceSettings* pDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
                 if( FAILED( DXUTChangeDevice( pDeviceSettings, NULL, NULL, true, false ) ) )
                 {
                     DXUTShutdown();
@@ -2934,27 +2903,27 @@ void DXUTRender3DEnvironment11()
     }
     else if( SUCCEEDED( hr ) )
     {
-        if( GetDXUTState().GetRenderingOccluded() )
+        if( g_pDXUTState.GetRenderingOccluded() )
         {
             // Now that we're no longer occluded
             // allow us to render again
-            GetDXUTState().SetRenderingOccluded( false );
+            g_pDXUTState.SetRenderingOccluded( false );
         }
     }
 
     // Update current frame #
-    int nFrame = GetDXUTState().GetCurrentFrameNumber();
+    int nFrame = g_pDXUTState.GetCurrentFrameNumber();
     nFrame++;
-    GetDXUTState().SetCurrentFrameNumber( nFrame );
+    g_pDXUTState.SetCurrentFrameNumber( nFrame );
 
 
     // Update the D3D11 counter stats
     //DXUTUpdateD3D11CounterStats();
 
     // Check to see if the app should shutdown due to cmdline
-    if( GetDXUTState().GetOverrideQuitAfterFrame() != 0 )
+    if( g_pDXUTState.GetOverrideQuitAfterFrame() != 0 )
     {
-        if( nFrame > GetDXUTState().GetOverrideQuitAfterFrame() )
+        if( nFrame > g_pDXUTState.GetOverrideQuitAfterFrame() )
             DXUTShutdown();
     }
 
@@ -3028,8 +2997,8 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
 
     if( pd3dDevice != NULL )
     {
-        if (GetDXUTState().GetD3D11RasterizerState()!= NULL ) 
-            GetDXUTState().GetD3D11RasterizerState()->Release();
+        if (g_pDXUTState.GetD3D11RasterizerState()!= NULL ) 
+            g_pDXUTState.GetD3D11RasterizerState()->Release();
 
         // Call ClearState to avoid tons of messy debug spew telling us that we're deleting bound objects
         ID3D11DeviceContext* pImmediateContext = DXUTGetD3D11DeviceContext();
@@ -3040,72 +3009,72 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
         pImmediateContext->Flush();
 
         // Call the app's SwapChain lost callback
-        GetDXUTState().SetInsideDeviceCallback( true );
-        if( GetDXUTState().GetDeviceObjectsReset() )
+        g_pDXUTState.SetInsideDeviceCallback( true );
+        if( g_pDXUTState.GetDeviceObjectsReset() )
         {
             LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallbackSwapChainReleasing =
-                GetDXUTState().GetD3D11SwapChainReleasingFunc();
+                g_pDXUTState.GetD3D11SwapChainReleasingFunc();
             if( pCallbackSwapChainReleasing != NULL )
-                pCallbackSwapChainReleasing( GetDXUTState().GetD3D11SwapChainReleasingFuncUserContext() );
-            GetDXUTState().SetDeviceObjectsReset( false );
+                pCallbackSwapChainReleasing( g_pDXUTState.GetD3D11SwapChainReleasingFuncUserContext() );
+            g_pDXUTState.SetDeviceObjectsReset( false );
         }
 
         // Release our old depth stencil texture and view 
-        ID3D11Texture2D* pDS = GetDXUTState().GetD3D11DepthStencil();
+        ID3D11Texture2D* pDS = g_pDXUTState.GetD3D11DepthStencil();
         SAFE_RELEASE( pDS );
-        GetDXUTState().SetD3D11DepthStencil( NULL );
-        ID3D11DepthStencilView* pDSV = GetDXUTState().GetD3D11DepthStencilView();
+        g_pDXUTState.SetD3D11DepthStencil( NULL );
+        ID3D11DepthStencilView* pDSV = g_pDXUTState.GetD3D11DepthStencilView();
         SAFE_RELEASE( pDSV );
-        GetDXUTState().SetD3D11DepthStencilView( NULL );
+        g_pDXUTState.SetD3D11DepthStencilView( NULL );
 
         // Cleanup the render target view
-        ID3D11RenderTargetView* pRTV = GetDXUTState().GetD3D11RenderTargetView();
+        ID3D11RenderTargetView* pRTV = g_pDXUTState.GetD3D11RenderTargetView();
         SAFE_RELEASE( pRTV );
-        GetDXUTState().SetD3D11RenderTargetView( NULL );
+        g_pDXUTState.SetD3D11RenderTargetView( NULL );
 
         // Call the app's device destroyed callback
-        if( GetDXUTState().GetDeviceObjectsCreated() )
+        if( g_pDXUTState.GetDeviceObjectsCreated() )
         {
-            LPDXUTCALLBACKD3D11DEVICEDESTROYED pCallbackDeviceDestroyed = GetDXUTState().GetD3D11DeviceDestroyedFunc();
+            LPDXUTCALLBACKD3D11DEVICEDESTROYED pCallbackDeviceDestroyed = g_pDXUTState.GetD3D11DeviceDestroyedFunc();
             if( pCallbackDeviceDestroyed != NULL )
-                pCallbackDeviceDestroyed( GetDXUTState().GetD3D11DeviceDestroyedFuncUserContext() );
-            GetDXUTState().SetDeviceObjectsCreated( false );
+                pCallbackDeviceDestroyed( g_pDXUTState.GetD3D11DeviceDestroyedFuncUserContext() );
+            g_pDXUTState.SetDeviceObjectsCreated( false );
         }
 
-        GetDXUTState().SetInsideDeviceCallback( false );
+        g_pDXUTState.SetInsideDeviceCallback( false );
 
         // Release the swap chain
-        GetDXUTState().SetReleasingSwapChain( true );
+        g_pDXUTState.SetReleasingSwapChain( true );
         IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
         if( pSwapChain )
         {
             pSwapChain->SetFullscreenState( FALSE, 0 );
         }
         SAFE_RELEASE( pSwapChain );
-        GetDXUTState().SetDXGISwapChain( NULL );
-        GetDXUTState().SetReleasingSwapChain( false );
+        g_pDXUTState.SetDXGISwapChain( NULL );
+        g_pDXUTState.SetReleasingSwapChain( false );
 
         // Release the outputs.
-        IDXGIOutput** ppOutputArray = GetDXUTState().GetDXGIOutputArray();
-        UINT OutputCount = GetDXUTState().GetDXGIOutputArraySize();
+        IDXGIOutput** ppOutputArray = g_pDXUTState.GetDXGIOutputArray();
+        UINT OutputCount = g_pDXUTState.GetDXGIOutputArraySize();
         for( UINT o = 0; o < OutputCount; ++o )
         SAFE_RELEASE( ppOutputArray[o] );
         delete[] ppOutputArray;
-        GetDXUTState().SetDXGIOutputArray( NULL );
-        GetDXUTState().SetDXGIOutputArraySize( 0 );
+        g_pDXUTState.SetDXGIOutputArray( NULL );
+        g_pDXUTState.SetDXGIOutputArraySize( 0 );
 
         // Release the D3D adapter.
-        IDXGIAdapter* pAdapter = GetDXUTState().GetDXGIAdapter();
+        IDXGIAdapter* pAdapter = g_pDXUTState.GetDXGIAdapter();
         SAFE_RELEASE( pAdapter );
-        GetDXUTState().SetDXGIAdapter( NULL );
+        g_pDXUTState.SetDXGIAdapter( NULL );
 
         // Release the counters
         //DXUTDestroyD3D11Counters();
 
         // Release the D3D11 immediate context (if it exists) because it has a extra ref count on it
-        ID3D11DeviceContext* pd3d11DeviceContext = GetDXUTState().GetD3D11DeviceContext();
+        ID3D11DeviceContext* pd3d11DeviceContext = g_pDXUTState.GetD3D11DeviceContext();
         SAFE_RELEASE( pd3d11DeviceContext );
-        GetDXUTState().SetD3D11DeviceContext( NULL );
+        g_pDXUTState.SetD3D11DeviceContext( NULL );
 
         // Release the D3D device and in debug configs, displays a message box if there 
         // are unrelease objects.
@@ -3117,19 +3086,19 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
                 DXUTDisplayErrorMessage( DXUTERR_NONZEROREFCOUNT );
             }
         }
-        GetDXUTState().SetD3D11Device( NULL );
+        g_pDXUTState.SetD3D11Device( NULL );
 
         if( bReleaseSettings )
         {
-            DXUTDeviceSettings* pOldDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+            DXUTDeviceSettings* pOldDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
             SAFE_DELETE(pOldDeviceSettings);
-            GetDXUTState().SetCurrentDeviceSettings( NULL );
+            g_pDXUTState.SetCurrentDeviceSettings( NULL );
         }
 
-        DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = GetDXUTState().GetBackBufferSurfaceDescDXGI();
+        DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = g_pDXUTState.GetBackBufferSurfaceDescDXGI();
         ZeroMemory( pBackBufferSurfaceDesc, sizeof( DXGI_SURFACE_DESC ) );
 
-        GetDXUTState().SetDeviceCreated( false );
+        g_pDXUTState.SetDeviceCreated( false );
     }
 }
 
@@ -3140,7 +3109,7 @@ void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
 LRESULT CALLBACK DXUTLowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 {
     if( nCode < 0 || nCode != HC_ACTION )  // do not process message 
-        return CallNextHookEx( GetDXUTState().GetKeyboardHook(), nCode, wParam, lParam );
+        return CallNextHookEx( g_pDXUTState.GetKeyboardHook(), nCode, wParam, lParam );
 
     bool bEatKeystroke = false;
     KBDLLHOOKSTRUCT* p = ( KBDLLHOOKSTRUCT* )lParam;
@@ -3149,7 +3118,7 @@ LRESULT CALLBACK DXUTLowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lPar
         case WM_KEYDOWN:
         case WM_KEYUP:
             {
-                bEatKeystroke = ( !GetDXUTState().GetAllowShortcutKeys() &&
+                bEatKeystroke = ( !g_pDXUTState.GetAllowShortcutKeys() &&
                                   ( p->vkCode == VK_LWIN || p->vkCode == VK_RWIN ) );
                 break;
             }
@@ -3158,7 +3127,7 @@ LRESULT CALLBACK DXUTLowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lPar
     if( bEatKeystroke )
         return 1;
     else
-        return CallNextHookEx( GetDXUTState().GetKeyboardHook(), nCode, wParam, lParam );
+        return CallNextHookEx( g_pDXUTState.GetKeyboardHook(), nCode, wParam, lParam );
 }
 
 //--------------------------------------------------------------------------------------
@@ -3166,22 +3135,22 @@ LRESULT CALLBACK DXUTLowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lPar
 //--------------------------------------------------------------------------------------
 void WINAPI DXUTPause( bool bPauseTime, bool bPauseRendering )
 {
-    int nPauseTimeCount = GetDXUTState().GetPauseTimeCount();
+    int nPauseTimeCount = g_pDXUTState.GetPauseTimeCount();
     if( bPauseTime ) nPauseTimeCount++;
     else
         nPauseTimeCount--;
     if( nPauseTimeCount < 0 ) nPauseTimeCount = 0;
-    GetDXUTState().SetPauseTimeCount( nPauseTimeCount );
+    g_pDXUTState.SetPauseTimeCount( nPauseTimeCount );
 
-    int nPauseRenderingCount = GetDXUTState().GetPauseRenderingCount();
+    int nPauseRenderingCount = g_pDXUTState.GetPauseRenderingCount();
     if( bPauseRendering ) nPauseRenderingCount++;
     else
         nPauseRenderingCount--;
     if( nPauseRenderingCount < 0 ) nPauseRenderingCount = 0;
-    GetDXUTState().SetPauseRenderingCount( nPauseRenderingCount );
+    g_pDXUTState.SetPauseRenderingCount( nPauseRenderingCount );
 
-    GetDXUTState().SetRenderingPaused( nPauseRenderingCount > 0 );
-    GetDXUTState().SetTimePaused( nPauseTimeCount > 0 );
+    g_pDXUTState.SetRenderingPaused( nPauseRenderingCount > 0 );
+    g_pDXUTState.SetTimePaused( nPauseTimeCount > 0 );
 }
 
 
@@ -3201,16 +3170,16 @@ HRESULT WINAPI DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutI
     DXUTTimer.fTimeoutInSecs = fTimeoutInSecs;
     DXUTTimer.fCountdown = fTimeoutInSecs;
     DXUTTimer.bEnabled = true;
-    DXUTTimer.nID = GetDXUTState().GetTimerLastID() + 1;
-    GetDXUTState().SetTimerLastID( DXUTTimer.nID );
+    DXUTTimer.nID = g_pDXUTState.GetTimerLastID() + 1;
+    g_pDXUTState.SetTimerLastID( DXUTTimer.nID );
 
-    CGrowableArray <DXUT_TIMER>* pTimerList = GetDXUTState().GetTimerList();
+    CGrowableArray <DXUT_TIMER>* pTimerList = g_pDXUTState.GetTimerList();
     if( pTimerList == NULL )
     {
         pTimerList = new CGrowableArray <DXUT_TIMER>;
         if( pTimerList == NULL )
             return E_OUTOFMEMORY;
-        GetDXUTState().SetTimerList( pTimerList );
+        g_pDXUTState.SetTimerList( pTimerList );
     }
 
     if( FAILED( hr = pTimerList->Add( DXUTTimer ) ) )
@@ -3228,7 +3197,7 @@ HRESULT WINAPI DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutI
 //--------------------------------------------------------------------------------------
 HRESULT WINAPI DXUTKillTimer( UINT nIDEvent )
 {
-    CGrowableArray <DXUT_TIMER>* pTimerList = GetDXUTState().GetTimerList();
+    CGrowableArray <DXUT_TIMER>* pTimerList = g_pDXUTState.GetTimerList();
     if( pTimerList == NULL )
         return S_FALSE;
 
@@ -3260,7 +3229,7 @@ void DXUTHandleTimers()
 {
     float fElapsedTime = DXUTGetElapsedTime();
 
-    CGrowableArray <DXUT_TIMER>* pTimerList = GetDXUTState().GetTimerList();
+    CGrowableArray <DXUT_TIMER>* pTimerList = g_pDXUTState.GetTimerList();
     if( pTimerList == NULL )
         return;
 
@@ -3325,9 +3294,9 @@ void DXUTDisplayErrorMessage( HRESULT hr )
 
     }   
 
-    GetDXUTState().SetExitCode(nExitCode);
+    g_pDXUTState.SetExitCode(nExitCode);
 
-    bool bShowMsgBoxOnError = GetDXUTState().GetShowMsgBoxOnError();
+    bool bShowMsgBoxOnError = g_pDXUTState.GetShowMsgBoxOnError();
     if( bFound && bShowMsgBoxOnError )
     {
         if( DXUTGetWindowTitle()[0] == 0 )
@@ -3518,7 +3487,7 @@ HRESULT WINAPI DXUTToggleREF()
 //--------------------------------------------------------------------------------------
 void DXUTCheckForDXGIFullScreenSwitch()
 {
-    DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
     {
         IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
         assert( pSwapChain != NULL );
@@ -3534,13 +3503,13 @@ void DXUTCheckForDXGIFullScreenSwitch()
 
             if( bIsWindowed )
             {
-                GetDXUTState().SetWindowBackBufferWidthAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Width );
-                GetDXUTState().SetWindowBackBufferHeightAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Height );
+                g_pDXUTState.SetWindowBackBufferWidthAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Width );
+                g_pDXUTState.SetWindowBackBufferHeightAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Height );
             }
             else
             {
-                GetDXUTState().SetFullScreenBackBufferWidthAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Width );
-                GetDXUTState().SetFullScreenBackBufferHeightAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Height );
+                g_pDXUTState.SetFullScreenBackBufferWidthAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Width );
+                g_pDXUTState.SetFullScreenBackBufferHeightAtModeChange( deviceSettings.d3d11.sd.BufferDesc.Height );
             }
         }
     }
@@ -3552,7 +3521,7 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
     RECT rcCurrentClient;
     GetClientRect( DXUTGetHWND(), &rcCurrentClient );
 
-    DXUTDeviceSettings* pDevSettings = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pDevSettings = g_pDXUTState.GetCurrentDeviceSettings();
     assert( pDevSettings != NULL );
 
     IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
@@ -3564,25 +3533,25 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
     pDevSettings->d3d11.sd.Windowed = !bFullScreen;
 
     // Call releasing
-    GetDXUTState().SetInsideDeviceCallback( true );
-    LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallbackSwapChainReleasing = GetDXUTState().GetD3D11SwapChainReleasingFunc
+    g_pDXUTState.SetInsideDeviceCallback( true );
+    LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallbackSwapChainReleasing = g_pDXUTState.GetD3D11SwapChainReleasingFunc
         ();
     if( pCallbackSwapChainReleasing != NULL )
-        pCallbackSwapChainReleasing( GetDXUTState().GetD3D11SwapChainResizedFuncUserContext() );
-    GetDXUTState().SetInsideDeviceCallback( false );
+        pCallbackSwapChainReleasing( g_pDXUTState.GetD3D11SwapChainResizedFuncUserContext() );
+    g_pDXUTState.SetInsideDeviceCallback( false );
 
     // Release our old depth stencil texture and view 
-    ID3D11Texture2D* pDS = GetDXUTState().GetD3D11DepthStencil();
+    ID3D11Texture2D* pDS = g_pDXUTState.GetD3D11DepthStencil();
     SAFE_RELEASE( pDS );
-    GetDXUTState().SetD3D11DepthStencil( NULL );
-    ID3D11DepthStencilView* pDSV = GetDXUTState().GetD3D11DepthStencilView();
+    g_pDXUTState.SetD3D11DepthStencil( NULL );
+    ID3D11DepthStencilView* pDSV = g_pDXUTState.GetD3D11DepthStencilView();
     SAFE_RELEASE( pDSV );
-    GetDXUTState().SetD3D11DepthStencilView( NULL );
+    g_pDXUTState.SetD3D11DepthStencilView( NULL );
 
     // Release our old render target view
-    ID3D11RenderTargetView* pRTV = GetDXUTState().GetD3D11RenderTargetView();
+    ID3D11RenderTargetView* pRTV = g_pDXUTState.GetD3D11RenderTargetView();
     SAFE_RELEASE( pRTV );
-    GetDXUTState().SetD3D11RenderTargetView( NULL );
+    g_pDXUTState.SetD3D11RenderTargetView( NULL );
 
     // Alternate between 0 and DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH when resizing buffers.
     // When in windowed mode, we want 0 since this allows the app to change to the desktop
@@ -3600,7 +3569,7 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
                                   pDevSettings->d3d11.sd.BufferDesc.Format,
                                   Flags ) ;
 
-    if( !GetDXUTState().GetDoNotStoreBufferSize() )
+    if( !g_pDXUTState.GetDoNotStoreBufferSize() )
     {
         pDevSettings->d3d11.sd.BufferDesc.Width = ( UINT )rcCurrentClient.right;
         pDevSettings->d3d11.sd.BufferDesc.Height = ( UINT )rcCurrentClient.bottom;
@@ -3622,32 +3591,32 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
     DXUTSetupCursor();
 
     // Call the app's SwapChain reset callback
-    GetDXUTState().SetInsideDeviceCallback( true );
+    g_pDXUTState.SetInsideDeviceCallback( true );
     const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = DXUTGetDXGIBackBufferSurfaceDesc();
-    LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallbackSwapChainResized = GetDXUTState().GetD3D11SwapChainResizedFunc();
+    LPDXUTCALLBACKD3D11SWAPCHAINRESIZED pCallbackSwapChainResized = g_pDXUTState.GetD3D11SwapChainResizedFunc();
     hr = S_OK;
     if( pCallbackSwapChainResized != NULL )
         hr = pCallbackSwapChainResized( pd3dDevice, pSwapChain, pBackBufferSurfaceDesc,
-                                        GetDXUTState().GetD3D11SwapChainResizedFuncUserContext() );
-    GetDXUTState().SetInsideDeviceCallback( false );
+                                        g_pDXUTState.GetD3D11SwapChainResizedFuncUserContext() );
+    g_pDXUTState.SetInsideDeviceCallback( false );
     if( FAILED( hr ) )
     {
         // If callback failed, cleanup
         if( hr != DXUTERR_MEDIANOTFOUND )
             hr = DXUTERR_RESETTINGDEVICEOBJECTS;
 
-        GetDXUTState().SetInsideDeviceCallback( true );
+        g_pDXUTState.SetInsideDeviceCallback( true );
         LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallbackSwapChainReleasing =
-            GetDXUTState().GetD3D11SwapChainReleasingFunc();
+            g_pDXUTState.GetD3D11SwapChainReleasingFunc();
         if( pCallbackSwapChainReleasing != NULL )
-            pCallbackSwapChainReleasing( GetDXUTState().GetD3D11SwapChainResizedFuncUserContext() );
-        GetDXUTState().SetInsideDeviceCallback( false );
+            pCallbackSwapChainReleasing( g_pDXUTState.GetD3D11SwapChainResizedFuncUserContext() );
+        g_pDXUTState.SetInsideDeviceCallback( false );
         DXUTPause( false, false );
         PostQuitMessage( 0 );
     }
     else
     {
-        GetDXUTState().SetDeviceObjectsReset( true );
+        g_pDXUTState.SetDeviceObjectsReset( true );
         DXUTPause( false, false );
     }
 }
@@ -3657,7 +3626,7 @@ void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
 //--------------------------------------------------------------------------------------
 void DXUTCheckForDXGIBufferChange()
 {
-    if(DXUTGetDXGISwapChain() != NULL && !GetDXUTState().GetReleasingSwapChain() )
+    if(DXUTGetDXGISwapChain() != NULL && !g_pDXUTState.GetReleasingSwapChain() )
     {
         //DXUTgetdxgi
         IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
@@ -3679,7 +3648,7 @@ void DXUTCheckForWindowSizeChange()
 {
     // Skip the check for various reasons
           
-    if( GetDXUTState().GetIgnoreSizeChange() || !GetDXUTState().GetDeviceCreated() )
+    if( g_pDXUTState.GetIgnoreSizeChange() || !g_pDXUTState.GetDeviceCreated() )
         return;
 	DXUTCheckForDXGIBufferChange();
 }
@@ -3692,13 +3661,13 @@ void DXUTCheckForWindowSizeChange()
 void DXUTCheckForWindowChangingMonitors()
 {
     // Skip this check for various reasons
-    if( !GetDXUTState().GetAutoChangeAdapter() ||
-        GetDXUTState().GetIgnoreSizeChange() || !GetDXUTState().GetDeviceCreated() || !DXUTIsWindowed() )
+    if( !g_pDXUTState.GetAutoChangeAdapter() ||
+        g_pDXUTState.GetIgnoreSizeChange() || !g_pDXUTState.GetDeviceCreated() || !DXUTIsWindowed() )
         return;
 
     HRESULT hr;
     HMONITOR hWindowMonitor = DXUTMonitorFromWindow( DXUTGetHWND(), MONITOR_DEFAULTTOPRIMARY );
-    HMONITOR hAdapterMonitor = GetDXUTState().GetAdapterMonitor();
+    HMONITOR hAdapterMonitor = g_pDXUTState.GetAdapterMonitor();
     if( hWindowMonitor != hAdapterMonitor )
     {
         UINT newOrdinal;
@@ -3724,7 +3693,7 @@ void DXUTCheckForWindowChangingMonitors()
                 if( hr == E_ABORT )
                 {
                     // so nothing changed and keep from attempting to switch adapters next time
-                    GetDXUTState().SetAutoChangeAdapter( false );
+                    g_pDXUTState.SetAutoChangeAdapter( false );
                 }
                 else if( FAILED( hr ) )
                 {
@@ -3856,13 +3825,13 @@ HRESULT DXUTHandleDeviceRemoved()
     // Device has been removed. Call the application's callback if set.  If no callback
     // has been set, then just look for a new device
     bool bLookForNewDevice = true;
-    LPDXUTCALLBACKDEVICEREMOVED pDeviceRemovedFunc = GetDXUTState().GetDeviceRemovedFunc();
+    LPDXUTCALLBACKDEVICEREMOVED pDeviceRemovedFunc = g_pDXUTState.GetDeviceRemovedFunc();
     if( pDeviceRemovedFunc )
-        bLookForNewDevice = pDeviceRemovedFunc( GetDXUTState().GetDeviceRemovedFuncUserContext() );
+        bLookForNewDevice = pDeviceRemovedFunc( g_pDXUTState.GetDeviceRemovedFuncUserContext() );
 
     if( bLookForNewDevice )
     {
-        DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+        DXUTDeviceSettings* pDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
 
 
         hr = DXUTSnapDeviceSettingsToEnumDevice( pDeviceSettings, false);
@@ -3882,17 +3851,17 @@ HRESULT DXUTHandleDeviceRemoved()
 
 
 //--------------------------------------------------------------------------------------
-// Stores back buffer surface desc in GetDXUTState().GetBackBufferSurfaceDesc10()
+// Stores back buffer surface desc in g_pDXUTState.GetBackBufferSurfaceDesc10()
 //--------------------------------------------------------------------------------------
 void DXUTUpdateBackBufferDesc()
 {
     {
         HRESULT hr;
         ID3D11Texture2D* pBackBuffer;
-        IDXGISwapChain* pSwapChain = GetDXUTState().GetDXGISwapChain();
+        IDXGISwapChain* pSwapChain = g_pDXUTState.GetDXGISwapChain();
         assert( pSwapChain != NULL );
         hr = pSwapChain->GetBuffer( 0, __uuidof( *pBackBuffer ), ( LPVOID* )&pBackBuffer );
-        DXGI_SURFACE_DESC* pBBufferSurfaceDesc = GetDXUTState().GetBackBufferSurfaceDescDXGI();
+        DXGI_SURFACE_DESC* pBBufferSurfaceDesc = g_pDXUTState.GetBackBufferSurfaceDescDXGI();
         ZeroMemory( pBBufferSurfaceDesc, sizeof( DXGI_SURFACE_DESC ) );
         if( SUCCEEDED( hr ) )
         {
@@ -3915,7 +3884,7 @@ void DXUTSetupCursor()
 {
     {
         // Clip cursor if requested
-        if( !DXUTIsWindowed() && GetDXUTState().GetClipCursorWhenFullScreen() )
+        if( !DXUTIsWindowed() && g_pDXUTState.GetClipCursorWhenFullScreen() )
         {
             // Confine cursor to full screen window
             RECT rcWindow;
@@ -3934,25 +3903,25 @@ void DXUTSetupCursor()
 //--------------------------------------------------------------------------------------
 void DXUTUpdateFrameStats()
 {
-    if( GetDXUTState().GetNoStats() )
+    if( g_pDXUTState.GetNoStats() )
         return;
 
     // Keep track of the frame count
-    double fLastTime = GetDXUTState().GetLastStatsUpdateTime();
-    DWORD dwFrames = GetDXUTState().GetLastStatsUpdateFrames();
-    double fAbsTime = GetDXUTState().GetAbsoluteTime();
+    double fLastTime = g_pDXUTState.GetLastStatsUpdateTime();
+    DWORD dwFrames = g_pDXUTState.GetLastStatsUpdateFrames();
+    double fAbsTime = g_pDXUTState.GetAbsoluteTime();
     dwFrames++;
-    GetDXUTState().SetLastStatsUpdateFrames( dwFrames );
+    g_pDXUTState.SetLastStatsUpdateFrames( dwFrames );
 
     // Update the scene stats once per second
     if( fAbsTime - fLastTime > 1.0f )
     {
         float fFPS = ( float )( dwFrames / ( fAbsTime - fLastTime ) );
-        GetDXUTState().SetFPS( fFPS );
-        GetDXUTState().SetLastStatsUpdateTime( fAbsTime );
-        GetDXUTState().SetLastStatsUpdateFrames( 0 );
+        g_pDXUTState.SetFPS( fFPS );
+        g_pDXUTState.SetLastStatsUpdateTime( fAbsTime );
+        g_pDXUTState.SetLastStatsUpdateFrames( 0 );
 
-        WCHAR* pstrFPS = GetDXUTState().GetFPSStats();
+        WCHAR* pstrFPS = g_pDXUTState.GetFPSStats();
         swprintf_s( pstrFPS, 64, L"%0.2f fps ", fFPS );
     }
 }
@@ -3964,9 +3933,9 @@ void DXUTUpdateFrameStats()
 //--------------------------------------------------------------------------------------
 LPCWSTR WINAPI DXUTGetFrameStats( bool bShowFPS )
 {
-    WCHAR* pstrFrameStats = GetDXUTState().GetFrameStats();
-    WCHAR* pstrFPS = ( bShowFPS ) ? GetDXUTState().GetFPSStats() : L"";
-    swprintf_s( pstrFrameStats, 256, GetDXUTState().GetStaticFrameStats(), pstrFPS );
+    WCHAR* pstrFrameStats = g_pDXUTState.GetFrameStats();
+    WCHAR* pstrFPS = ( bShowFPS ) ? g_pDXUTState.GetFPSStats() : L"";
+    swprintf_s( pstrFrameStats, 256, g_pDXUTState.GetStaticFrameStats(), pstrFPS );
     return pstrFrameStats;
 }
 
@@ -3975,11 +3944,11 @@ LPCWSTR WINAPI DXUTGetFrameStats( bool bShowFPS )
 //--------------------------------------------------------------------------------------
 void DXUTUpdateD3D11DeviceStats( D3D_DRIVER_TYPE DeviceType, DXGI_ADAPTER_DESC* pAdapterDesc )
 {
-    if( GetDXUTState().GetNoStats() )
+    if( g_pDXUTState.GetNoStats() )
         return;
 
     // Store device description
-    WCHAR* pstrDeviceStats = GetDXUTState().GetDeviceStats();
+    WCHAR* pstrDeviceStats = g_pDXUTState.GetDeviceStats();
     if( DeviceType == D3D_DRIVER_TYPE_REFERENCE )
         wcscpy_s( pstrDeviceStats, 256, L"REFERENCE" );
     else if( DeviceType == D3D_DRIVER_TYPE_HARDWARE )
@@ -3996,7 +3965,7 @@ void DXUTUpdateD3D11DeviceStats( D3D_DRIVER_TYPE DeviceType, DXGI_ADAPTER_DESC* 
         wcscat_s( pstrDeviceStats, 256, L": " );
 
         // Try to get a unique description from the CD3D11EnumDeviceSettingsCombo
-        DXUTDeviceSettings* pDeviceSettings = GetDXUTState().GetCurrentDeviceSettings();
+        DXUTDeviceSettings* pDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
         if( !pDeviceSettings )
             return;
 
@@ -4020,7 +3989,7 @@ DXUTDeviceSettings WINAPI DXUTGetDeviceSettings()
 {
     // Return a copy of device settings of the current device.  If no device exists yet, then
     // return a blank device settings struct
-    DXUTDeviceSettings* pDS = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pDS = g_pDXUTState.GetCurrentDeviceSettings();
     if( pDS )
     {
         return *pDS;
@@ -4035,7 +4004,7 @@ DXUTDeviceSettings WINAPI DXUTGetDeviceSettings()
 
 bool WINAPI DXUTIsVsyncEnabled()
 {
-    DXUTDeviceSettings* pDS = GetDXUTState().GetCurrentDeviceSettings();
+    DXUTDeviceSettings* pDS = g_pDXUTState.GetCurrentDeviceSettings();
     if( pDS )
     {
         return ( pDS->d3d11.SyncInterval == 0 );
@@ -4048,7 +4017,7 @@ bool WINAPI DXUTIsVsyncEnabled()
 
 bool WINAPI DXUTIsKeyDown( BYTE vKey )
 {
-    bool* bKeys = GetDXUTState().GetKeys();
+    bool* bKeys = g_pDXUTState.GetKeys();
     if( vKey >= 0xA0 && vKey <= 0xA5 )  // VK_LSHIFT, VK_RSHIFT, VK_LCONTROL, VK_RCONTROL, VK_LMENU, VK_RMENU
         return GetAsyncKeyState( vKey ) != 0; // these keys only are tracked via GetAsyncKeyState()
     else if( vKey >= 0x01 && vKey <= 0x06 && vKey != 0x03 ) // mouse buttons (VK_*BUTTON)
@@ -4059,52 +4028,52 @@ bool WINAPI DXUTIsKeyDown( BYTE vKey )
 
 bool WINAPI DXUTWasKeyPressed( BYTE vKey )
 {
-    bool* bLastKeys = GetDXUTState().GetLastKeys();
-    bool* bKeys = GetDXUTState().GetKeys();
-    GetDXUTState().SetAppCalledWasKeyPressed( true );
+    bool* bLastKeys = g_pDXUTState.GetLastKeys();
+    bool* bKeys = g_pDXUTState.GetKeys();
+    g_pDXUTState.SetAppCalledWasKeyPressed( true );
     return ( !bLastKeys[vKey] && bKeys[vKey] );
 }
 
 bool WINAPI DXUTIsMouseButtonDown( BYTE vButton )
 {
-    bool* bMouseButtons = GetDXUTState().GetMouseButtons();
+    bool* bMouseButtons = g_pDXUTState.GetMouseButtons();
     int nIndex = DXUTMapButtonToArrayIndex( vButton );
     return bMouseButtons[nIndex];
 }
 
 void WINAPI DXUTSetMultimonSettings( bool bAutoChangeAdapter )
 {
-    GetDXUTState().SetAutoChangeAdapter( bAutoChangeAdapter );
+    g_pDXUTState.SetAutoChangeAdapter( bAutoChangeAdapter );
 }
 
 void WINAPI DXUTSetHotkeyHandling( bool bAltEnterToToggleFullscreen, bool bEscapeToQuit, bool bPauseToToggleTimePause )
 {
-    GetDXUTState().SetHandleEscape( bEscapeToQuit );
-    GetDXUTState().SetHandleAltEnter( bAltEnterToToggleFullscreen );
-    GetDXUTState().SetHandlePause( bPauseToToggleTimePause );
+    g_pDXUTState.SetHandleEscape( bEscapeToQuit );
+    g_pDXUTState.SetHandleAltEnter( bAltEnterToToggleFullscreen );
+    g_pDXUTState.SetHandlePause( bPauseToToggleTimePause );
 }
 
 void WINAPI DXUTSetCursorSettings( bool bShowCursorWhenFullScreen, bool bClipCursorWhenFullScreen )
 {
-    GetDXUTState().SetClipCursorWhenFullScreen( bClipCursorWhenFullScreen );
-    GetDXUTState().SetShowCursorWhenFullScreen( bShowCursorWhenFullScreen );
+    g_pDXUTState.SetClipCursorWhenFullScreen( bClipCursorWhenFullScreen );
+    g_pDXUTState.SetShowCursorWhenFullScreen( bShowCursorWhenFullScreen );
     DXUTSetupCursor();
 }
 
 void WINAPI DXUTSetWindowSettings( bool bCallDefWindowProc )
 {
-    GetDXUTState().SetCallDefWindowProc( bCallDefWindowProc );
+    g_pDXUTState.SetCallDefWindowProc( bCallDefWindowProc );
 }
 
 void WINAPI DXUTSetConstantFrameTime( bool bEnabled, float fTimePerFrame )
 {
-    if( GetDXUTState().GetOverrideConstantFrameTime() )
+    if( g_pDXUTState.GetOverrideConstantFrameTime() )
     {
-        bEnabled = GetDXUTState().GetOverrideConstantFrameTime();
-        fTimePerFrame = GetDXUTState().GetOverrideConstantTimePerFrame();
+        bEnabled = g_pDXUTState.GetOverrideConstantFrameTime();
+        fTimePerFrame = g_pDXUTState.GetOverrideConstantTimePerFrame();
     }
-    GetDXUTState().SetConstantFrameTime( bEnabled );
-    GetDXUTState().SetTimePerFrame( fTimePerFrame );
+    g_pDXUTState.SetConstantFrameTime( bEnabled );
+    g_pDXUTState.SetTimePerFrame( fTimePerFrame );
 }
 
 
@@ -4113,8 +4082,8 @@ void WINAPI DXUTSetConstantFrameTime( bool bEnabled, float fTimePerFrame )
 //--------------------------------------------------------------------------------------
 void WINAPI DXUTResetFrameworkState()
 {
-    GetDXUTState().Destroy();
-    GetDXUTState().Create();
+    g_pDXUTState.Destroy();
+    g_pDXUTState.Create();
 }
 
 
@@ -4127,7 +4096,7 @@ void WINAPI DXUTShutdown( int nExitCode )
     if( hWnd != NULL )
         SendMessage( hWnd, WM_CLOSE, 0, 0 );
 
-    GetDXUTState().SetExitCode( nExitCode );
+    g_pDXUTState.SetExitCode( nExitCode );
 
     DXUTCleanup3DEnvironment( true );
 
@@ -4141,9 +4110,9 @@ void WINAPI DXUTShutdown( int nExitCode )
     // restored when the crashed app is run again.
 
     // Shutdown D3D11
-    IDXGIFactory1* pDXGIFactory = GetDXUTState().GetDXGIFactory();
+    IDXGIFactory1* pDXGIFactory = g_pDXUTState.GetDXGIFactory();
     SAFE_RELEASE( pDXGIFactory );
-    GetDXUTState().SetDXGIFactory( NULL );
+    g_pDXUTState.SetDXGIFactory( NULL );
 }
 
 void DXUTApplyDefaultDeviceSettings(DXUTDeviceSettings *modifySettings) {
