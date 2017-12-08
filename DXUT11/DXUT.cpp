@@ -1009,10 +1009,6 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
         // Find the window's initial size, but it might be changed later
         int nDefaultWidth = 640;
         int nDefaultHeight = 480;
-        if( g_pDXUTState.GetOverrideWidth() != 0 )
-            nDefaultWidth = g_pDXUTState.GetOverrideWidth();
-        if( g_pDXUTState.GetOverrideHeight() != 0 )
-            nDefaultHeight = g_pDXUTState.GetOverrideHeight();
 
         RECT rc;
         SetRect( &rc, 0, 0, nDefaultWidth, nDefaultHeight );
