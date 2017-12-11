@@ -37,25 +37,12 @@ void WINAPI DXUTDestroyD3D11Enumeration()
     SAFE_DELETE( g_pDXUTD3D11Enumeration );
 }
 
-class DXUTMemoryHelperD3D11Enum
-{
-public:
-DXUTMemoryHelperD3D11Enum()
-{
-    DXUTCreateD3D11Enumeration();
-}
-~DXUTMemoryHelperD3D11Enum()
-{
-    DXUTDestroyD3D11Enumeration();
-}
-};
-
-
 //--------------------------------------------------------------------------------------
 CD3D11Enumeration* WINAPI DXUTGetD3D11Enumeration( bool bForceEnumerate, bool bEnumerateAllAdapterFormats, D3D_FEATURE_LEVEL forceFL )
 {
     // Using an static class with accessor function to allow control of the construction order
-    static DXUTMemoryHelperD3D11Enum d3d11enumMemory;
+  //  static DXUTMemoryHelperD3D11Enum d3d11enumMemory;
+	DXUTCreateD3D11Enumeration();
     if( g_pDXUTD3D11Enumeration && ( !g_pDXUTD3D11Enumeration->HasEnumerated() || bForceEnumerate ) )
     {
         g_pDXUTD3D11Enumeration->SetEnumerateAllAdapterFormats( bEnumerateAllAdapterFormats );
