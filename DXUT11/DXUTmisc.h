@@ -79,26 +79,6 @@ protected:
 };
 
 //--------------------------------------------------------------------------------------
-// Debug printing support
-// See dxerr.h for more debug printing support
-//--------------------------------------------------------------------------------------
-void WINAPI DXUTOutputDebugStringW( LPCWSTR strMsg, ... );
-void WINAPI DXUTOutputDebugStringA( LPCSTR strMsg, ... );
-HRESULT WINAPI DXUTTrace( const CHAR* strFile, DWORD dwLine, HRESULT hr, const WCHAR* strMsg, bool bPopMsgBox );
-void WINAPI DXUTTraceDecl( D3DVERTEXELEMENT9 decl[MAX_FVF_DECL_SIZE] );
-WCHAR* WINAPI DXUTTraceD3DDECLUSAGEtoString( BYTE u );
-WCHAR* WINAPI DXUTTraceD3DDECLMETHODtoString( BYTE m );
-WCHAR* WINAPI DXUTTraceD3DDECLTYPEtoString( BYTE t );
-WCHAR* WINAPI DXUTTraceWindowsMessage( UINT uMsg );
-
-#ifdef UNICODE
-#define DXUTOutputDebugString DXUTOutputDebugStringW
-#else
-#define DXUTOutputDebugString DXUTOutputDebugStringA
-#endif
-
-
-//--------------------------------------------------------------------------------------
 // Direct3D9 dynamic linking support -- calls top-level D3D9 APIs with graceful
 // failure if APIs are not present.
 //--------------------------------------------------------------------------------------

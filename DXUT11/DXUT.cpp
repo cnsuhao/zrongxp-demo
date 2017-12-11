@@ -494,7 +494,7 @@ void DXUTCheckForDXGIFullScreenSwitch();
 void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullscreen );
 void DXUTCheckForDXGIBufferChange();
 void DXUTCheckForWindowSizeChange();
-HMONITOR DXUTGetMonitorFromAdapter( DXUTDeviceSettings* pDeviceSettings );
+HMONITOR DXUTGetMonitorFromAdapter();
 HRESULT DXUTGetAdapterOrdinalFromMonitor( HMONITOR hMonitor, UINT* pAdapterOrdinal );
 HRESULT DXUTGetOutputOrdinalFromMonitor( HMONITOR hMonitor, UINT* pOutputOrdinal );
 HRESULT DXUTHandleDeviceRemoved();
@@ -1760,67 +1760,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         return hr;
     }
 
-    HMONITOR hAdapterMonitor = DXUTGetMonitorFromAdapter( pNewDeviceSettings );
-    g_pDXUTState.SetAdapterMonitor( hAdapterMonitor );
-
-    // Check to see if the window needs to be resized.  
-    // Handle cases where the window is minimized and maxmimized as well.
- 
-    bool bNeedToResize = false;
-    if( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) )                      // only resize if pp.BackbufferWidth/Height were not 0
-    {
-        UINT nClientWidth;
-        UINT nClientHeight;
-        {
-            // Window is restored or maximized so just get its client rect
-            RECT rcClient;
-            GetClientRect( DXUTGetHWNDDeviceWindowed(), &rcClient );
-            nClientWidth = ( UINT )( rcClient.right - rcClient.left );
-            nClientHeight = ( UINT )( rcClient.bottom - rcClient.top );
-        }
-
-        // Now that we know the client rect, compare it against the back buffer size
-        // to see if the client rect is already the right size
-       // if( nClientWidth != DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) ||
-      //      nClientHeight != DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) )
-        {
-            bNeedToResize = true;
-        }
-
-        if( bClipWindowToSingleAdapter && !IsIconic( DXUTGetHWNDDeviceWindowed() ) )
-        {
-            // Get the rect of the monitor attached to the adapter
-            MONITORINFO miAdapter;
-            miAdapter.cbSize = sizeof( MONITORINFO );
-            hAdapterMonitor = DXUTGetMonitorFromAdapter( pNewDeviceSettings );
-            DXUTGetMonitorInfo( hAdapterMonitor, &miAdapter );
-            HMONITOR hWindowMonitor = DXUTMonitorFromWindow( DXUTGetHWND(), MONITOR_DEFAULTTOPRIMARY );
-
-            // Get the rect of the window
-            RECT rcWindow;
-            GetWindowRect( DXUTGetHWNDDeviceWindowed(), &rcWindow );
-
-            // Check if the window rect is fully inside the adapter's vitural screen rect
-            if( ( rcWindow.left < miAdapter.rcWork.left ||
-                  rcWindow.right > miAdapter.rcWork.right ||
-                  rcWindow.top < miAdapter.rcWork.top ||
-                  rcWindow.bottom > miAdapter.rcWork.bottom ) )
-            {
-                if( hWindowMonitor == hAdapterMonitor && IsZoomed( DXUTGetHWNDDeviceWindowed() ) )
-                {
-                    // If the window is maximized and on the same monitor as the adapter, then 
-                    // no need to clip to single adapter as the window is already clipped 
-                    // even though the rcWindow rect is outside of the miAdapter.rcWork
-                }
-                else
-                {
-                    bNeedToResize = true;
-                }
-            }
-        }
-    }
-
-    // Only resize window if needed 
+	bool bNeedToResize = true;
 
     if( bNeedToResize )
     {
@@ -1829,7 +1769,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             // Get the rect of the monitor attached to the adapter
             MONITORINFO miAdapter;
             miAdapter.cbSize = sizeof( MONITORINFO );
-            hAdapterMonitor = DXUTGetMonitorFromAdapter( pNewDeviceSettings );
+			HMONITOR hAdapterMonitor = DXUTGetMonitorFromAdapter();
             DXUTGetMonitorInfo( hAdapterMonitor, &miAdapter );
 
             // Get the rect of the monitor attached to the window
@@ -1838,8 +1778,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             DXUTGetMonitorInfo( DXUTMonitorFromWindow( DXUTGetHWND(), MONITOR_DEFAULTTOPRIMARY ), &miWindow );
 
             // Do something reasonable if the BackBuffer size is greater than the monitor size
-            int nAdapterMonitorWidth = miAdapter.rcWork.right - miAdapter.rcWork.left;
-            int nAdapterMonitorHeight = miAdapter.rcWork.bottom - miAdapter.rcWork.top;
+			int nAdapterMonitorWidth = 1920;// miAdapter.rcWork.right - miAdapter.rcWork.left;
+			int nAdapterMonitorHeight = 1080;// miAdapter.rcWork.bottom - miAdapter.rcWork.top;
 
 			int nClientWidth = pNewDeviceSettings->d3d11.sd.BufferDesc.Width;
 			int nClientHeight = pNewDeviceSettings->d3d11.sd.BufferDesc.Height;
@@ -3344,20 +3284,15 @@ void WINAPI DXUTRender3DEnvironment()
 //--------------------------------------------------------------------------------------
 // Returns the HMONITOR attached to an adapter/output
 //--------------------------------------------------------------------------------------
-HMONITOR DXUTGetMonitorFromAdapter( DXUTDeviceSettings* pDeviceSettings )
+HMONITOR DXUTGetMonitorFromAdapter(  )
 {
-    if( pDeviceSettings->ver == DXUT_D3D11_DEVICE )
-    {
         CD3D11Enumeration* pD3DEnum = DXUTGetD3D11Enumeration();
         assert( pD3DEnum != NULL );
-        CD3D11EnumOutputInfo* pOutputInfo = pD3DEnum->GetOutputInfo( pDeviceSettings->d3d11.AdapterOrdinal,
-                                                                     pDeviceSettings->d3d11.Output );
+        CD3D11EnumOutputInfo* pOutputInfo = pD3DEnum->GetOutputInfo( 0,
+                                                                     0 );
         if( !pOutputInfo )
             return 0;
         return DXUTMonitorFromRect( &pOutputInfo->Desc.DesktopCoordinates, MONITOR_DEFAULTTONEAREST );
-    }
-
-    return 0;
 }
 
 
