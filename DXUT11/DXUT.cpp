@@ -494,8 +494,6 @@ void DXUTCheckForDXGIFullScreenSwitch();
 void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullscreen );
 void DXUTCheckForDXGIBufferChange();
 void DXUTCheckForWindowSizeChange();
-void DXUTCheckForWindowChangingMonitors();
-void DXUTCleanup3DEnvironment( bool bReleaseSettings );
 HMONITOR DXUTGetMonitorFromAdapter( DXUTDeviceSettings* pDeviceSettings );
 HRESULT DXUTGetAdapterOrdinalFromMonitor( HMONITOR hMonitor, UINT* pAdapterOrdinal );
 HRESULT DXUTGetOutputOrdinalFromMonitor( HMONITOR hMonitor, UINT* pOutputOrdinal );
@@ -508,21 +506,8 @@ HRESULT DXUTCreateD3D11Views( ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3
 HRESULT DXUTCreate3DEnvironment11( ID3D11Device* pd3dDeviceFromApp );
 HRESULT DXUTReset3DEnvironment11();
 void DXUTRender3DEnvironment11();
-void DXUTCleanup3DEnvironment11( bool bReleaseSettings = true );
 void DXUTUpdateD3D11DeviceStats( D3D_DRIVER_TYPE DeviceType, DXGI_ADAPTER_DESC* pAdapterDesc );
 
-
-//--------------------------------------------------------------------------------------
-// Internal helper functions 
-//--------------------------------------------------------------------------------------
-UINT DXUTGetBackBufferWidthFromDS( DXUTDeviceSettings* pNewDeviceSettings )     
-{ 
-    return pNewDeviceSettings->d3d11.sd.BufferDesc.Width; 
-}
-UINT DXUTGetBackBufferHeightFromDS( DXUTDeviceSettings* pNewDeviceSettings )    
-{ 
-    return pNewDeviceSettings->d3d11.sd.BufferDesc.Height; 
-}
 bool DXUTGetIsWindowedFromDS( DXUTDeviceSettings* pNewDeviceSettings )          
 { 
     if (!pNewDeviceSettings) 
@@ -1243,66 +1228,66 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
         case WM_SIZE:
             
-           if( SIZE_MINIMIZED == wParam )
-            {
-                DXUTPause( true, true ); // Pause while we're minimized
+           //if( SIZE_MINIMIZED == wParam )
+           // {
+           //     DXUTPause( true, true ); // Pause while we're minimized
 
-                g_pDXUTState.SetMinimized( true );
-                g_pDXUTState.SetMaximized( false );
-            }
-            else
-            {
-                RECT rcCurrentClient;
-                GetClientRect( DXUTGetHWND(), &rcCurrentClient );
-                if( rcCurrentClient.top == 0 && rcCurrentClient.bottom == 0 )
-                {
-                    // Rapidly clicking the task bar to minimize and restore a window
-                    // can cause a WM_SIZE message with SIZE_RESTORED when 
-                    // the window has actually become minimized due to rapid change
-                    // so just ignore this message
-                }
-                else if( SIZE_MAXIMIZED == wParam )
-                {
-                    if( g_pDXUTState.GetMinimized() )
-                        DXUTPause( false, false ); // Unpause since we're no longer minimized
-                    g_pDXUTState.SetMinimized( false );
-                    g_pDXUTState.SetMaximized( true );
-                    DXUTCheckForWindowSizeChange();
-                    DXUTCheckForWindowChangingMonitors();
-                }
-                else if( SIZE_RESTORED == wParam )
-                {
-                    //DXUTCheckForDXGIFullScreenSwitch();
-                    if( g_pDXUTState.GetMaximized() )
-                    {
-                        g_pDXUTState.SetMaximized( false );
-                        DXUTCheckForWindowSizeChange();
-                        DXUTCheckForWindowChangingMonitors();
-                    }
-                    else if( g_pDXUTState.GetMinimized() )
-                    {
-                        DXUTPause( false, false ); // Unpause since we're no longer minimized
-                        g_pDXUTState.SetMinimized( false );
-                        DXUTCheckForWindowSizeChange();
-                        DXUTCheckForWindowChangingMonitors();
-                    }
-                    else if( g_pDXUTState.GetInSizeMove() )
-                    {
-                        // If we're neither maximized nor minimized, the window size 
-                        // is changing by the user dragging the window edges.  In this 
-                        // case, we don't reset the device yet -- we wait until the 
-                        // user stops dragging, and a WM_EXITSIZEMOVE message comes.
-                    }
-                    else
-                    {
-                        // This WM_SIZE come from resizing the window via an API like SetWindowPos() so 
-                        // resize and reset the device now.
-                        DXUTCheckForWindowSizeChange();
-                        DXUTCheckForWindowChangingMonitors();
-                    }
-                }
-            }
-            
+           //     g_pDXUTState.SetMinimized( true );
+           //     g_pDXUTState.SetMaximized( false );
+           // }
+           // else
+           // {
+           //     RECT rcCurrentClient;
+           //     GetClientRect( DXUTGetHWND(), &rcCurrentClient );
+           //     if( rcCurrentClient.top == 0 && rcCurrentClient.bottom == 0 )
+           //     {
+           //         // Rapidly clicking the task bar to minimize and restore a window
+           //         // can cause a WM_SIZE message with SIZE_RESTORED when 
+           //         // the window has actually become minimized due to rapid change
+           //         // so just ignore this message
+           //     }
+           //     else if( SIZE_MAXIMIZED == wParam )
+           //     {
+           //         if( g_pDXUTState.GetMinimized() )
+           //             DXUTPause( false, false ); // Unpause since we're no longer minimized
+           //         g_pDXUTState.SetMinimized( false );
+           //         g_pDXUTState.SetMaximized( true );
+           //         DXUTCheckForWindowSizeChange();
+           //         DXUTCheckForWindowChangingMonitors();
+           //     }
+           //     else if( SIZE_RESTORED == wParam )
+           //     {
+           //         //DXUTCheckForDXGIFullScreenSwitch();
+           //         if( g_pDXUTState.GetMaximized() )
+           //         {
+           //             g_pDXUTState.SetMaximized( false );
+           //             DXUTCheckForWindowSizeChange();
+           //             DXUTCheckForWindowChangingMonitors();
+           //         }
+           //         else if( g_pDXUTState.GetMinimized() )
+           //         {
+           //             DXUTPause( false, false ); // Unpause since we're no longer minimized
+           //             g_pDXUTState.SetMinimized( false );
+           //             DXUTCheckForWindowSizeChange();
+           //             DXUTCheckForWindowChangingMonitors();
+           //         }
+           //         else if( g_pDXUTState.GetInSizeMove() )
+           //         {
+           //             // If we're neither maximized nor minimized, the window size 
+           //             // is changing by the user dragging the window edges.  In this 
+           //             // case, we don't reset the device yet -- we wait until the 
+           //             // user stops dragging, and a WM_EXITSIZEMOVE message comes.
+           //         }
+           //         else
+           //         {
+           //             // This WM_SIZE come from resizing the window via an API like SetWindowPos() so 
+           //             // resize and reset the device now.
+           //             DXUTCheckForWindowSizeChange();
+           //             DXUTCheckForWindowChangingMonitors();
+           //         }
+           //     }
+           // }
+           // 
             break;
 
 
@@ -1320,7 +1305,7 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         case WM_EXITSIZEMOVE:
             DXUTPause( false, false );
             DXUTCheckForWindowSizeChange();
-            DXUTCheckForWindowChangingMonitors();
+            //DXUTCheckForWindowChangingMonitors();
             g_pDXUTState.SetInSizeMove( false );
             break;
 
@@ -1729,7 +1714,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
 
     g_pDXUTState.SetCurrentDeviceSettings(pNewDeviceSettingsOnHeap);
-//    DXUTSnapDeviceSettingsToEnumDevice(pNewDeviceSettingsOnHeap, false);
 
     if( FAILED( hr ) ) // the call will fail if no valid devices were found
     {
@@ -1737,8 +1721,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
         return hr;
     }
 
-    // If the ModifyDeviceSettings callback is non-NULL, then call it to let the app 
-    // change the settings or reject the device change by returning false.
+
     LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallbackModifyDeviceSettings = g_pDXUTState.GetModifyDeviceSettingsFunc();
     if( pCallbackModifyDeviceSettings && pd3d9DeviceFromApp == NULL )
     {
@@ -1769,27 +1752,27 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     // Take note if the backbuffer width & height are 0 now as they will change after pd3dDevice->Reset()
     bool bKeepCurrentWindowSize = false;
-    if( DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) == 0 &&
-        DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) == 0 )
-        bKeepCurrentWindowSize = true;
+    //if( DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) == 0 &&
+    //    DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) == 0 )
+    //    bKeepCurrentWindowSize = true;
 
     //////////////////////////
     // Before reset
     /////////////////////////
     if( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) )
     {
-        // Going to windowed mode
-        if( pOldDeviceSettings && !DXUTGetIsWindowedFromDS( pOldDeviceSettings ) )
-        {
-            // Going from fullscreen -> windowed
-            g_pDXUTState.SetFullScreenBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
-                                                                        pOldDeviceSettings ) );
-            g_pDXUTState.SetFullScreenBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
-                                                                        pOldDeviceSettings ) );
-            //DXGI should handle this, but in the case where switching from d3d9 full screen to windowed d3d11 it does not.
-            SetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE, g_pDXUTState.GetWindowedStyleAtModeChange() );
+        //// Going to windowed mode
+        //if( pOldDeviceSettings && !DXUTGetIsWindowedFromDS( pOldDeviceSettings ) )
+        //{
+        //    // Going from fullscreen -> windowed
+        //    g_pDXUTState.SetFullScreenBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
+        //                                                                pOldDeviceSettings ) );
+        //    g_pDXUTState.SetFullScreenBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
+        //                                                                pOldDeviceSettings ) );
+        //    //DXGI should handle this, but in the case where switching from d3d9 full screen to windowed d3d11 it does not.
+        //    SetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE, g_pDXUTState.GetWindowedStyleAtModeChange() );
 
-        }
+        //}
     }
     else
     {
@@ -1799,23 +1782,19 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             // Transistioning to full screen mode from a standard window so 
             if( pOldDeviceSettings )
             {
-                g_pDXUTState.SetWindowBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
-                                                                        pOldDeviceSettings ) );
-                g_pDXUTState.SetWindowBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
-                                                                        pOldDeviceSettings ) );
+                //g_pDXUTState.SetWindowBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
+                //                                                        pOldDeviceSettings ) );
+                //g_pDXUTState.SetWindowBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
+                //                                                        pOldDeviceSettings ) );
             }
         }
     }
-
-    if( pOldDeviceSettings )
-        DXUTCleanup3DEnvironment( false );
 
     // Create the D3D device and call the app's device callbacks
     hr = DXUTCreate3DEnvironment11( pd3d11DeviceFromApp );
     if( FAILED( hr ) )
     {
         SAFE_DELETE( pOldDeviceSettings );
-        DXUTCleanup3DEnvironment( true );
         DXUTDisplayErrorMessage( hr );
         DXUTPause( false, false );
         g_pDXUTState.SetIgnoreSizeChange( false );
@@ -1844,8 +1823,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
         // Now that we know the client rect, compare it against the back buffer size
         // to see if the client rect is already the right size
-        if( nClientWidth != DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) ||
-            nClientHeight != DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) )
+       // if( nClientWidth != DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) ||
+      //      nClientHeight != DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) )
         {
             bNeedToResize = true;
         }
@@ -1904,8 +1883,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
             int nAdapterMonitorWidth = miAdapter.rcWork.right - miAdapter.rcWork.left;
             int nAdapterMonitorHeight = miAdapter.rcWork.bottom - miAdapter.rcWork.top;
 
-            int nClientWidth = DXUTGetBackBufferWidthFromDS( pNewDeviceSettings );
-            int nClientHeight = DXUTGetBackBufferHeightFromDS( pNewDeviceSettings );
+			int nClientWidth = pNewDeviceSettings->d3d11.sd.BufferDesc.Width;
+			int nClientHeight = pNewDeviceSettings->d3d11.sd.BufferDesc.Height;
 
             // Get the rect of the window
             RECT rcWindow;
@@ -2059,16 +2038,6 @@ void WINAPI DXUTSetD3DVersionSupport( bool bAppCanUseD3D9,  bool bAppCanUseD3D11
     g_pDXUTState.SetUseD3DVersionOverride( true );
     g_pDXUTState.SetAppSupportsD3D9Override( bAppCanUseD3D9 );
     g_pDXUTState.SetAppSupportsD3D11Override( bAppCanUseD3D11 );
-}
-
-
-//--------------------------------------------------------------------------------------
-// Returns true if app has registered any D3D9 callbacks or 
-// used the DXUTSetD3DVersionSupport API and passed true for bAppCanUseD3D9
-//--------------------------------------------------------------------------------------
-bool WINAPI DXUTDoesAppSupportD3D9()
-{
-	return false;
 }
 
 //--------------------------------------------------------------------------------------
@@ -2707,8 +2676,8 @@ void DXUTRender3DEnvironment11()
         {
             GetClientRect( DXUTGetHWND(), &rcClient );
             
-            assert( DXUTGetDXGIBackBufferSurfaceDesc()->Width == (UINT)rcClient.right );
-            assert( DXUTGetDXGIBackBufferSurfaceDesc()->Height == (UINT)rcClient.bottom );
+           // assert( DXUTGetDXGIBackBufferSurfaceDesc()->Width == (UINT)rcClient.right );
+           // assert( DXUTGetDXGIBackBufferSurfaceDesc()->Height == (UINT)rcClient.bottom );
         }
 #endif
     }
@@ -2858,124 +2827,6 @@ void ClearD3D11DeviceContext( ID3D11DeviceContext* pd3dDeviceContext )
     pd3dDeviceContext->OMSetDepthStencilState( NULL, 0 );
     pd3dDeviceContext->RSSetState( NULL );
 }
-
-//--------------------------------------------------------------------------------------
-// Cleans up the 3D environment by:
-//      - Calls the device lost callback 
-//      - Calls the device destroyed callback 
-//      - Releases the D3D device
-//--------------------------------------------------------------------------------------
-void DXUTCleanup3DEnvironment11( bool bReleaseSettings )
-{
-    ID3D11Device* pd3dDevice = DXUTGetD3D11Device();
-
-    if( pd3dDevice != NULL )
-    {
-        if (g_pDXUTState.GetD3D11RasterizerState()!= NULL ) 
-            g_pDXUTState.GetD3D11RasterizerState()->Release();
-
-        // Call ClearState to avoid tons of messy debug spew telling us that we're deleting bound objects
-        ID3D11DeviceContext* pImmediateContext = DXUTGetD3D11DeviceContext();
-        ClearD3D11DeviceContext( pImmediateContext );
-
-        // Clear state and flush
-        pImmediateContext->ClearState();
-        pImmediateContext->Flush();
-
-        // Call the app's SwapChain lost callback
-        g_pDXUTState.SetInsideDeviceCallback( true );
-        if( g_pDXUTState.GetDeviceObjectsReset() )
-        {
-            LPDXUTCALLBACKD3D11SWAPCHAINRELEASING pCallbackSwapChainReleasing =
-                g_pDXUTState.GetD3D11SwapChainReleasingFunc();
-            if( pCallbackSwapChainReleasing != NULL )
-                pCallbackSwapChainReleasing( g_pDXUTState.GetD3D11SwapChainReleasingFuncUserContext() );
-            g_pDXUTState.SetDeviceObjectsReset( false );
-        }
-
-        // Release our old depth stencil texture and view 
-        ID3D11Texture2D* pDS = g_pDXUTState.GetD3D11DepthStencil();
-        SAFE_RELEASE( pDS );
-        g_pDXUTState.SetD3D11DepthStencil( NULL );
-        ID3D11DepthStencilView* pDSV = g_pDXUTState.GetD3D11DepthStencilView();
-        SAFE_RELEASE( pDSV );
-        g_pDXUTState.SetD3D11DepthStencilView( NULL );
-
-        // Cleanup the render target view
-        ID3D11RenderTargetView* pRTV = g_pDXUTState.GetD3D11RenderTargetView();
-        SAFE_RELEASE( pRTV );
-        g_pDXUTState.SetD3D11RenderTargetView( NULL );
-
-        // Call the app's device destroyed callback
-        if( g_pDXUTState.GetDeviceObjectsCreated() )
-        {
-            LPDXUTCALLBACKD3D11DEVICEDESTROYED pCallbackDeviceDestroyed = g_pDXUTState.GetD3D11DeviceDestroyedFunc();
-            if( pCallbackDeviceDestroyed != NULL )
-                pCallbackDeviceDestroyed( g_pDXUTState.GetD3D11DeviceDestroyedFuncUserContext() );
-            g_pDXUTState.SetDeviceObjectsCreated( false );
-        }
-
-        g_pDXUTState.SetInsideDeviceCallback( false );
-
-        // Release the swap chain
-        g_pDXUTState.SetReleasingSwapChain( true );
-        IDXGISwapChain* pSwapChain = DXUTGetDXGISwapChain();
-        if( pSwapChain )
-        {
-            pSwapChain->SetFullscreenState( FALSE, 0 );
-        }
-        SAFE_RELEASE( pSwapChain );
-        g_pDXUTState.SetDXGISwapChain( NULL );
-        g_pDXUTState.SetReleasingSwapChain( false );
-
-        // Release the outputs.
-        IDXGIOutput** ppOutputArray = g_pDXUTState.GetDXGIOutputArray();
-        UINT OutputCount = g_pDXUTState.GetDXGIOutputArraySize();
-        for( UINT o = 0; o < OutputCount; ++o )
-        SAFE_RELEASE( ppOutputArray[o] );
-        delete[] ppOutputArray;
-        g_pDXUTState.SetDXGIOutputArray( NULL );
-        g_pDXUTState.SetDXGIOutputArraySize( 0 );
-
-        // Release the D3D adapter.
-        IDXGIAdapter* pAdapter = g_pDXUTState.GetDXGIAdapter();
-        SAFE_RELEASE( pAdapter );
-        g_pDXUTState.SetDXGIAdapter( NULL );
-
-        // Release the counters
-        //DXUTDestroyD3D11Counters();
-
-        // Release the D3D11 immediate context (if it exists) because it has a extra ref count on it
-        ID3D11DeviceContext* pd3d11DeviceContext = g_pDXUTState.GetD3D11DeviceContext();
-        SAFE_RELEASE( pd3d11DeviceContext );
-        g_pDXUTState.SetD3D11DeviceContext( NULL );
-
-        // Release the D3D device and in debug configs, displays a message box if there 
-        // are unrelease objects.
-        if( pd3dDevice )
-        {
-            UINT references = pd3dDevice->Release();
-            if( references > 0 )
-            {
-                DXUTDisplayErrorMessage( DXUTERR_NONZEROREFCOUNT );
-            }
-        }
-        g_pDXUTState.SetD3D11Device( NULL );
-
-        if( bReleaseSettings )
-        {
-            DXUTDeviceSettings* pOldDeviceSettings = g_pDXUTState.GetCurrentDeviceSettings();
-            SAFE_DELETE(pOldDeviceSettings);
-            g_pDXUTState.SetCurrentDeviceSettings( NULL );
-        }
-
-        DXGI_SURFACE_DESC* pBackBufferSurfaceDesc = g_pDXUTState.GetBackBufferSurfaceDescDXGI();
-        ZeroMemory( pBackBufferSurfaceDesc, sizeof( DXGI_SURFACE_DESC ) );
-
-        g_pDXUTState.SetDeviceCreated( false );
-    }
-}
-
 
 //--------------------------------------------------------------------------------------
 // Low level keyboard hook to disable Windows key to prevent accidental task switching.  
@@ -3143,11 +2994,7 @@ void DXUTDisplayErrorMessage( HRESULT hr )
         case DXUTERR_NODIRECT3D:
         {
             nExitCode = 2;
-            if( !DXUTDoesAppSupportD3D9() )
-                wcscpy_s( strBuffer, ARRAYSIZE(strBuffer), L"Could not initialize Direct3D 11. " );
-            else
-                wcscpy_s( strBuffer, ARRAYSIZE(strBuffer), L"Could not initialize Direct3D 9. Check that the latest version of DirectX is correctly installed on your system.  Also make sure that this program was compiled with header files that match the installed DirectX DLLs." );
-            break;
+         break;
         }
         case DXUTERR_NOCOMPATIBLEDEVICES:    
             nExitCode = 3; 
@@ -3391,6 +3238,7 @@ void DXUTCheckForDXGIFullScreenSwitch()
 
 void DXUTResizeDXGIBuffers( UINT Width, UINT Height, BOOL bFullScreen )
 {
+	//return;
     HRESULT hr = S_OK;
     RECT rcCurrentClient;
     GetClientRect( DXUTGetHWND(), &rcCurrentClient );
@@ -3527,60 +3375,6 @@ void DXUTCheckForWindowSizeChange()
 	DXUTCheckForDXGIBufferChange();
 }
 
-
-//--------------------------------------------------------------------------------------
-// Checks to see if the HWND changed monitors, and if it did it creates a device 
-// from the monitor's adapter and recreates the scene.
-//--------------------------------------------------------------------------------------
-void DXUTCheckForWindowChangingMonitors()
-{
-    // Skip this check for various reasons
-    if( !g_pDXUTState.GetAutoChangeAdapter() ||
-        g_pDXUTState.GetIgnoreSizeChange() || !g_pDXUTState.GetDeviceCreated() || !DXUTIsWindowed() )
-        return;
-
-    HRESULT hr;
-    HMONITOR hWindowMonitor = DXUTMonitorFromWindow( DXUTGetHWND(), MONITOR_DEFAULTTOPRIMARY );
-    HMONITOR hAdapterMonitor = g_pDXUTState.GetAdapterMonitor();
-    if( hWindowMonitor != hAdapterMonitor )
-    {
-        UINT newOrdinal;
-        if( SUCCEEDED( DXUTGetAdapterOrdinalFromMonitor( hWindowMonitor, &newOrdinal ) ) )
-        {
-            // Find the closest valid device settings with the new ordinal
-            DXUTDeviceSettings deviceSettings = DXUTGetDeviceSettings();
-            {
-                deviceSettings.d3d11.AdapterOrdinal = newOrdinal;
-                UINT newOutput;
-                if( SUCCEEDED( DXUTGetOutputOrdinalFromMonitor( hWindowMonitor, &newOutput ) ) )
-                    deviceSettings.d3d11.Output = newOutput;
-            }
-
-            hr = DXUTSnapDeviceSettingsToEnumDevice( &deviceSettings, false );
-            if( SUCCEEDED( hr ) )
-            {
-                // Create a Direct3D device using the new device settings.  
-                // If there is an existing device, then it will either reset or recreate the scene.
-                hr = DXUTChangeDevice( &deviceSettings, NULL, NULL, false, false );
-
-                // If hr == E_ABORT, this means the app rejected the device settings in the ModifySettingsCallback
-                if( hr == E_ABORT )
-                {
-                    // so nothing changed and keep from attempting to switch adapters next time
-                    g_pDXUTState.SetAutoChangeAdapter( false );
-                }
-                else if( FAILED( hr ) )
-                {
-                    DXUTShutdown();
-                    DXUTPause( false, false );
-                    return;
-                }
-            }
-        }
-    }
-}
-
-
 //--------------------------------------------------------------------------------------
 // Renders the scene using either D3D9 or D3D11
 //--------------------------------------------------------------------------------------
@@ -3588,17 +3382,6 @@ void WINAPI DXUTRender3DEnvironment()
 {
     DXUTRender3DEnvironment11();
 }
-
-
-//--------------------------------------------------------------------------------------
-// Cleans up both the D3D9 and D3D11 3D environment (but only one should be active at a time)
-//--------------------------------------------------------------------------------------
-void DXUTCleanup3DEnvironment( bool bReleaseSettings )
-{
-    if( DXUTGetD3D11Device() )
-        DXUTCleanup3DEnvironment11( bReleaseSettings );
-}
-
 
 //--------------------------------------------------------------------------------------
 // Returns the HMONITOR attached to an adapter/output
@@ -3971,8 +3754,6 @@ void WINAPI DXUTShutdown( int nExitCode )
         SendMessage( hWnd, WM_CLOSE, 0, 0 );
 
     g_pDXUTState.SetExitCode( nExitCode );
-
-    DXUTCleanup3DEnvironment( true );
 
     // Restore shortcut keys (Windows key, accessibility shortcuts) to original state
     // This is important to call here if the shortcuts are disabled, 
