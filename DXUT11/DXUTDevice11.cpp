@@ -172,30 +172,6 @@ HRESULT CD3D11Enumeration::Enumerate( LPDXUTCALLBACKISD3D11DEVICEACCEPTABLE IsD3
         }
     }
 
-
-    //  If we did not get an adapter then we should still enumerate WARP and Ref.
-    //if (m_AdapterInfoList.GetSize() == 0) {
-
-
-    //    CD3D11EnumAdapterInfo* pAdapterInfo = new CD3D11EnumAdapterInfo;
-    //    if( !pAdapterInfo )
-    //    {
-    //        return E_OUTOFMEMORY;
-    //    }
-    //    ZeroMemory( pAdapterInfo, sizeof( CD3D11EnumAdapterInfo ) );
-    //    pAdapterInfo->bAdapterUnavailable = true;
-
-    //    hr = EnumerateDevices( pAdapterInfo );
-
-    //    // Get info for each devicecombo on this device
-    //    if( FAILED( hr = EnumerateDeviceCombosNoAdapter(  pAdapterInfo ) ) )
-    //    {
-    //        delete pAdapterInfo;
-    //    }
-
-    //    if (!FAILED(hr)) hr = m_AdapterInfoList.Add( pAdapterInfo );
-    //}
-
     //
     // Check for 2 or more adapters with the same name. Append the name
     // with some instance number if that's the case to help distinguish
@@ -293,123 +269,25 @@ HRESULT CD3D11Enumeration::EnumerateOutputs( CD3D11EnumAdapterInfo* pAdapterInfo
 HRESULT CD3D11Enumeration::EnumerateDisplayModes( CD3D11EnumOutputInfo* pOutputInfo )
 {
     HRESULT hr = S_OK;
-    DXGI_FORMAT allowedAdapterFormatArray[] =
+	DXGI_FORMAT allowedAdapterFormatArray = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    UINT NumModes = 512;
+    DXGI_MODE_DESC* pDesc = new DXGI_MODE_DESC[ NumModes ];
+
+    hr = pOutputInfo->m_pOutput->GetDisplayModeList( allowedAdapterFormatArray,
+                                                        DXGI_ENUM_MODES_SCALING,
+                                                        &NumModes,
+                                                        pDesc );
+
+    if( SUCCEEDED( hr ) )
     {
-        DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,     //This is DXUT's preferred mode
-
-        DXGI_FORMAT_R8G8B8A8_UNORM,			
-        DXGI_FORMAT_R16G16B16A16_FLOAT,
-        DXGI_FORMAT_R10G10B10A2_UNORM
-    };
-    int allowedAdapterFormatArrayCount = sizeof( allowedAdapterFormatArray ) / sizeof( allowedAdapterFormatArray[0] );
-
-    // Swap perferred modes for apps running in linear space
-    DXGI_FORMAT RemoteMode = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-
-        allowedAdapterFormatArray[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-        allowedAdapterFormatArray[1] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-        RemoteMode = DXGI_FORMAT_R8G8B8A8_UNORM;
-
-
-    // The fast path only enumerates R8G8B8A8_UNORM_SRGB modes
-    if( !m_bEnumerateAllAdapterFormats )
-        allowedAdapterFormatArrayCount = 1;
-
-    for( int f = 0; f < allowedAdapterFormatArrayCount; ++f )
-    {
-        // Fast-path: Try to grab at least 512 modes.
-        //			  This is to avoid calling GetDisplayModeList more times than necessary.
-        //			  GetDisplayModeList is an expensive call.
-        UINT NumModes = 512;
-        DXGI_MODE_DESC* pDesc = new DXGI_MODE_DESC[ NumModes ];
-        assert( pDesc );
-        if( !pDesc )
-            return E_OUTOFMEMORY;
-
-        hr = pOutputInfo->m_pOutput->GetDisplayModeList( allowedAdapterFormatArray[f],
-                                                         DXGI_ENUM_MODES_SCALING,
-                                                         &NumModes,
-                                                         pDesc );
-        if( DXGI_ERROR_NOT_FOUND == hr )
+        for( UINT m = 0; m < NumModes; m++ )
         {
-            SAFE_DELETE_ARRAY( pDesc );
-            NumModes = 0;
-            break;
+            pOutputInfo->displayModeList.Add( pDesc[m] );
         }
-        else if( MAKE_DXGI_HRESULT( 34 ) == hr && RemoteMode == allowedAdapterFormatArray[f] )
-        {
-            // DXGI cannot enumerate display modes over a remote session.  Therefore, create a fake display
-            // mode for the current screen resolution for the remote session.
-            if( 0 != GetSystemMetrics( 0x1000 ) ) // SM_REMOTESESSION
-            {
-                DEVMODE DevMode;
-                DevMode.dmSize = sizeof( DEVMODE );
-                if( EnumDisplaySettings( NULL, ENUM_CURRENT_SETTINGS, &DevMode ) )
-                {
-                    NumModes = 1;
-                    pDesc[0].Width = DevMode.dmPelsWidth;
-                    pDesc[0].Height = DevMode.dmPelsHeight;
-                    pDesc[0].Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-                    pDesc[0].RefreshRate.Numerator = 60;
-                    pDesc[0].RefreshRate.Denominator = 1;
-                    pDesc[0].ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
-                    pDesc[0].Scaling = DXGI_MODE_SCALING_CENTERED;
-                    hr = S_OK;
-                }
-            }
-        }
-        else if( DXGI_ERROR_MORE_DATA == hr )
-        {
-            // Slow path.  There were more than 512 modes.
-            SAFE_DELETE_ARRAY( pDesc );
-            hr = pOutputInfo->m_pOutput->GetDisplayModeList( allowedAdapterFormatArray[f],
-                                                             DXGI_ENUM_MODES_SCALING,
-                                                             &NumModes,
-                                                             NULL );
-            if( FAILED( hr ) )
-            {
-                NumModes = 0;
-                break;
-            }
-
-            pDesc = new DXGI_MODE_DESC[ NumModes ];
-            assert( pDesc );
-            if( !pDesc )
-                return E_OUTOFMEMORY;
-
-            hr = pOutputInfo->m_pOutput->GetDisplayModeList( allowedAdapterFormatArray[f],
-                                                             DXGI_ENUM_MODES_SCALING,
-                                                             &NumModes,
-                                                             pDesc );
-            if( FAILED( hr ) )
-            {
-                SAFE_DELETE_ARRAY( pDesc );
-                NumModes = 0;
-                break;
-            }
-
-        }
-
-        if( 0 == NumModes && 0 == f )
-        {
-            // No R8G8B8A8_UNORM_SRGB modes!
-            // Abort the fast-path if we're on it
-            allowedAdapterFormatArrayCount = sizeof( allowedAdapterFormatArray ) / sizeof
-                ( allowedAdapterFormatArray[0] );
-            SAFE_DELETE_ARRAY( pDesc );
-            continue;
-        }
-
-        if( SUCCEEDED( hr ) )
-        {
-            for( UINT m = 0; m < NumModes; m++ )
-            {
-                pOutputInfo->displayModeList.Add( pDesc[m] );
-            }
-        }
-
-        SAFE_DELETE_ARRAY( pDesc );
     }
+
+    SAFE_DELETE_ARRAY( pDesc );
 
     return hr;
 }

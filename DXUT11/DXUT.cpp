@@ -1729,7 +1729,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
 
     g_pDXUTState.SetCurrentDeviceSettings(pNewDeviceSettingsOnHeap);
-    DXUTSnapDeviceSettingsToEnumDevice(pNewDeviceSettingsOnHeap, false);
+//    DXUTSnapDeviceSettingsToEnumDevice(pNewDeviceSettingsOnHeap, false);
 
     if( FAILED( hr ) ) // the call will fail if no valid devices were found
     {
