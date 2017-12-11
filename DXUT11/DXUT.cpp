@@ -1749,47 +1749,6 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
 
     DXUTPause( true, true );
 
-
-    // Take note if the backbuffer width & height are 0 now as they will change after pd3dDevice->Reset()
-    bool bKeepCurrentWindowSize = false;
-    //if( DXUTGetBackBufferWidthFromDS( pNewDeviceSettings ) == 0 &&
-    //    DXUTGetBackBufferHeightFromDS( pNewDeviceSettings ) == 0 )
-    //    bKeepCurrentWindowSize = true;
-
-    //////////////////////////
-    // Before reset
-    /////////////////////////
-    if( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) )
-    {
-        //// Going to windowed mode
-        //if( pOldDeviceSettings && !DXUTGetIsWindowedFromDS( pOldDeviceSettings ) )
-        //{
-        //    // Going from fullscreen -> windowed
-        //    g_pDXUTState.SetFullScreenBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
-        //                                                                pOldDeviceSettings ) );
-        //    g_pDXUTState.SetFullScreenBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
-        //                                                                pOldDeviceSettings ) );
-        //    //DXGI should handle this, but in the case where switching from d3d9 full screen to windowed d3d11 it does not.
-        //    SetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE, g_pDXUTState.GetWindowedStyleAtModeChange() );
-
-        //}
-    }
-    else
-    {
-        // Going to fullscreen mode
-        if( pOldDeviceSettings == NULL || ( pOldDeviceSettings && DXUTGetIsWindowedFromDS( pOldDeviceSettings ) ) )
-        {
-            // Transistioning to full screen mode from a standard window so 
-            if( pOldDeviceSettings )
-            {
-                //g_pDXUTState.SetWindowBackBufferWidthAtModeChange( DXUTGetBackBufferWidthFromDS(
-                //                                                        pOldDeviceSettings ) );
-                //g_pDXUTState.SetWindowBackBufferHeightAtModeChange( DXUTGetBackBufferHeightFromDS(
-                //                                                        pOldDeviceSettings ) );
-            }
-        }
-    }
-
     // Create the D3D device and call the app's device callbacks
     hr = DXUTCreate3DEnvironment11( pd3d11DeviceFromApp );
     if( FAILED( hr ) )
@@ -1808,8 +1767,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings,
     // Handle cases where the window is minimized and maxmimized as well.
  
     bool bNeedToResize = false;
-    if( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) && // only resize if in windowed mode
-        !bKeepCurrentWindowSize )                      // only resize if pp.BackbufferWidth/Height were not 0
+    if( DXUTGetIsWindowedFromDS( pNewDeviceSettings ) )                      // only resize if pp.BackbufferWidth/Height were not 0
     {
         UINT nClientWidth;
         UINT nClientHeight;
